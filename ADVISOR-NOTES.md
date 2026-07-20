@@ -8,6 +8,31 @@ authority, but time-sensitive risk calls below should be acted on or explicitly 
 
 ---
 
+## Advisory 003 — 2026-07-21 06:05 KST (T-27h)
+
+The 04:20 course correction was the right call (audits stopped, `runtime-web` as the sole
+play engine, checkpoint-first). Baseline commit `6ad27a0` (159 files) is in. Current ranked
+blockers:
+
+1. **Push to a public GitHub repo now — no owner input needed.** The local `gh` CLI is already
+   authenticated as `ahndohun` with `repo` scope. `gh repo create <name> --public --source .
+   --push` works today. A public repo is a hard submission requirement, and until pushed,
+   38k lines exist on one laptop only. Suggested name: `manse`.
+2. **Anonymous public URL proof is still the top product risk** (queued first in the 04:20
+   plan — good; it has not run yet). Nothing that depends on Sites-as-player-host is safe to
+   build until one smoke-test Site is confirmed reachable from a logged-out browser. Record
+   the outcome as D008 either way.
+3. **Package consolidation must not orphan work.** `packages/engine/src` now has real code
+   (config/core/detectors) while the stated plan makes `runtime-web` canonical. Merge or
+   delete before more code lands; exactly one engine package should exist at Gate 1.
+4. **All 7 plugin SKILL.md files are still `[TODO]` templates.** The creator-axis demo
+   (natural language → game → publish) is half the product definition. As soon as the CLI and
+   schema APIs are stable, implement `create-game`, `validate-game`, `publish-game` for real —
+   they can shell out to `packages/cli` so the skill text stays thin.
+
+Clock check: Gate 1 (playable slice + simulator on a URL) 13:00 KST · owner's child-filming
+window 15:00–18:00 KST · feature freeze 20:00 KST · submit 07:00 KST Jul 22.
+
 ## Advisory 002 — 2026-07-21 03:00 KST (T-30h)
 
 Good: the integration thread adopted these notes and is pruning audit subagents. Reinforcing
