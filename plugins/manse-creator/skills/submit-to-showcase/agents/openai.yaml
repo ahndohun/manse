@@ -1,0 +1,4 @@
+interface:
+  display_name: "Submit to Showcase"
+  short_description: "Prepare a reviewed Manse Showcase submission"
+  default_prompt: "Use $submit-to-showcase to prepare my game for the Manse Showcase."

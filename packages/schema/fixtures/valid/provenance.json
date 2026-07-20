@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "assets": [
+    {
+      "assetId": "intro-en",
+      "path": "assets/audio/intro-en.mp3",
+      "license": {
+        "spdxId": "CC0-1.0",
+        "name": "CC0 1.0 Universal",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attribution": null
+      },
+      "provenance": {
+        "kind": "generated",
+        "tool": "OpenAI text-to-speech",
+        "model": "gpt-4o-mini-tts",
+        "prompt": "Friendly English narration: Reach up and meet the stars!",
+        "generatedAt": "2026-07-21T00:00:00.000Z"
+      }
+    },
+    {
+      "assetId": "cue-sfx",
+      "path": "assets/audio/cue.wav",
+      "license": {
+        "spdxId": "CC0-1.0",
+        "name": "CC0 1.0 Universal",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attribution": null
+      },
+      "provenance": {
+        "kind": "original",
+        "creator": "Example Creator",
+        "createdAt": "2026-07-21T00:00:00.000Z"
+      }
+    }
+  ]
+}

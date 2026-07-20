@@ -1,0 +1,4 @@
+interface:
+  display_name: "Validate Game"
+  short_description: "Check game safety, assets, schemas, and build"
+  default_prompt: "Use $validate-game to check my Manse game before publishing."

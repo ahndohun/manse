@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "manse.example",
+  "slug": "manse-example",
+  "title": [{ "locale": "en", "text": "Unsafe game" }],
+  "summary": [{ "locale": "en", "text": "This fixture intentionally uses an insecure game URL." }],
+  "gameUrl": "http://game.example/",
+  "sourceUrl": "https://github.com/example/manse-game",
+  "engineVersion": "0.1.0",
+  "locales": ["en"],
+  "ageRange": { "min": 4, "max": 10 },
+  "movementTags": ["touch"],
+  "accessibility": {
+    "captions": true,
+    "seatedMode": true,
+    "highContrast": true,
+    "reducedStimulation": true,
+    "audioCues": true
+  },
+  "thumbnail": {
+    "url": "https://game.example/assets/thumbnail.webp",
+    "mediaType": "image/webp",
+    "alt": [{ "locale": "en", "text": "Unsafe fixture" }]
+  },
+  "license": { "spdxId": "MIT", "name": "MIT License", "url": null, "attribution": null },
+  "contentProvenance": {
+    "hasGeneratedAssets": false,
+    "hasThirdPartyAssets": false,
+    "provenanceUrl": "https://game.example/packs/example/provenance.json"
+  },
+  "permissions": { "camera": true, "deviceLocalStorage": true }
+}

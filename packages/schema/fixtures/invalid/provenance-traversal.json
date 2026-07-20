@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "assets": [
+    {
+      "assetId": "unsafe",
+      "path": "../outside.js",
+      "license": { "spdxId": "MIT", "name": "MIT License", "url": null, "attribution": null },
+      "provenance": {
+        "kind": "third-party",
+        "creator": "Unknown",
+        "sourceUrl": "https://example.com/asset",
+        "retrievedAt": "2026-07-21T00:00:00.000Z"
+      }
+    }
+  ]
+}

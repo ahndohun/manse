@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "assets": [
+    {
+      "path": "/og.png",
+      "origin": "generated",
+      "generator": "OpenAI image generation via Codex",
+      "createdAt": "2026-07-21",
+      "license": "MIT",
+      "promptSummary": "Original Manse social card using the site's cream, charcoal, coral, lime, and forest visual system with geometric motion tracking motifs."
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Publish Game"
+  short_description: "Publish and verify a standalone Manse game Site"
+  default_prompt: "Use $publish-game to publish my validated Manse game with Sites."

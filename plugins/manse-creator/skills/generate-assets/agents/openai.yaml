@@ -1,0 +1,4 @@
+interface:
+  display_name: "Generate Assets"
+  short_description: "Create licensed game art and record provenance"
+  default_prompt: "Use $generate-assets to create original assets for my Manse game."

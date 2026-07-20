@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "meta": {
+    "id": "manse.example",
+    "title": [{ "locale": "en", "text": "Manse Example" }],
+    "summary": [{ "locale": "en", "text": "A minimal valid motion-game pack." }],
+    "theme": "Reach for friendly stars",
+    "locales": ["en"],
+    "ageBands": ["4-5", "6-7", "8+"],
+    "estMinutes": 3,
+    "engine": { "minimumVersion": "0.1.0", "maximumVersion": null },
+    "compiler": null
+  },
+  "permissions": { "camera": true, "deviceLocalStorage": true },
+  "cast": [
+    {
+      "id": "guide",
+      "name": [{ "locale": "en", "text": "Mansi" }],
+      "artAssetId": null,
+      "description": "A friendly geometric guide rendered by the engine."
+    }
+  ],
+  "entrySceneId": "intro",
+  "scenes": [
+    {
+      "id": "intro",
+      "kind": "story",
+      "narration": {
+        "items": [
+          { "locale": "en", "text": "Reach up and meet the stars!", "audioAssetId": "intro-en" }
+        ],
+        "captionDefaultOn": true
+      },
+      "demo": { "characterId": "guide", "animation": "wave" },
+      "challenge": null,
+      "learning": null,
+      "artAssetId": null,
+      "energy": "calm",
+      "terminal": false,
+      "transitions": [{ "on": "always", "to": "reach", "adapt": null }]
+    },
+    {
+      "id": "reach",
+      "kind": "challenge",
+      "narration": {
+        "items": [{ "locale": "en", "text": "Touch three stars.", "audioAssetId": null }],
+        "captionDefaultOn": true
+      },
+      "demo": { "characterId": "guide", "animation": "reach" },
+      "challenge": {
+        "type": "touch_targets",
+        "count": 3,
+        "zone": "reachable",
+        "targetScale": 1,
+        "dwellMs": 150,
+        "limb": "hands",
+        "timeBudgetMs": 15000,
+        "successAudioId": "cue-sfx",
+        "encourageAudioId": "cue-sfx"
+      },
+      "learning": { "kind": "counting", "payload": ["1", "2", "3"] },
+      "artAssetId": null,
+      "energy": "medium",
+      "terminal": false,
+      "transitions": [
+        { "on": "success", "to": "finish", "adapt": null },
+        {
+          "on": "struggle",
+          "to": "finish",
+          "adapt": { "targetScaleMul": 1.2, "dwellMsMul": 0.8, "countDelta": -1, "timeBudgetMul": 1.2 }
+        }
+      ]
+    },
+    {
+      "id": "finish",
+      "kind": "celebration",
+      "narration": {
+        "items": [{ "locale": "en", "text": "You did it!", "audioAssetId": null }],
+        "captionDefaultOn": true
+      },
+      "demo": { "characterId": "guide", "animation": "celebrate" },
+      "challenge": null,
+      "learning": null,
+      "artAssetId": null,
+      "energy": "calm",
+      "terminal": true,
+      "transitions": []
+    }
+  ],
+  "adaptPolicy": {
+    "targetSuccessBand": [0.65, 0.85],
+    "maxStruggleStreak": 2,
+    "maxHighEnergyMs": 90000
+  },
+  "assets": {
+    "images": [],
+    "audio": [
+      {
+        "id": "intro-en",
+        "path": "assets/audio/intro-en.mp3",
+        "mediaType": "audio/mpeg",
+        "locale": "en",
+        "transcript": "Reach up and meet the stars!",
+        "license": {
+          "spdxId": "CC0-1.0",
+          "name": "CC0 1.0 Universal",
+          "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+          "attribution": null
+        },
+        "provenance": {
+          "kind": "generated",
+          "tool": "OpenAI text-to-speech",
+          "model": "gpt-4o-mini-tts",
+          "prompt": "Friendly English narration: Reach up and meet the stars!",
+          "generatedAt": "2026-07-21T00:00:00.000Z"
+        }
+      },
+      {
+        "id": "cue-sfx",
+        "path": "assets/audio/cue.wav",
+        "mediaType": "audio/wav",
+        "locale": null,
+        "transcript": "",
+        "license": {
+          "spdxId": "CC0-1.0",
+          "name": "CC0 1.0 Universal",
+          "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+          "attribution": null
+        },
+        "provenance": {
+          "kind": "original",
+          "creator": "Example Creator",
+          "createdAt": "2026-07-21T00:00:00.000Z"
+        }
+      }
+    ],
+    "music": []
+  }
+}

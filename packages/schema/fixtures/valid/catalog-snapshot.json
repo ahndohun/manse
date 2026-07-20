@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "games": [
+    {
+      "manifestUrl": "https://game.example/.well-known/manse-game.json",
+      "manifest": {
+        "schemaVersion": 1,
+        "id": "manse.example",
+        "slug": "manse-example",
+        "title": [{ "locale": "en", "text": "Manse Example" }],
+        "summary": [{ "locale": "en", "text": "A tiny contract fixture for the open Manse engine." }],
+        "gameUrl": "https://game.example/",
+        "sourceUrl": "https://github.com/example/manse-game",
+        "engineVersion": "0.1.0",
+        "locales": ["en"],
+        "ageRange": { "min": 4, "max": 99 },
+        "movementTags": ["touch", "full-body"],
+        "accessibility": {
+          "captions": true,
+          "seatedMode": true,
+          "highContrast": true,
+          "reducedStimulation": true,
+          "audioCues": true
+        },
+        "thumbnail": {
+          "url": "https://game.example/assets/thumbnail.webp",
+          "mediaType": "image/webp",
+          "alt": [{ "locale": "en", "text": "A player reaching toward a bright star" }]
+        },
+        "license": {
+          "spdxId": "MIT",
+          "name": "MIT License",
+          "url": "https://spdx.org/licenses/MIT.html",
+          "attribution": "Copyright Example Creator"
+        },
+        "contentProvenance": {
+          "hasGeneratedAssets": true,
+          "hasThirdPartyAssets": false,
+          "provenanceUrl": "https://game.example/packs/example/provenance.json"
+        },
+        "permissions": { "camera": true, "deviceLocalStorage": true }
+      }
+    }
+  ]
+}

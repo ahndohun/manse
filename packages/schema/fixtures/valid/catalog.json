@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1,
+  "games": [
+    { "manifestUrl": "https://game.example/.well-known/manse-game.json" }
+  ]
+}

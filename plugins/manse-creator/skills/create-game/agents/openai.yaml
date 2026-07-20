@@ -1,0 +1,4 @@
+interface:
+  display_name: "Create Game"
+  short_description: "Turn a plain-language idea into a Manse game"
+  default_prompt: "Use $create-game to turn my idea into a new Manse game Site."

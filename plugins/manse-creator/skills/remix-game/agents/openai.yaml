@@ -1,0 +1,4 @@
+interface:
+  display_name: "Remix Game"
+  short_description: "Remix a Manse game with attribution preserved"
+  default_prompt: "Use $remix-game to create an attributed remix of a Manse game."

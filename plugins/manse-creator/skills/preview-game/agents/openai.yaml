@@ -1,0 +1,4 @@
+interface:
+  display_name: "Preview Game"
+  short_description: "Preview a Manse game with safe simulator controls"
+  default_prompt: "Use $preview-game to open and test my Manse game locally."
