@@ -21,13 +21,13 @@ need a Manse account, a controller, a subscription, or a runtime AI service.
 
 ## Release links
 
-These values will be replaced after the corresponding public artifacts exist.
+Remaining placeholders will be replaced after the corresponding public artifacts exist.
 
 | Artifact | Release value |
 | --- | --- |
 | Public Showcase | `<SHOWCASE_URL>` |
 | Engine/starter playground | `<PLAYGROUND_URL>` |
-| Source repository | `<REPOSITORY_URL>` |
+| Source repository | [github.com/ahndohun/manse](https://github.com/ahndohun/manse) |
 | Manse Creator listing | `<PLUGIN_LISTING_URL>` |
 | Devpost demo video | `<DEMO_VIDEO_URL>` |
 | Primary Codex `/feedback` Session ID | `<CODEX_SESSION_ID>` |
@@ -84,7 +84,7 @@ See [Publishing a game](docs/PUBLISHING.md) for the complete workflow and
 Until the public marketplace URL above is filled, install from a local checkout:
 
 ```bash
-git clone <REPOSITORY_URL> manse
+git clone https://github.com/ahndohun/manse.git
 cd manse
 codex plugin marketplace add "$(pwd)"
 codex plugin add manse-creator@personal
@@ -116,7 +116,7 @@ not to the Manse runtime.
 - A camera only for the real pose path; the simulator is the default test path
 
 ```bash
-git clone <REPOSITORY_URL> manse
+git clone https://github.com/ahndohun/manse.git
 cd manse
 npm install
 npm run validate
@@ -161,9 +161,7 @@ apps/
   hub/                    static public Showcase Site
 packages/
   cli/                    validation, manifest, catalog, and packaging commands
-  engine/                 deterministic game and episode execution
-  pose/                   on-device pose providers and performance ladder
-  runtime-web/            browser player, rendering, camera setup, fallbacks
+  runtime-web/            game execution, pose input, rendering, and fallbacks
   schema/                 shared manifest and pack contract
 plugins/
   manse-creator/          installable Codex creator/publisher plugin

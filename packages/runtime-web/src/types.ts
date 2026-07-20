@@ -62,10 +62,6 @@ export interface RuntimePoseProvider {
   getMetrics(): PoseProviderMetrics;
 }
 
-export interface ReplayPoseProvider extends RuntimePoseProvider {
-  readonly kind: "replay";
-}
-
 export interface RuntimeTarget {
   readonly id: string;
   /** Normalized screen-space center. */

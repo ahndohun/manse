@@ -19,6 +19,7 @@ export function SiteFooter() {
 
         <div className="footer-links" aria-label="Platform links">
           <p>Platform</p>
+          <Link href="/playground">Engine playground</Link>
           <Link href="/#games">Explore games</Link>
           <Link href="/#platform">How it works</Link>
           <Link href="/docs">Documentation</Link>

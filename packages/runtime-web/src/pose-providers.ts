@@ -47,6 +47,9 @@ abstract class ScheduledPoseProvider implements RuntimePoseProvider {
     this.timing = timing;
   }
 
+  abstract initialize(): Promise<void>;
+  abstract start(source?: PoseInputSource): Promise<void>;
+
   get state(): RuntimePoseProvider["state"] {
     return this.stateValue;
   }
@@ -417,4 +420,3 @@ function finiteOr(value: number | undefined, fallback: number): number {
 function clamp(value: number, minimum: number, maximum: number): number {
   return Math.min(maximum, Math.max(minimum, value));
 }
-

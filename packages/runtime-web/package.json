@@ -6,7 +6,8 @@
   "type": "module",
   "sideEffects": false,
   "files": [
-    "dist"
+    "dist",
+    "assets"
   ],
   "exports": {
     ".": {
@@ -30,7 +31,7 @@
   },
   "devDependencies": {
     "typescript": "^5.9.2",
-    "vitest": "^3.2.4"
+    "vitest": "3.2.7"
   },
   "engines": {
     "node": ">=22.13.0"

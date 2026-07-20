@@ -40,3 +40,6 @@ next-env.d.ts
 /.wrangler/
 /outputs/
 /work/
+/public/models/*.task
+/public/vendor/mediapipe/wasm/
+/public/playground/*.wav

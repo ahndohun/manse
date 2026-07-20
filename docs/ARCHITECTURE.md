@@ -212,9 +212,7 @@ A Showcase listing is a reviewed discovery link, not a security sandbox or owner
 | Path | Responsibility | Must not own |
 | --- | --- | --- |
 | `packages/schema` | canonical manifest, pack, provenance, and catalog schemas; types; fixtures; strict validation primitives | browser UI or publishing side effects |
-| `packages/engine` | deterministic scene execution, challenge evaluation, adaptation, and content-neutral game state | DOM, camera permission, or hosting code |
-| `packages/pose` | pose-provider contracts, scheduling, confidence handling, smoothing, extrapolation, and capability tiers | game-specific rules or network telemetry |
-| `packages/runtime-web` | browser composition: camera and simulator adapters, renderer, audio, captions, asset loading, and offline integration | schema forks or creator accounts |
+| `packages/runtime-web` | the single play engine: deterministic scene execution, local pose and simulator providers, challenge evaluation, renderer, audio, captions, asset loading, and browser integration | schema forks, creator accounts, camera upload, or runtime AI calls |
 | `packages/cli` | deterministic project, validation, preview, catalog, and publishing-support commands used by people and plugin skills | hidden remote state or required credentials in source |
 | `plugins/manse-creator` | Codex plugin manifest, focused creator skills, scripts, and starter assets | a private game format or runtime AI service |
 | `apps/hub` | static official Showcase and platform documentation surface | databases, authentication, game proxying, or third-party code execution |
@@ -222,7 +220,7 @@ A Showcase listing is a reviewed discovery link, not a security sandbox or owner
 | `.github/workflows` | contract, fixture, catalog, build, and contribution gates | semantic approval without a maintainer |
 | `docs` | product contract, architecture, publishing, privacy, platform support, and contribution guidance | divergent executable schemas |
 
-`packages/engine` and `packages/runtime-web` are deliberately separate, not duplicate engines: the former is device-independent logic, while the latter is the browser runtime that composes it with pose input and presentation.
+The v0.1 engine and browser adapters intentionally ship as one package. Internal modules keep scene logic, input providers, and presentation separated without exposing multiple half-integrated packages to creators.
 
 ## Self-hosting and portability
 

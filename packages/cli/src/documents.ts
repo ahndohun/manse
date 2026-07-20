@@ -175,6 +175,65 @@ async function collectPackFiles(packsRoot: string): Promise<string[]> {
   return results.sort((left, right) => left < right ? -1 : left > right ? 1 : 0);
 }
 
+function semverParts(value: string): readonly number[] {
+  return value.split("-", 1)[0]?.split(".").map((part) => Number.parseInt(part, 10)) ?? [];
+}
+
+function compareSemver(left: string, right: string): number {
+  const leftParts = semverParts(left);
+  const rightParts = semverParts(right);
+  for (let index = 0; index < 3; index += 1) {
+    const difference = (leftParts[index] ?? 0) - (rightParts[index] ?? 0);
+    if (difference !== 0) return difference < 0 ? -1 : 1;
+  }
+  return 0;
+}
+
+function assertManifestPackCompatibility(
+  manifest: Record<string, unknown>,
+  pack: Record<string, unknown>,
+  packPath: string,
+): void {
+  const engineVersion = manifest.engineVersion;
+  const meta = isRecord(pack.meta) ? pack.meta : undefined;
+  const engine = meta !== undefined && isRecord(meta.engine) ? meta.engine : undefined;
+  if (typeof engineVersion === "string" && engine !== undefined) {
+    const minimum = engine.minimumVersion;
+    const maximum = engine.maximumVersion;
+    if (
+      (typeof minimum === "string" && compareSemver(engineVersion, minimum) < 0)
+      || (typeof maximum === "string" && compareSemver(engineVersion, maximum) > 0)
+    ) {
+      throw new CliError(
+        "ENGINE_INCOMPATIBLE",
+        `Pack ${packPath} is not compatible with manifest engine version ${engineVersion}.`,
+        { exitCode: ExitCode.Unsupported },
+      );
+    }
+  }
+  const manifestLocales = Array.isArray(manifest.locales) ? new Set(manifest.locales) : new Set<unknown>();
+  const packLocales = meta !== undefined && Array.isArray(meta.locales) ? meta.locales : [];
+  const missingLocales = packLocales.filter((locale) => !manifestLocales.has(locale));
+  if (missingLocales.length > 0) {
+    throw new CliError(
+      "PACK_LOCALE_UNDECLARED",
+      `Pack ${packPath} uses locales not declared by the game manifest: ${missingLocales.join(", ")}.`,
+      { exitCode: ExitCode.Validation },
+    );
+  }
+  if (isRecord(manifest.permissions) && isRecord(pack.permissions)) {
+    for (const [permission, requested] of Object.entries(pack.permissions)) {
+      if (requested === true && manifest.permissions[permission] !== true) {
+        throw new CliError(
+          "PACK_PERMISSION_UNDECLARED",
+          `Pack ${packPath} requests '${permission}' without declaring it in the game manifest.`,
+          { exitCode: ExitCode.Validation },
+        );
+      }
+    }
+  }
+}
+
 export function sourceManifestPath(projectRoot: string): string {
   return join(projectRoot, "public", ...MANIFEST_RELATIVE_PATH.split("/"));
 }
@@ -203,8 +262,13 @@ export async function validateProjectRoot(projectRoot: string): Promise<Validate
     });
   }
 
-  const documents: ValidatedDocument[] = [await validateJsonDocument(manifestPath, "manifest")];
-  for (const packPath of packPaths) documents.push(await validatePackDirectory(packPath));
+  const manifest = await validateJsonDocument(manifestPath, "manifest");
+  const documents: ValidatedDocument[] = [manifest];
+  for (const packPath of packPaths) {
+    const pack = await validatePackDirectory(packPath);
+    assertManifestPackCompatibility(manifest.document, pack.document, packPath);
+    documents.push(pack);
+  }
   return documents;
 }
 
@@ -224,7 +288,10 @@ export async function validateTarget(rawTarget: string, cwd: string): Promise<Va
       exitCode: ExitCode.LocalIo,
     });
   }
-  if (metadata.isFile()) return [await validateJsonDocument(target)];
+  if (metadata.isFile()) {
+    if (basename(target) === PACK_FILENAME) return [await validatePackDirectory(target)];
+    return [await validateJsonDocument(target)];
+  }
   if (!metadata.isDirectory()) {
     throw new CliError("UNSUPPORTED_TARGET", "Validation accepts a JSON file or project/pack directory.", {
       exitCode: ExitCode.Usage,

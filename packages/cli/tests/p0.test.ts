@@ -1,0 +1,119 @@
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { dirname, join } from "node:path";
+import { describe, expect, it } from "vitest";
+
+import { packPublication, validateProjectRoot, validateTarget } from "../src/index.js";
+
+async function readFixture(filename: string): Promise<Record<string, unknown>> {
+  const path = new URL(`../../schema/fixtures/valid/${filename}`, import.meta.url);
+  return JSON.parse(await readFile(path, "utf8")) as Record<string, unknown>;
+}
+
+async function writeJson(path: string, value: unknown): Promise<void> {
+  await mkdir(dirname(path), { recursive: true });
+  await writeFile(path, `${JSON.stringify(value, null, 2)}\n`, "utf8");
+}
+
+async function seedGame(
+  webRoot: string,
+  options: { readonly engineVersion?: string; readonly html?: string } = {},
+): Promise<{ readonly manifestPath: string; readonly packPath: string; readonly packRoot: string }> {
+  const manifest = await readFixture("manse-game.json");
+  if (options.engineVersion !== undefined) manifest.engineVersion = options.engineVersion;
+  const pack = await readFixture("manse.pack.json");
+  const provenance = await readFixture("provenance.json");
+  const manifestPath = join(webRoot, ".well-known", "manse-game.json");
+  const packRoot = join(webRoot, "packs", "example");
+  const packPath = join(packRoot, "manse.pack.json");
+
+  await writeJson(manifestPath, manifest);
+  await writeJson(packPath, pack);
+  await writeJson(join(packRoot, "provenance.json"), provenance);
+  await mkdir(join(packRoot, "assets", "audio"), { recursive: true });
+  await writeFile(join(packRoot, "assets", "audio", "intro-en.mp3"), "fixture narration", "utf8");
+  await writeFile(join(packRoot, "assets", "audio", "cue.wav"), "fixture cue", "utf8");
+  if (options.html !== undefined) await writeFile(join(webRoot, "index.html"), options.html, "utf8");
+
+  return { manifestPath, packPath, packRoot };
+}
+
+async function withTempRoot(run: (root: string) => Promise<void>): Promise<void> {
+  const root = await mkdtemp(join(tmpdir(), "manse-cli-test-"));
+  try {
+    await run(root);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+}
+
+describe("P0 project validation", () => {
+  it("validates a source project and a direct pack target with provenance", async () => {
+    await withTempRoot(async (root) => {
+      const seeded = await seedGame(join(root, "public"));
+      const projectDocuments = await validateProjectRoot(root);
+      const packDocuments = await validateTarget(seeded.packPath, root);
+
+      expect(projectDocuments.map(({ kind }) => kind)).toEqual(["manifest", "pack"]);
+      expect(packDocuments.map(({ kind }) => kind)).toEqual(["pack"]);
+    });
+  });
+
+  it("rejects executable content inside declarative packs", async () => {
+    await withTempRoot(async (root) => {
+      const { packRoot } = await seedGame(join(root, "public"));
+      await writeFile(join(packRoot, "payload.js"), "export default 1;\n", "utf8");
+
+      await expect(validateProjectRoot(root)).rejects.toMatchObject({ code: "EXECUTABLE_PACK_ASSET" });
+    });
+  });
+
+  it("rejects packs outside the manifest engine compatibility range", async () => {
+    await withTempRoot(async (root) => {
+      await seedGame(join(root, "public"), { engineVersion: "0.0.9" });
+
+      await expect(validateProjectRoot(root)).rejects.toMatchObject({ code: "ENGINE_INCOMPATIBLE" });
+    });
+  });
+});
+
+describe("P0 publication safety", () => {
+  it("creates byte-for-byte deterministic local-only ZIP artifacts", async () => {
+    await withTempRoot(async (root) => {
+      const projectRoot = join(root, "game");
+      const deployRoot = join(projectRoot, "dist");
+      await seedGame(deployRoot, {
+        html: '<!doctype html><script type="module" src="/assets/app.js"></script>',
+      });
+      await mkdir(join(deployRoot, "assets"), { recursive: true });
+      await writeFile(join(deployRoot, "assets", "app.js"), "console.log('local runtime');\n", "utf8");
+
+      const first = await packPublication(projectRoot, join(root, "first.zip"), root);
+      const second = await packPublication(projectRoot, join(root, "second.zip"), root);
+
+      expect(first.sha256).toMatch(/^[a-f0-9]{64}$/u);
+      expect(second.sha256).toBe(first.sha256);
+      expect(await readFile(first.outputPath)).toEqual(await readFile(second.outputPath));
+    });
+  });
+
+  it("blocks remote runtime resources and secret-bearing files", async () => {
+    await withTempRoot(async (root) => {
+      const remoteProject = join(root, "remote-game");
+      await seedGame(join(remoteProject, "dist"), {
+        html: '<!doctype html><script src="https://cdn.example/runtime.js"></script>',
+      });
+      await expect(
+        packPublication(remoteProject, join(root, "remote.zip"), root),
+      ).rejects.toMatchObject({ code: "RUNTIME_CDN_BLOCKED" });
+
+      const secretProject = join(root, "secret-game");
+      const secretDeployRoot = join(secretProject, "dist");
+      await seedGame(secretDeployRoot, { html: "<!doctype html><title>Local game</title>" });
+      await writeFile(join(secretDeployRoot, ".env"), "TOKEN=do-not-publish\n", "utf8");
+      await expect(
+        packPublication(secretProject, join(root, "secret.zip"), root),
+      ).rejects.toMatchObject({ code: "PRIVATE_FILE_BLOCKED" });
+    });
+  });
+});

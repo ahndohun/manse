@@ -29,3 +29,7 @@ The initial proposal used D1, R2, and creator identity in the official platform.
 ### D007 — Sites-first federated publishing
 
 Every game is a self-contained Site owned and published by its creator. The official Manse Site is a static Showcase that links to those games and never hosts or executes their code. A game exposes a standard public manifest; listing is a small catalog contribution validated by CI and approved by a maintainer. This removes the central upload service, storage, authentication, and moderation backend from v0.1 while making Codex-to-Sites publishing the primary product workflow.
+
+### D009 — One public play-engine package for v0.1
+
+`@manse/runtime-web` is the sole v0.1 play engine. It owns deterministic scene execution, local camera and simulator pose providers, challenge evaluation, rendering, captions, and browser integration behind internal module boundaries. The partial `@manse/engine` and `@manse/pose` packages were removed before release so creators and judges see one coherent runtime contract rather than three independently versioned packages. Their useful P0 work was retained or reimplemented inside `runtime-web`; the baseline commit preserves the discarded drafts for reference.

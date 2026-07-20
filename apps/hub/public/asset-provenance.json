@@ -8,6 +8,36 @@
       "createdAt": "2026-07-21",
       "license": "MIT",
       "promptSummary": "Original Manse social card using the site's cream, charcoal, coral, lime, and forest visual system with geometric motion tracking motifs."
+    },
+    {
+      "path": "/playground/success.wav",
+      "origin": "original-procedural",
+      "generator": "scripts/sync-runtime-assets.mjs",
+      "createdAt": "2026-07-21",
+      "license": "MIT",
+      "promptSummary": "Deterministic 660 Hz feedback tone synthesized locally at build time."
+    },
+    {
+      "path": "/playground/encourage.wav",
+      "origin": "original-procedural",
+      "generator": "scripts/sync-runtime-assets.mjs",
+      "createdAt": "2026-07-21",
+      "license": "MIT",
+      "promptSummary": "Deterministic 440 Hz feedback tone synthesized locally at build time."
+    },
+    {
+      "path": "/models/pose_landmarker_lite.task",
+      "origin": "third-party",
+      "source": "Google MediaPipe Pose Landmarker official model bundle",
+      "license": "Apache-2.0",
+      "sha256": "59929e1d1ee95287735ddd833b19cf4ac46d29bc7afddbbf6753c459690d574a"
+    },
+    {
+      "path": "/models/pose_landmarker_full.task",
+      "origin": "third-party",
+      "source": "Google MediaPipe Pose Landmarker official model bundle",
+      "license": "Apache-2.0",
+      "sha256": "4eaa5eb7a98365221087693fcc286334cf0858e2eb6e15b506aa4a7ecdcec4ad"
     }
   ]
 }

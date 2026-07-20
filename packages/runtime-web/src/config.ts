@@ -43,7 +43,7 @@ export const TIER_PROFILES: Readonly<Record<DeviceTier, TierProfile>> = {
     model: "lite",
     particleCount: 20,
     targetScale: 1.12,
-    dwellScale: 1.15,
+    dwellScale: 0.9,
   },
   C: {
     tier: "C",
@@ -52,7 +52,7 @@ export const TIER_PROFILES: Readonly<Record<DeviceTier, TierProfile>> = {
     model: "lite",
     particleCount: 8,
     targetScale: 1.25,
-    dwellScale: 1.3,
+    dwellScale: 0.8,
   },
 };
 
@@ -138,9 +138,11 @@ export function assertSameOriginRuntimeUrl(
   }
   const url = new URL(value, location.href);
   const pageOrigin = location.origin === "null" ? new URL(location.href).origin : location.origin;
+  if (url.username !== "" || url.password !== "") {
+    throw new Error(`${label} must not contain credentials.`);
+  }
   if (url.origin !== pageOrigin && url.protocol !== "file:") {
     throw new Error(`${label} must be hosted by the game Site; cross-origin runtime assets are not allowed.`);
   }
   return url;
 }
-

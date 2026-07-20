@@ -1,0 +1,435 @@
+import { TIER_PROFILES } from "../config.js";
+import type {
+  RendererFactory,
+  RendererFactoryOptions,
+  RuntimeLandmark,
+  RuntimeRenderFrame,
+  RuntimeRenderer,
+  RuntimeTarget,
+} from "../types.js";
+
+const SKELETON_CONNECTIONS: readonly (readonly [number, number])[] = [
+  [11, 12], [11, 13], [13, 15], [12, 14], [14, 16],
+  [11, 23], [12, 24], [23, 24], [23, 25], [25, 27],
+  [24, 26], [26, 28], [27, 29], [29, 31], [28, 30], [30, 32],
+];
+
+export const createDefaultRenderer: RendererFactory = (options) => {
+  try {
+    return new WebGlCanvasRenderer(options);
+  } catch {
+    try {
+      return new Canvas2dRenderer(options);
+    } catch {
+      return new DomRenderer(options);
+    }
+  }
+};
+
+abstract class BaseRenderer implements RuntimeRenderer {
+  abstract readonly kind: RuntimeRenderer["kind"];
+  readonly element: HTMLDivElement;
+  protected readonly options: RendererFactoryOptions;
+
+  constructor(options: RendererFactoryOptions) {
+    this.options = options;
+    this.element = options.document.createElement("div");
+    this.element.dataset.manseRenderer = "";
+    this.element.setAttribute("role", "img");
+    this.element.setAttribute("aria-label", "Motion game camera and play field");
+    setStyles(this.element, {
+      position: "relative",
+      width: "100%",
+      height: "100%",
+      minHeight: "240px",
+      overflow: "hidden",
+      background: "#10162b",
+      borderRadius: "24px",
+      touchAction: "none",
+    });
+  }
+
+  abstract render(frame: RuntimeRenderFrame): void;
+
+  protected mount(): void {
+    this.options.container.append(this.element);
+  }
+
+  destroy(): void {
+    this.element.remove();
+  }
+}
+
+class WebGlCanvasRenderer extends BaseRenderer {
+  readonly kind = "webgl2" as const;
+  private readonly cameraCanvas: HTMLCanvasElement;
+  private readonly overlayCanvas: HTMLCanvasElement;
+  private readonly gl: WebGL2RenderingContext;
+  private readonly overlay: CanvasRenderingContext2D;
+  private readonly program: WebGLProgram;
+  private readonly texture: WebGLTexture;
+  private readonly mirrorUniform: WebGLUniformLocation | null;
+
+  constructor(options: RendererFactoryOptions) {
+    super(options);
+    this.cameraCanvas = options.document.createElement("canvas");
+    this.overlayCanvas = options.document.createElement("canvas");
+    setCanvasStyles(this.cameraCanvas);
+    setCanvasStyles(this.overlayCanvas);
+    this.element.append(this.cameraCanvas, this.overlayCanvas);
+    const gl = this.cameraCanvas.getContext("webgl2", {
+      alpha: false,
+      antialias: options.tier === "S" || options.tier === "A",
+      depth: false,
+      stencil: false,
+      powerPreference: options.tier === "C" ? "low-power" : "high-performance",
+    });
+    const overlay = this.overlayCanvas.getContext("2d", { alpha: true });
+    if (gl === null || overlay === null) throw new Error("Canvas acceleration is unavailable.");
+    this.gl = gl;
+    this.overlay = overlay;
+    this.program = createVideoProgram(gl);
+    const texture = gl.createTexture();
+    if (texture === null) {
+      gl.deleteProgram(this.program);
+      throw new Error("Unable to allocate the camera texture.");
+    }
+    this.texture = texture;
+    this.mirrorUniform = gl.getUniformLocation(this.program, "uMirror");
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    this.mount();
+  }
+
+  render(frame: RuntimeRenderFrame): void {
+    resizeCanvases(this.element, [this.cameraCanvas, this.overlayCanvas], frame.tier);
+    const { gl } = this;
+    gl.viewport(0, 0, this.cameraCanvas.width, this.cameraCanvas.height);
+    gl.clearColor(0.045, 0.067, 0.14, 1);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    if (frame.video !== null && frame.video.readyState >= 2) {
+      gl.useProgram(this.program);
+      gl.bindTexture(gl.TEXTURE_2D, this.texture);
+      try {
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, frame.video);
+        gl.uniform1f(this.mirrorUniform, frame.mirror ? 1 : 0);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      } catch {
+        // A not-yet-ready video frame is expected during camera warm-up.
+      }
+    }
+    drawOverlay(this.overlay, this.overlayCanvas, frame);
+  }
+
+  override destroy(): void {
+    this.gl.deleteTexture(this.texture);
+    this.gl.deleteProgram(this.program);
+    super.destroy();
+  }
+}
+
+class Canvas2dRenderer extends BaseRenderer {
+  readonly kind = "canvas2d" as const;
+  private readonly canvas: HTMLCanvasElement;
+  private readonly context: CanvasRenderingContext2D;
+
+  constructor(options: RendererFactoryOptions) {
+    super(options);
+    this.canvas = options.document.createElement("canvas");
+    setCanvasStyles(this.canvas);
+    this.element.append(this.canvas);
+    const context = this.canvas.getContext("2d", { alpha: false });
+    if (context === null) throw new Error("Canvas 2D is unavailable.");
+    this.context = context;
+    this.mount();
+  }
+
+  render(frame: RuntimeRenderFrame): void {
+    resizeCanvases(this.element, [this.canvas], frame.tier);
+    const { context, canvas } = this;
+    context.save();
+    context.fillStyle = "#10162b";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    if (frame.video !== null && frame.video.readyState >= 2) {
+      if (frame.mirror) {
+        context.translate(canvas.width, 0);
+        context.scale(-1, 1);
+      }
+      context.drawImage(frame.video, 0, 0, canvas.width, canvas.height);
+    }
+    context.restore();
+    drawOverlay(context, canvas, frame);
+  }
+}
+
+class DomRenderer extends BaseRenderer {
+  readonly kind = "dom" as const;
+  private readonly overlay: SVGSVGElement;
+  private mountedVideo: HTMLVideoElement | null = null;
+  private readonly caption: HTMLDivElement;
+
+  constructor(options: RendererFactoryOptions) {
+    super(options);
+    this.overlay = options.document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    this.overlay.setAttribute("viewBox", "0 0 1000 1000");
+    this.overlay.setAttribute("aria-hidden", "true");
+    setStyles(this.overlay, { position: "absolute", inset: "0", width: "100%", height: "100%" });
+    this.caption = options.document.createElement("div");
+    setStyles(this.caption, {
+      position: "absolute",
+      left: "8%",
+      right: "8%",
+      bottom: "5%",
+      padding: "10px 14px",
+      color: "white",
+      background: "rgba(0,0,0,.72)",
+      borderRadius: "12px",
+      textAlign: "center",
+      font: "600 18px/1.35 system-ui, sans-serif",
+    });
+    this.element.append(this.overlay, this.caption);
+    this.mount();
+  }
+
+  render(frame: RuntimeRenderFrame): void {
+    if (frame.video !== null && this.mountedVideo !== frame.video) {
+      this.mountedVideo?.remove();
+      this.mountedVideo = frame.video;
+      setStyles(frame.video, {
+        position: "absolute",
+        inset: "0",
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+        transform: frame.mirror ? "scaleX(-1)" : "none",
+      });
+      this.element.prepend(frame.video);
+    }
+    this.overlay.replaceChildren();
+    const landmarks = bestLandmarks(frame);
+    for (const [startIndex, endIndex] of SKELETON_CONNECTIONS) {
+      const start = landmarks[startIndex];
+      const end = landmarks[endIndex];
+      if (!visible(start) || !visible(end)) continue;
+      const line = this.options.document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1", String(start.x * 1000));
+      line.setAttribute("y1", String(start.y * 1000));
+      line.setAttribute("x2", String(end.x * 1000));
+      line.setAttribute("y2", String(end.y * 1000));
+      line.setAttribute("stroke", "#8ee7ff");
+      line.setAttribute("stroke-width", "8");
+      this.overlay.append(line);
+    }
+    for (const target of frame.targets) this.appendDomTarget(target);
+    if (frame.celebrationProgress > 0) {
+      const badge = this.options.document.createElementNS("http://www.w3.org/2000/svg", "text");
+      badge.setAttribute("x", "500");
+      badge.setAttribute("y", "500");
+      badge.setAttribute("text-anchor", "middle");
+      badge.setAttribute("font-size", "100");
+      badge.textContent = "★";
+      this.overlay.append(badge);
+    }
+    this.caption.textContent = frame.caption ?? "";
+    this.caption.hidden = frame.caption === null;
+  }
+
+  private appendDomTarget(target: RuntimeTarget): void {
+    const circle = this.options.document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    circle.setAttribute("cx", String(target.x * 1000));
+    circle.setAttribute("cy", String(target.y * 1000));
+    circle.setAttribute("r", String(target.radius * 1000));
+    circle.setAttribute("fill", rgbaCss(target.color, target.hit ? 0.25 : 0.85));
+    circle.setAttribute("stroke", "white");
+    circle.setAttribute("stroke-width", String(6 + target.dwellProgress * 14));
+    this.overlay.append(circle);
+  }
+}
+
+function createVideoProgram(gl: WebGL2RenderingContext): WebGLProgram {
+  const vertexSource = `#version 300 es
+    precision mediump float;
+    const vec2 positions[4] = vec2[4](vec2(-1.,-1.),vec2(1.,-1.),vec2(-1.,1.),vec2(1.,1.));
+    out vec2 uv;
+    void main(){ vec2 p=positions[gl_VertexID]; gl_Position=vec4(p,0.,1.); uv=vec2((p.x+1.)*.5,1.-(p.y+1.)*.5); }
+  `;
+  const fragmentSource = `#version 300 es
+    precision mediump float;
+    uniform sampler2D camera;
+    uniform float uMirror;
+    in vec2 uv;
+    out vec4 outColor;
+    void main(){ vec2 p=uv; if(uMirror>.5) p.x=1.-p.x; outColor=texture(camera,p); }
+  `;
+  const program = gl.createProgram();
+  if (program === null) throw new Error("Unable to create WebGL program.");
+  const vertex = compileShader(gl, gl.VERTEX_SHADER, vertexSource);
+  const fragment = compileShader(gl, gl.FRAGMENT_SHADER, fragmentSource);
+  gl.attachShader(program, vertex);
+  gl.attachShader(program, fragment);
+  gl.linkProgram(program);
+  gl.deleteShader(vertex);
+  gl.deleteShader(fragment);
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    const message = gl.getProgramInfoLog(program) ?? "unknown WebGL link error";
+    gl.deleteProgram(program);
+    throw new Error(message);
+  }
+  return program;
+}
+
+function compileShader(gl: WebGL2RenderingContext, type: number, source: string): WebGLShader {
+  const shader = gl.createShader(type);
+  if (shader === null) throw new Error("Unable to allocate WebGL shader.");
+  gl.shaderSource(shader, source);
+  gl.compileShader(shader);
+  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    const message = gl.getShaderInfoLog(shader) ?? "unknown WebGL compile error";
+    gl.deleteShader(shader);
+    throw new Error(message);
+  }
+  return shader;
+}
+
+function drawOverlay(
+  context: CanvasRenderingContext2D,
+  canvas: HTMLCanvasElement,
+  frame: RuntimeRenderFrame,
+): void {
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  const landmarks = bestLandmarks(frame);
+  context.lineCap = "round";
+  context.lineJoin = "round";
+  context.strokeStyle = "rgba(142, 231, 255, .86)";
+  context.lineWidth = Math.max(3, canvas.width * 0.006);
+  for (const [startIndex, endIndex] of SKELETON_CONNECTIONS) {
+    const start = landmarks[startIndex];
+    const end = landmarks[endIndex];
+    if (!visible(start) || !visible(end)) continue;
+    context.beginPath();
+    context.moveTo(start.x * canvas.width, start.y * canvas.height);
+    context.lineTo(end.x * canvas.width, end.y * canvas.height);
+    context.stroke();
+  }
+  for (const target of frame.targets) drawTarget(context, canvas, target, frame.timestampMs, frame.reducedStimulation);
+  if (frame.celebrationProgress > 0) drawCelebration(context, canvas, frame);
+  if (frame.caption !== null) drawCaption(context, canvas, frame.caption);
+}
+
+function drawTarget(
+  context: CanvasRenderingContext2D,
+  canvas: HTMLCanvasElement,
+  target: RuntimeTarget,
+  timestampMs: number,
+  reduced: boolean,
+): void {
+  const radius = target.radius * Math.min(canvas.width, canvas.height)
+    * (reduced ? 1 : 1 + Math.sin(timestampMs / 260) * 0.035);
+  const x = target.x * canvas.width;
+  const y = target.y * canvas.height;
+  context.beginPath();
+  context.arc(x, y, radius, 0, Math.PI * 2);
+  context.fillStyle = rgbaCss(target.color, target.hit ? 0.25 : 0.86);
+  context.fill();
+  context.strokeStyle = "rgba(255,255,255,.95)";
+  context.lineWidth = Math.max(3, radius * 0.12);
+  context.stroke();
+  if (!target.hit && target.dwellProgress > 0) {
+    context.beginPath();
+    context.arc(x, y, radius * 1.14, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * target.dwellProgress);
+    context.strokeStyle = "#fff3a3";
+    context.lineWidth = Math.max(5, radius * 0.16);
+    context.stroke();
+  }
+}
+
+function drawCelebration(
+  context: CanvasRenderingContext2D,
+  canvas: HTMLCanvasElement,
+  frame: RuntimeRenderFrame,
+): void {
+  const profile = TIER_PROFILES[frame.tier];
+  const count = frame.reducedStimulation ? Math.min(6, profile.particleCount) : profile.particleCount;
+  for (let index = 0; index < count; index += 1) {
+    const angle = index * 2.399963 + frame.celebrationProgress * 0.4;
+    const distance = frame.celebrationProgress * Math.min(canvas.width, canvas.height) * (0.12 + (index % 7) * 0.035);
+    const x = canvas.width / 2 + Math.cos(angle) * distance;
+    const y = canvas.height / 2 + Math.sin(angle) * distance;
+    context.fillStyle = ["#ff6b6b", "#4cc9f0", "#ffd166", "#80ed99"][index % 4] ?? "white";
+    context.beginPath();
+    context.arc(x, y, Math.max(3, canvas.width * 0.007), 0, Math.PI * 2);
+    context.fill();
+  }
+}
+
+function drawCaption(context: CanvasRenderingContext2D, canvas: HTMLCanvasElement, caption: string): void {
+  const fontSize = Math.max(16, Math.min(32, canvas.width * 0.035));
+  context.font = `600 ${fontSize}px system-ui, sans-serif`;
+  context.textAlign = "center";
+  context.textBaseline = "middle";
+  const width = Math.min(canvas.width * 0.84, context.measureText(caption).width + fontSize * 2);
+  const height = fontSize * 2.1;
+  const x = (canvas.width - width) / 2;
+  const y = canvas.height - height - canvas.height * 0.04;
+  context.fillStyle = "rgba(0,0,0,.72)";
+  roundedRect(context, x, y, width, height, fontSize * 0.45);
+  context.fill();
+  context.fillStyle = "white";
+  context.fillText(caption, canvas.width / 2, y + height / 2, width - fontSize);
+}
+
+function roundedRect(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  radius: number,
+): void {
+  context.beginPath();
+  context.roundRect(x, y, width, height, radius);
+}
+
+function bestLandmarks(frame: RuntimeRenderFrame): readonly RuntimeLandmark[] {
+  let best: { readonly score: number; readonly landmarks: readonly RuntimeLandmark[] } | undefined;
+  for (const candidate of frame.poseFrame?.poses ?? []) {
+    if (best === undefined || candidate.score > best.score) best = candidate;
+  }
+  return best?.landmarks ?? [];
+}
+
+function visible(landmark: RuntimeLandmark | undefined): landmark is RuntimeLandmark {
+  return landmark !== undefined && Math.min(landmark.visibility, landmark.presence) >= 0.35;
+}
+
+function resizeCanvases(
+  element: HTMLElement,
+  canvases: readonly HTMLCanvasElement[],
+  tier: RuntimeRenderFrame["tier"],
+): void {
+  const width = Math.max(1, element.clientWidth || 640);
+  const height = Math.max(1, element.clientHeight || 480);
+  const browserDpr = typeof devicePixelRatio === "number" ? devicePixelRatio : 1;
+  const ratio = Math.min(browserDpr, TIER_PROFILES[tier].maxDevicePixelRatio);
+  const pixelWidth = Math.max(1, Math.round(width * ratio));
+  const pixelHeight = Math.max(1, Math.round(height * ratio));
+  for (const canvas of canvases) {
+    if (canvas.width !== pixelWidth) canvas.width = pixelWidth;
+    if (canvas.height !== pixelHeight) canvas.height = pixelHeight;
+  }
+}
+
+function setCanvasStyles(canvas: HTMLCanvasElement): void {
+  setStyles(canvas, { position: "absolute", inset: "0", width: "100%", height: "100%" });
+}
+
+function setStyles(element: HTMLElement | SVGElement, styles: Readonly<Record<string, string>>): void {
+  Object.assign((element as HTMLElement).style, styles);
+}
+
+function rgbaCss(color: readonly [number, number, number, number], alpha = color[3]): string {
+  return `rgba(${Math.round(color[0] * 255)},${Math.round(color[1] * 255)},${Math.round(color[2] * 255)},${alpha})`;
+}

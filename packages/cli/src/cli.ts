@@ -65,7 +65,17 @@ function parseCommandArgs(
     ["help", { type: "boolean" as const, short: "h" }],
   ]);
   try {
-    return parseArgs({ args: [...args], allowPositionals: true, options, strict: true });
+    const parsed = parseArgs({ args: [...args], allowPositionals: true, options, strict: true });
+    const normalized: Record<string, string | boolean | undefined> = {};
+    for (const [name, value] of Object.entries(parsed.values)) {
+      if (Array.isArray(value)) {
+        throw new CliError("DUPLICATE_OPTION", `--${name} may be provided only once.`, {
+          exitCode: ExitCode.Usage,
+        });
+      }
+      normalized[name] = value;
+    }
+    return { options: normalized, positionals: parsed.positionals };
   } catch (error) {
     throw new CliError("INVALID_ARGUMENTS", error instanceof Error ? error.message : "Invalid command arguments.", {
       cause: error,

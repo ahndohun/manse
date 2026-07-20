@@ -33,7 +33,7 @@ export default function Home() {
             <h1>Every screen can be a <em>playground.</em></h1>
             <p className="hero-lede">Manse turns a camera-equipped browser into a motion game console—and gives anyone a Codex-powered path to create and publish games of their own.</p>
             <div className="button-row">
-              <a className="button button-coral button-large" href="#games">Explore games <span aria-hidden="true">↓</span></a>
+              <Link className="button button-coral button-large" href="/playground">Try the engine <span aria-hidden="true">↗</span></Link>
               <Link className="button button-ghost button-large" href="/docs#install">Create a game <span aria-hidden="true">↗</span></Link>
             </div>
             <ul className="hero-proof" aria-label="Platform promises">
