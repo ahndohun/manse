@@ -5,11 +5,11 @@ actions. Update it whenever the release artifact or public URLs change.
 
 ## Current release candidate
 
-- Deployed source commit: `9de12e79c9a41871c14d37176b0ca2c85a28588e`
+- Deployed source commit: `22fda902264d3faae40709d6da7599b324f00258`
 - Repository: https://github.com/ahndohun/manse
-- Saved Sites version: **9**
+- Saved Sites version: **10**
 - Packaged Showcase content hash recorded by Sites:
-  `sha256:886ebd8bf1f0d74a0be265a8f134b72b4e63151381d8f543cd525862083bbf16`
+  `sha256:2933b2ff11eda2ebf27fb5e8b33d3c35e5ad8262e776d62b19411f63b990ce22`
 - Public Showcase origin:
   `https://manse-showcase.ran584000.chatgpt.site`
 - Current access state: **public; no Manse or ChatGPT account required**
@@ -28,6 +28,12 @@ simulator from 0 / 3 through 3 / 3 with trusted pointer input and showed
 and overlay canvases, observed no page errors, and completed without an
 account, API key, camera permission, or rebuild. The deployed home page contains
 zero occurrences of the removed "Auto quality" claim.
+
+Version 10 then integrated the kinetic local landing into the official
+Showcase while preserving the reviewed catalog, creator documentation,
+submission guidance, and playground routes. Fresh public requests confirmed
+the new hero, brand assets, and all four routes, and the signed-out playground
+gate again completed 3 / 3 with no rebuild or camera permission.
 
 ## Verified repository gate
 
