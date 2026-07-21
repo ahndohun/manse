@@ -47,3 +47,36 @@ personal data.
 - [x] The video contains no secrets, personal notifications, or unlicensed media.
 - [ ] The YouTube visibility is Public, not Unlisted or Private.
 - [ ] The final URL is copied into README and `docs/DEVPOST-SUBMISSION.md`.
+
+## YouTube release metadata
+
+Use this exact metadata for the public upload so the release remains
+reproducible and the judge path is visible without opening the description
+editor again.
+
+- **Title:** Manse — Open-Source Motion Games Built with Codex + GPT-5.6
+- **Audience:** Confirm with the channel owner at upload time. The video is a
+  developer-tool demonstration, while the games themselves support family play.
+- **Visibility:** Public
+- **Thumbnail:** Use the approved 16:9 opening-gameplay frame with the complete
+  Fire Hose Hero HUD visible.
+
+```text
+Manse turns Codex into an open studio for camera-based active games. Create,
+validate, preview, and publish independent motion-game Sites from a
+plain-language brief—without a central game runner or runtime AI dependency.
+
+Live Showcase:
+https://manse-showcase.ran584000.chatgpt.site
+
+Flagship game — Fire Hose Hero:
+https://fire-hose-hero.ran584000.chatgpt.site
+
+Source and Manse Creator installation:
+https://github.com/ahndohun/manse
+
+Built for OpenAI Build Week with Codex and GPT-5.6. Camera frames and inferred
+pose data stay on the playing device. The engine, declarative pack format,
+creator plugin, validator, publisher workflow, and Showcase are MIT licensed
+and self-hostable.
+```

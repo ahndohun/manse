@@ -16,6 +16,47 @@ against the final video and deployed build before submitting.
 - **Public YouTube demo:** `<DEMO_VIDEO_URL>`
 - **Primary Codex `/feedback` Session ID:** `019f8035-dbb1-7213-8946-84a80b7343f8`
 
+## Submission form answers
+
+The project owner must confirm the personal **Submitter Type** and **Country of
+Residence** fields. Do not infer either value. Use the following exact answers
+for the remaining Build Week fields:
+
+- **Category:** Developer Tools
+- **Code repository:** https://github.com/ahndohun/manse
+- **Codex `/feedback` Session ID:** `019f8035-dbb1-7213-8946-84a80b7343f8`
+- **Judge testing instructions:**
+
+  ```text
+  No account, API key, camera, or rebuild is required for the public judge path.
+  Open https://manse-showcase.ran584000.chatgpt.site, complete the three-target
+  simulator at
+  https://manse-showcase.ran584000.chatgpt.site/playground?provider=simulated,
+  then open the independent flagship game at
+  https://fire-hose-hero.ran584000.chatgpt.site. The repository is public and
+  MIT licensed; full local validation is documented in README.md.
+  ```
+
+- **Plugin installation and testing instructions:**
+
+  ```text
+  Prerequisites: Git, Node.js 22.13+, and the Codex CLI. Run:
+
+  git clone https://github.com/ahndohun/manse.git
+  cd manse
+  codex plugin marketplace add "$(pwd)"
+  codex plugin add manse-creator@manse
+
+  Start a new Codex task and ask Manse Creator to create, preview, and validate
+  an active game from a plain-language brief. Creator tooling requires an
+  environment where Codex, Git, and Node.js 22.13+ run. Recent desktop Chrome
+  or Edge is the primary browser validation target; exact camera support is
+  release- and device-specific, and the simulator is the supported camera-free
+  fallback. Judges can test the deployed Showcase, simulator, and flagship
+  game above without rebuilding anything. See docs/SUPPORTED-PLATFORMS.md for
+  the complete support boundary.
+  ```
+
 ## Short description
 
 Manse turns Codex into an open studio for camera-based active games. A creator
