@@ -75,6 +75,20 @@ await compareTrees(
 const qaRoot = await mkdtemp(join(tmpdir(), "manse-plugin-contract-"));
 const gameRoot = join(qaRoot, "contract-game");
 try {
+  const missingIdentity = spawnSync(process.execPath, [
+    join(pluginRoot, "scripts/create-game.mjs"),
+    "--output", join(qaRoot, "identity-must-be-authored"),
+    "--slug", "identity-must-be-authored",
+    "--title", "Identity QA",
+    "--summary", "The generator must reject a brief with no authored player fantasy.",
+    "--theme", "Test room",
+  ], { cwd: repositoryRoot, encoding: "utf8" });
+  assert(missingIdentity.status !== 0, "The generator must reject briefs that omit the authored game identity.");
+  assert(
+    `${missingIdentity.stderr}${missingIdentity.stdout}`.includes("--fantasy is required"),
+    "The missing-identity error must tell the creator which authored field is required.",
+  );
+
   run(process.execPath, [
     join(pluginRoot, "scripts/create-game.mjs"),
     "--output", gameRoot,
@@ -82,6 +96,9 @@ try {
     "--title", "Contract \"Game\" <QA>",
     "--summary", "Generated safely from the bundled Manse starter.",
     "--theme", "Accessible paper targets",
+    "--fantasy", "Become a gallery conservator racing to protect irreplaceable paper constellations.",
+    "--player-verb", "sweep both hands through the glowing paper constellations",
+    "--target-metaphor", "fragile paper constellations that crease, brighten, and lock into the archive",
     "--source-url", "https://github.com/ahndohun/contract-game",
     "--minutes", "60",
     "--target-count", "12",
@@ -97,22 +114,39 @@ try {
   ], gameRoot);
   const validation = JSON.parse(result.stdout);
   assert(validation.ok === true, "Generated starter must pass the vendored Manse validator.");
+  run(process.execPath, [join(gameRoot, "scripts/check-game-quality.mjs")], gameRoot);
   const pack = await readJson(join(gameRoot, "public/packs/contract-game/manse.pack.json"));
   const siteProvenance = await readJson(join(gameRoot, "public/asset-provenance.json"));
-  const challenge = pack.scenes.find((scene) => scene.challenge !== null)?.challenge;
+  const challengeScenes = pack.scenes.filter((scene) => scene.challenge !== null);
+  const challenge = challengeScenes[0]?.challenge;
   assert(challenge?.type === "touch_targets", "The default mechanic must remain the universally runnable touch_targets.");
   assert(pack.schemaVersion === 1, "touch_targets games must stay schemaVersion 1 packs runnable by every engine.");
-  assert(challenge?.timeBudgetMs === 300_000, "Long briefs must respect the challenge time-budget schema ceiling.");
-  const firstRound = pack.scenes.find((scene) => scene.id === "round-one");
-  const easierRound = pack.scenes.find((scene) => scene.id === "round-two");
+  assert(challengeScenes.length === 3, "Generated games must contain a learn, pressure, and finale challenge.");
+  assert(
+    challengeScenes.reduce((total, scene) => total + scene.challenge.timeBudgetMs, 0) === 300_000,
+    "Long briefs must split one bounded mission budget across the three authored beats.",
+  );
+  assert(
+    new Set(challengeScenes.map((scene) => JSON.stringify(scene.challenge))).size === 3,
+    "Generated challenge beats must have observably distinct parameters.",
+  );
+  const firstRound = pack.scenes.find((scene) => scene.id === "learn-the-verb");
+  const pressureRound = pack.scenes.find((scene) => scene.id === "raise-the-stakes");
+  const finaleRound = pack.scenes.find((scene) => scene.id === "finale");
   const struggle = firstRound?.transitions.find((transition) => transition.on === "struggle");
-  assert(struggle?.to === "round-two" && struggle.adapt !== null, "Generated games must include an executable adaptive retry.");
-  assert(easierRound?.challenge?.type === "touch_targets", "The adaptive retry must keep the declared mechanic.");
+  assert(struggle?.to === "raise-the-stakes" && struggle.adapt !== null, "Generated games must include an executable recovery path.");
+  assert(pressureRound?.challenge?.type === "touch_targets", "The pressure beat must keep the declared mechanic.");
+  assert(finaleRound?.challenge?.type === "touch_targets", "The finale must keep the declared mechanic.");
   const wasmProvenance = siteProvenance.assets.filter((asset) => asset.path.startsWith("/vendor/mediapipe/wasm/"));
   assert(wasmProvenance.length === 4, "Generated games must record all four MediaPipe WASM files.");
   assert(wasmProvenance.every((asset) => /^[a-f0-9]{64}$/u.test(asset.sha256)), "WASM provenance must include SHA-256 integrity.");
   const config = await readFile(join(gameRoot, "app/game-config.ts"), "utf8");
   assert(config.includes('Contract \\"Game\\" <QA>'), "Generated source must safely encode creator text.");
+  assert(config.includes('"imageUrl":"/thumbnail.png"'), "Generated games must show their art instead of a null hero placeholder.");
+  const experience = await readJson(join(gameRoot, ".manse/experience.json"));
+  assert(experience.status === "design-required", "A scaffold must not falsely self-approve its game quality.");
+  assert(experience.beats?.length === 3, "The experience contract must carry three authored beats.");
+  assert(experience.qualityGates?.themedEntitiesInPlay === false, "Unimplemented visual gates must start false.");
 
   // A motion mechanic must generate a valid schemaVersion 2 pack pinned to the
   // 0.2 engine it bundles.
@@ -124,6 +158,9 @@ try {
     "--title", "Motion QA",
     "--summary", "Generated freeze mechanic from the bundled Manse starter.",
     "--theme", "Statue garden",
+    "--fantasy", "Become the moonlit garden keeper and outwit statues that wake whenever you move.",
+    "--player-verb", "freeze your whole body when a stone sentinel turns toward you",
+    "--target-metaphor", "moonlit stone sentinels that crack, turn, and settle back onto their plinths",
     "--mechanic", "freeze",
     "--target-count", "3",
   ]);
@@ -137,6 +174,7 @@ try {
     "--json",
   ], motionRoot);
   assert(JSON.parse(motionResult.stdout).ok === true, "Generated motion games must pass the vendored Manse validator.");
+  run(process.execPath, [join(motionRoot, "scripts/check-game-quality.mjs")], motionRoot);
   const motionPack = await readJson(join(motionRoot, "public/packs/motion-game/manse.pack.json"));
   assert(motionPack.schemaVersion === 2, "Motion mechanics must emit schemaVersion 2 packs.");
   assert(

@@ -29,12 +29,24 @@ function uniqueLocales(games: readonly CatalogGame[]): string[] {
   );
 }
 
-function GameCard({ game }: { game: CatalogGame }) {
+function GameCard({ game, featured = false }: { game: CatalogGame; featured?: boolean }) {
+  const artUrl = game.slug === "fire-hose-hero"
+    ? "/featured/fire-hose-hero-gameplay.png"
+    : game.thumbnailUrl;
+  const artDescription = featured ? `${game.title} gameplay` : `${game.title} cover art`;
   return (
-    <article className="game-card">
-      <div className="game-card-art" aria-hidden="true">
-        <span>{game.title.slice(0, 1).toUpperCase()}</span>
-      </div>
+    <article className={featured ? "game-card game-card-featured" : "game-card"}>
+      <a className="game-card-art" href={game.gameUrl} target="_blank" rel="noreferrer" aria-label={`Play ${game.title}`}>
+        {artUrl !== null ? (
+          // Creator-owned Sites serve their own thumbnails; the Showcase must
+          // display them directly instead of proxying third-party game assets.
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={artUrl} alt={artDescription} loading={featured ? "eager" : "lazy"} />
+        ) : (
+          <span aria-hidden="true">{game.title.slice(0, 1).toUpperCase()}</span>
+        )}
+        <strong>{featured ? "Flagship mission · real gameplay" : "Engine mechanic demo · cover art"}</strong>
+      </a>
       <div className="game-card-body">
         <div className="game-card-kicker">
           <span>{game.energy}</span>
@@ -52,7 +64,7 @@ function GameCard({ game }: { game: CatalogGame }) {
         </ul>
         <div className="game-card-actions">
           <a className="button button-ink" href={game.gameUrl} target="_blank" rel="noreferrer">
-            Play on creator Site <span aria-hidden="true">↗</span>
+            Play game <span aria-hidden="true">↗</span>
           </a>
           <a className="text-link" href={game.sourceUrl} target="_blank" rel="noreferrer">
             Source <span aria-hidden="true">↗</span>
@@ -82,7 +94,7 @@ export function CatalogExplorer({ games }: { games: CatalogGame[] }) {
     <div className="catalog-explorer">
       <div className="catalog-toolbar">
         <label className="search-field">
-          <span className="sr-only">Search community games</span>
+          <span className="sr-only">Search showcase games</span>
           <span aria-hidden="true">⌕</span>
           <input
             type="search"
@@ -92,7 +104,7 @@ export function CatalogExplorer({ games }: { games: CatalogGame[] }) {
           />
         </label>
 
-        <div className="catalog-filters" aria-label="Filter community games">
+        <div className="catalog-filters" aria-label="Filter showcase games">
           <label>
             <span className="sr-only">Movement</span>
             <select
@@ -177,8 +189,8 @@ export function CatalogExplorer({ games }: { games: CatalogGame[] }) {
 
       {filteredGames.length > 0 ? (
         <div className="game-grid">
-          {filteredGames.map((game) => (
-            <GameCard key={game.id} game={game} />
+          {filteredGames.map((game, index) => (
+            <GameCard key={game.id} game={game} featured={!hasFilters && index === 0 && game.slug === "fire-hose-hero"} />
           ))}
         </div>
       ) : games.length === 0 ? (
@@ -191,7 +203,7 @@ export function CatalogExplorer({ games }: { games: CatalogGame[] }) {
           <p className="eyebrow">The stage is open</p>
           <h3>Be one of the first Manse creators.</h3>
           <p>
-            Community games will appear here after their public manifest passes automated checks
+            Creator games will appear here after their public manifest passes automated checks
             and a maintainer review.
           </p>
           <div className="button-row centered-buttons">

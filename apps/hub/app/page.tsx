@@ -43,7 +43,7 @@ export default function Home() {
 
       <section className="catalog-section section" id="games">
         <div className="shell">
-          <div className="section-heading stacked-heading"><p className="eyebrow">Community showcase</p><h2>Play something that moves you.</h2><p>Every listing is a reviewed link to an independent, creator-owned ChatGPT Site. Games open directly, never in an iframe.</p></div>
+          <div className="section-heading stacked-heading"><p className="eyebrow">Playable showcase</p><h2>Play something that moves you.</h2><p>Fire Hose Hero is the complete flagship mission. Five additional Sites demonstrate the engine&apos;s freeze, squat, jump, reach, and dodge mechanics. Every game opens directly on its own public Site.</p></div>
           <CatalogExplorer games={catalogSnapshot.games} />
         </div>
       </section>

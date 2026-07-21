@@ -13,7 +13,7 @@ Read `../../references/creator-contract.md` and `../../references/release-checkl
 
 ## Workflow
 
-1. Work from the game project root. Inspect `package.json`, `.manse/project.json`, the public manifest, every pack, both provenance layers, `.openai/hosting.json`, and the source tree.
+1. Work from the game project root. Inspect `package.json`, `.manse/project.json`, `.manse/experience.json`, the public manifest, every pack, both provenance layers, `.openai/hosting.json`, and the source tree.
 2. Run:
 
 ```bash
@@ -28,8 +28,9 @@ Do not weaken scripts, schemas, or tests to manufacture a pass.
 4. Inspect the production output. Require the public manifest, pack, pack provenance, thumbnail, runtime model files, MediaPipe WASM, and third-party notices. Confirm the deployed code does not require a runtime CDN.
 5. Search non-generated source and public metadata for `eval`, dynamic code loading, iframe embedding, analytics/trackers, remote pose assets, credentials, `.example.invalid`, `replace-me`, and personal child data. Investigate matches in context; do not treat harmless documentation text as executable behavior.
 6. Compare manifest claims to the implementation: locale, age range, movement, captions, seated mode, high contrast, reduced stimulation, audio cues, permissions, source, and provenance.
-7. Run `npm run validate:release`. A draft URL or missing Sites project is a blocking release issue but not a failure of local game creation.
-8. Return a compact report with passed gates, blocking failures, non-blocking caveats, exact commands, and whether the game is locally valid, release-ready, or publicly verified. Fix failures only when the user's request includes implementation.
+7. Audit game quality as evidence, not self-description. Require themed entities during play, three visible reaction states, continuous input feedback, three distinct authored beats, room-readable mission state, score/resolution, at least three triggered sounds, no runtime/tier debug chrome, camera/simulator game-layer parity, reduced-motion completion, and genuine mid-play/completion captures. Anything missing is a release blocker even when schema validation is green.
+8. Run `npm run validate:release`. A draft URL or missing Sites project is a blocking release issue but not a failure of local game creation. A `.manse/experience.json` failure means the game is not release-quality and must never be waived as metadata cleanup.
+9. Return a compact report with passed gates, blocking failures, non-blocking caveats, exact commands, and whether the game is locally valid, release-ready, or publicly verified. Fix failures only when the user's request includes implementation.
 
 ## Public validation
 

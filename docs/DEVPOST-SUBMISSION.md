@@ -7,31 +7,31 @@ against the final video and deployed build before submitting.
 ## Project identity
 
 - **Name:** Manse
-- **Tagline:** An open-source motion-game engine and Codex publishing pipeline for every screen.
+- **Tagline:** Open-source motion games, authored in Codex and played in the browser.
 - **Track:** Developer Tools
 - **Repository:** https://github.com/ahndohun/manse
 - **Public Showcase:** https://manse-showcase.ran584000.chatgpt.site
 - **No-camera playground:** https://manse-showcase.ran584000.chatgpt.site/playground?provider=simulated
-- **Creator game used in the demo:** https://morning-star-catch.ran584000.chatgpt.site
+- **Flagship game used in the demo:** https://fire-hose-hero.ran584000.chatgpt.site
 - **Public YouTube demo:** `<DEMO_VIDEO_URL>`
-- **Primary Codex `/feedback` Session ID:** `<CODEX_SESSION_ID>`
+- **Primary Codex `/feedback` Session ID:** `019f8035-dbb1-7213-8946-84a80b7343f8`
 
 ## Short description
 
 Manse turns Codex into an open studio for camera-based active games. A creator
 describes a game in plain language, uses the Manse Creator plugin to generate a
-strict declarative project, previews it with a simulator or on-device camera,
-validates safety and provenance, and publishes an independent ChatGPT Site. The
-official Showcase is only a reviewed index of public manifests, so creators own
-their code, hosting, and license while players open normal links without a
-Manse account.
+self-contained Site around a strict declarative pack, previews it with a
+simulator or on-device camera, validates safety and provenance, and publishes
+an independent ChatGPT Site. The Showcase is a reviewed index of public
+manifests, so creators keep their code, hosting, and license while players open
+normal links without a Manse account.
 
 ## Inspiration
 
 Camera-based active-play systems can make a television, tablet, laptop, or phone
 feel like a game console, but their creation and distribution ecosystems are
-usually closed. We wanted the format, engine, tools, and catalog to be open—and
-we wanted a teacher, parent, artist, or game designer to publish without first
+usually closed. I wanted the format, engine, tools, and catalog to be open. I
+also wanted a teacher, parent, artist, or game designer to publish without first
 becoming a web developer.
 
 ## What it does
@@ -52,8 +52,8 @@ pose matching, jumps, speed strikes, dance steps, and sequenced combos — each 
 declarative, designer-tunable pack primitive judged body-relatively (ratios of
 the player's own torso and joint angles, never pixels) and verified by
 deterministic camera-free replay fixtures. Touch games remain schemaVersion 1
-packs any released engine runs; motion games declare the 0.2 contract so older
-runtimes reject them cleanly. New mechanics arrive through reviewed engine
+packs that released engines can run; motion games declare the 0.2 contract so
+older runtimes reject them cleanly. New mechanics arrive through reviewed engine
 contributions instead of allowing executable code in untrusted packs.
 
 ## How we built it
@@ -106,7 +106,14 @@ recognition support before completing a measured hardware matrix.
 - The repository marketplace exposes seven complete creator workflows rather
   than demo-only instructions.
 - Six independently hosted public games demonstrate the full publish-and-list
-  loop across touch, dodge, freeze, squat, and jump movement.
+  loop. Fire Hose Hero is the release-quality flagship: a three-alarm,
+  12-fire mission with a continuous hose, reactive targets, score/combo,
+  wave timers, authored sound, and explicit victory/failure. The other five
+  entries are labeled honestly as engine mechanic demos.
+- Generated games begin with an explicit fantasy, physical verb, themed target,
+  and three escalating beats. Publication blocks until a game-specific renderer,
+  reaction states, continuous feedback, audio, reduced-motion play, and genuine
+  gameplay/completion evidence pass the quality contract.
 - The public judge path requires no rebuild, camera, account, or API key.
 
 ## What we learned
@@ -132,7 +139,7 @@ extensions. The contracts and platform remain MIT licensed and self-hostable.
 1. Open `https://manse-showcase.ran584000.chatgpt.site` without signing in.
 2. Open `https://manse-showcase.ran584000.chatgpt.site/playground?provider=simulated` and complete the target
    sequence with mouse or touch input.
-3. Follow the creator-game link to `https://morning-star-catch.ran584000.chatgpt.site` and verify that it is an
+3. Follow the flagship link to `https://fire-hose-hero.ran584000.chatgpt.site` and verify that it is an
    independent Site.
 4. Inspect `/.well-known/manse-game.json` on that game origin.
 5. Install Manse Creator from the repository marketplace using the README steps.

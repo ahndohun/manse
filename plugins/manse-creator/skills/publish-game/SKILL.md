@@ -13,7 +13,7 @@ Read `../../references/creator-contract.md` and `../../references/release-checkl
 
 ## Workflow
 
-1. Run `$validate-game` or perform all of its blocking checks. Do not publish a project with failing content, types, tests, build, production audit, provenance, or privacy checks.
+1. Run `$validate-game` or perform all of its blocking checks. Do not publish a project with failing content, types, tests, build, production audit, provenance, privacy, or `.manse/experience.json` game-quality checks. A structurally valid generic runtime skin is not publishable.
 2. Confirm the intended public source repository and license. Pushing source changes external state; ask immediately before a push unless the user already authorized that exact push.
 3. Connect `.openai/hosting.json` to a new creator-owned Sites project. Each game gets its own project; never deploy it into the official Manse Showcase project.
 4. Determine the stable Sites origin. Update the manifest's `gameUrl`, thumbnail URL, and provenance URL to that exact origin; update `sourceUrl` to the public source. Remove draft placeholders and set `.manse/project.json` to a release-candidate state.

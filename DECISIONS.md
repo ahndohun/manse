@@ -210,3 +210,65 @@ cached shell. Verified end-to-end in a real browser: clean profile, one online
 load with no play, server stopped, reload, full pointer completion with zero
 console errors. Applied to the starter template and all six demo games; every
 game rebuilt with 16 precache URLs and passing tests.
+
+### D017 — Demo identity is bilingual and pack-governed; the starter is image-ready
+
+Each of the six creator-owned demo Sites now has a distinct, accessible color
+system and one locally bundled generated hero image. The image is a normal pack
+asset: it uses a relative same-Site path, localized Korean and English alt text,
+an MIT license, an exact matching pack-provenance record, and a Site-provenance
+record containing the final shipped-file SHA-256. The public manifest reports
+generated content honestly. No hero is hotlinked and no runtime image fetch was
+added.
+
+The demos declare `ko` and `en` throughout pack metadata, cast names, scene
+narration, image alt text, manifest metadata, and application chrome. The browser
+language chooses the initial shell locale, a visible selector keeps the choice
+explicit, and `createMansePlayer` receives the same locale. Changing language
+invalidates the current run, unsubscribes, destroys the player (and therefore any
+camera stream), and returns to the idle choice rather than reacquiring a camera.
+Game mechanics, thresholds, time budgets, adaptation, and the Fire Hose aim
+wrapper remain unchanged.
+
+Future generated games use the same shell contract without pretending that a
+translation or game-specific illustration already exists. The starter config
+supports localized title/summary values, an optional same-Site hero path and alt
+text, and theme colors; the current single-locale creator input is copied as an
+explicit fallback for both shell locales. With no hero it renders a decorative
+gradient rather than shipping a fake bitmap. Asset generation still goes through
+`generate-assets` so prompts, model reporting, licenses, and checksums stay exact.
+The D015 pointer-capture exception for buttons and links remains a tested starter
+and demo invariant.
+
+### D018 — A valid pack is not a finished game; release requires play evidence
+
+Schema validity and a working pose pipeline are necessary platform checks, but
+they do not prove that a child is playing a coherent game. The Creator workflow
+therefore separates structural generation from experience approval:
+
+- `create-game` now writes `.manse/experience.json` with a concrete player
+  fantasy, continuous physical verb, themed target metaphor, three authored
+  beats, presenter contract, quality gates, and evidence slots. New projects
+  start as `design-required`; a generated palette or default runtime target can
+  never self-certify as release-ready.
+- Every generated pack has a learn → pressure → finale arc with observably
+  different quantities, timing, and difficulty, plus three audio cues. Release
+  validation additionally requires a game-specific renderer, themed entities,
+  three visible reaction states, continuous input feedback, room-readable
+  mission state, score and resolution, camera/simulator parity, reduced-motion
+  completion, and genuine mid-play/completion captures. Missing evidence is a
+  blocking failure rather than a warning that publishing may waive.
+- Runtime/device-tier diagnostics are removed from player-facing starter chrome.
+  Privacy and current play mode remain visible; implementation details stay in
+  developer tooling.
+- Fire Hose Hero is the reference vertical slice for this contract: twelve
+  reactive fires across three alarms, continuous hose feedback, score/combo,
+  timer/pressure HUD, authored audio, explicit victory/failure, and one shared
+  presentation layer for simulator and on-device camera play. The Showcase uses
+  a capture from a run that reached the terminal 12/12 state, while the five
+  unchanged catalog entries are labeled honestly as engine mechanic demos.
+
+This gate is intentionally stricter than the declarative pack schema. The pack
+continues to contain no uploaded executable code; the creator-owned Site supplies
+its reviewed presentation layer, and publication remains impossible until both
+the data contract and shipped experience have evidence.

@@ -24,8 +24,11 @@ test("server-renders the public Showcase from the reviewed static catalog", asyn
 
   const html = await response.text();
   assert.match(html, /Every screen can be a/);
-  assert.match(html, /Play motion games in any browser\. Create and publish your own with Codex\./);
-  assert.match(html, /Community showcase/);
+  assert.match(html, /Aim, jump, dodge, and freeze in browser-native games\./);
+  assert.match(html, /Playable showcase/);
+  assert.match(html, /Flagship mission · real gameplay/);
+  assert.match(html, /Engine mechanic demo · cover art/);
+  assert.match(html, /\/featured\/fire-hose-hero-gameplay\.png/);
   assert.match(html, /Morning Star Catch/);
   assert.match(html, /Fire Hose Hero/);
   assert.match(html, /Fruit Basket Catch/);
@@ -110,9 +113,9 @@ test("keeps the six-game catalog local, typed, movement-complete, and storage-fr
 test("records integrity and license metadata for every bundled runtime asset", async () => {
   const provenance = JSON.parse(await readFile(new URL("public/asset-provenance.json", projectRoot), "utf8"));
   assert.equal(provenance.schemaVersion, 1);
-  assert.equal(provenance.assets.length, 9);
+  assert.equal(provenance.assets.length, 10);
   for (const asset of provenance.assets) {
-    assert.match(asset.path, /^\/(?:models|playground|vendor\/mediapipe\/wasm|og\.png)/);
+    assert.match(asset.path, /^\/(?:models|playground|featured|vendor\/mediapipe\/wasm|og\.png)/);
     assert.equal(typeof asset.license, "string");
     assert.match(asset.sha256, /^[a-f0-9]{64}$/);
     const contents = await readFile(new URL(`public${asset.path}`, projectRoot));

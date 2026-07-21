@@ -26,6 +26,9 @@ const { values } = parseArgs({
     title: { type: "string" },
     summary: { type: "string" },
     theme: { type: "string" },
+    fantasy: { type: "string" },
+    "player-verb": { type: "string" },
+    "target-metaphor": { type: "string" },
     locale: { type: "string", default: "en" },
     creator: { type: "string", default: "Game creator" },
     energy: { type: "string", default: "moderate" },
@@ -49,6 +52,8 @@ if (values.help === true) {
 Required:
   --output <new-directory> --slug <kebab-case> --title <title>
   --summary <summary> --theme <theme>
+  --fantasy <role-and-stakes> --player-verb <continuous physical verb>
+  --target-metaphor <themed object the player affects>
 
 Optional:
   --locale en --creator <name> --source-url <https-url>
@@ -76,6 +81,9 @@ const ageMax = integer(values["age-max"], "--age-max", ageMin, 120);
 const minutes = integer(values.minutes, "--minutes", 1, 60);
 const targetCount = integer(values["target-count"], "--target-count", 1, 12);
 const mechanic = values.mechanic ?? "touch_targets";
+const fantasy = required(values.fantasy, "--fantasy");
+const playerVerb = required(values["player-verb"], "--player-verb");
+const targetMetaphor = required(values["target-metaphor"], "--target-metaphor");
 
 /**
  * Every mechanic ships with conservative, child-safe tunables. Creators adjust
@@ -265,6 +273,9 @@ for (const [label, value, maximum] of [
   ["--title", title, 200],
   ["--summary", summary, 5_000],
   ["--theme", theme, 500],
+  ["--fantasy", fantasy, 500],
+  ["--player-verb", playerVerb, 120],
+  ["--target-metaphor", targetMetaphor, 120],
   ["--creator", creator, 200],
   ["--intro", intro, 5_000],
   ["--instruction", instruction, 5_000],
@@ -291,11 +302,28 @@ const license = {
   attribution: `${creator} — ${title}`,
 };
 const originalProvenance = { kind: "original", creator, createdAt };
+const palette = createThemePalette(`${title}\n${theme}`);
+const thumbnailPng = createThumbnailPng(palette);
 
 await cp(templateRoot, outputRoot, { recursive: true, errorOnExist: true });
 await replaceTemplateTokens(outputRoot, {
   "__GAME_SLUG__": slug,
-  "__GAME_CONFIG_JSON__": JSON.stringify({ slug, title, summary, creator, sourceUrl, locale }),
+  "__GAME_CONFIG_JSON__": JSON.stringify({
+    slug,
+    title: { en: title, ko: title },
+    summary: { en: summary, ko: summary },
+    creator,
+    sourceUrl,
+    locale,
+    hero: {
+      imageUrl: "/thumbnail.png",
+      alt: {
+        en: `Illustrated ${theme} play scene for ${title}`,
+        ko: `${title}의 ${theme} 플레이 장면 일러스트`,
+      },
+    },
+    theme: palette,
+  }),
 });
 await assertNoTemplateTokens(outputRoot);
 await cp(vendorRoot, join(outputRoot, "vendor"), { recursive: true });
@@ -307,7 +335,12 @@ await mkdir(audioRoot, { recursive: true });
 await mkdir(join(outputRoot, ".manse"), { recursive: true });
 
 const challengeAudio = { successAudioId: "success-tone", encourageAudioId: "encourage-tone" };
-const roundBudgetMs = Math.min(300_000, Math.max(20_000, minutes * 60_000 - 8_000));
+const missionBudgetMs = Math.min(300_000, Math.max(60_000, minutes * 60_000 - 8_000));
+const waveBudgets = splitMissionBudget(missionBudgetMs);
+const waveCounts = [Math.max(1, targetCount - 1), targetCount, Math.min(12, targetCount + 1)];
+const waveChallenges = waveCounts.map((count, index) =>
+  challengeForBeat(mechanic, mechanicPreset, count, waveBudgets[index], challengeAudio, index),
+);
 
 const pack = {
   // touch_targets stays a v1 pack every released engine executes; motion
@@ -349,42 +382,83 @@ const pack = {
       artAssetId: null,
       energy: "calm",
       terminal: false,
-      transitions: [{ on: "always", to: "round-one", adapt: null }],
+      transitions: [{ on: "always", to: "learn-the-verb", adapt: null }],
     },
     {
-      id: "round-one",
+      id: "learn-the-verb",
       kind: "challenge",
-      narration: { items: [{ locale, text: instruction, audioAssetId: null }], captionDefaultOn: true },
+      narration: {
+        items: [{ locale, text: `First beat — ${instruction}`, audioAssetId: null }],
+        captionDefaultOn: true,
+      },
       demo: null,
-      challenge: mechanicPreset.challenge(targetCount, roundBudgetMs, challengeAudio),
+      challenge: waveChallenges[0],
       learning: { kind: "none", payload: [] },
       artAssetId: null,
       energy: "medium",
       terminal: false,
       transitions: [
-        { on: "success", to: "complete", adapt: null },
-        { on: "struggle", to: "round-two", adapt: mechanicPreset.adapt },
+        { on: "success", to: "raise-the-stakes", adapt: null },
+        { on: "struggle", to: "raise-the-stakes", adapt: mechanicPreset.adapt },
       ],
     },
     {
-      id: "round-two",
+      id: "raise-the-stakes",
       kind: "challenge",
-      narration: { items: [{ locale, text: instruction, audioAssetId: null }], captionDefaultOn: true },
+      narration: {
+        items: [{ locale, text: `Second beat — the mission changes. ${instruction}`, audioAssetId: null }],
+        captionDefaultOn: true,
+      },
       demo: null,
-      challenge: mechanicPreset.challenge(targetCount, roundBudgetMs, challengeAudio),
+      challenge: waveChallenges[1],
       learning: { kind: "none", payload: [] },
       artAssetId: null,
       energy: "medium",
       terminal: false,
       transitions: [
+        { on: "success", to: "finale", adapt: null },
+        { on: "struggle", to: "finale", adapt: mechanicPreset.adapt },
+      ],
+    },
+    {
+      id: "finale",
+      kind: "challenge",
+      narration: {
+        items: [{ locale, text: `Final beat — use everything you learned. ${instruction}`, audioAssetId: null }],
+        captionDefaultOn: true,
+      },
+      demo: null,
+      challenge: waveChallenges[2],
+      learning: { kind: "none", payload: [] },
+      artAssetId: null,
+      energy: energy === "gentle" ? "medium" : "high",
+      terminal: false,
+      transitions: [
         { on: "success", to: "complete", adapt: null },
-        { on: "struggle", to: "complete", adapt: null },
+        { on: "struggle", to: "recovery", adapt: mechanicPreset.adapt },
+      ],
+    },
+    {
+      id: "recovery",
+      kind: "story",
+      narration: {
+        items: [{ locale, text: "Take a breath. The mission still counts, and you can try the finale again when you are ready.", audioAssetId: "encourage-tone" }],
+        captionDefaultOn: true,
+      },
+      demo: null,
+      challenge: null,
+      learning: null,
+      artAssetId: null,
+      energy: "calm",
+      terminal: false,
+      transitions: [
+        { on: "always", to: "complete", adapt: null },
       ],
     },
     {
       id: "complete",
       kind: "celebration",
-      narration: { items: [{ locale, text: celebration, audioAssetId: null }], captionDefaultOn: true },
+      narration: { items: [{ locale, text: celebration, audioAssetId: "finale-tone" }], captionDefaultOn: true },
       demo: null,
       challenge: null,
       learning: null,
@@ -402,7 +476,7 @@ const pack = {
         id: "success-tone",
         path: "assets/audio/success.wav",
         mediaType: "audio/wav",
-        locale: null,
+        locale,
         transcript: "",
         license,
         provenance: originalProvenance,
@@ -411,7 +485,16 @@ const pack = {
         id: "encourage-tone",
         path: "assets/audio/encourage.wav",
         mediaType: "audio/wav",
-        locale: null,
+        locale,
+        transcript: "",
+        license,
+        provenance: originalProvenance,
+      },
+      {
+        id: "finale-tone",
+        path: "assets/audio/finale.wav",
+        mediaType: "audio/wav",
+        locale,
         transcript: "",
         license,
         provenance: originalProvenance,
@@ -455,11 +538,11 @@ const manifest = {
   thumbnail: {
     url: `${draftOrigin}/thumbnail.png`,
     mediaType: "image/png",
-    alt: [{ locale, text: `Abstract motion-game artwork for ${title}` }],
+    alt: [{ locale, text: `Illustrated ${theme} play scene for ${title}` }],
   },
   license,
   contentProvenance: {
-    hasGeneratedAssets: false,
+    hasGeneratedAssets: true,
     hasThirdPartyAssets: true,
     provenanceUrl: `${draftOrigin}/asset-provenance.json`,
   },
@@ -476,9 +559,49 @@ await writeJson(join(outputRoot, ".manse", "project.json"), {
   createdAt,
   placeholders: ["gameUrl", "thumbnail.url", "contentProvenance.provenanceUrl", ...(sourceUrl.includes("replace-me") ? ["sourceUrl"] : [])],
 });
+await writeJson(join(outputRoot, ".manse", "experience.json"), {
+  schemaVersion: 1,
+  status: "design-required",
+  identity: {
+    fantasy,
+    playerVerb,
+    targetMetaphor,
+    oneSentencePromise: `${title}: ${summary}`,
+  },
+  beats: [
+    { id: "learn-the-verb", purpose: "Teach one readable physical action with immediate themed feedback.", intensity: 1 },
+    { id: "raise-the-stakes", purpose: "Change the spatial or timing demand without changing the core verb.", intensity: 2 },
+    { id: "finale", purpose: "Deliver the largest visual payoff and a clear resolution.", intensity: 3 },
+  ],
+  presenter: {
+    source: null,
+    themedEntities: [],
+    reactiveStates: [],
+    continuousFeedback: null,
+    scoreAndResolution: null,
+  },
+  qualityGates: {
+    themedEntitiesInPlay: false,
+    threeReactiveStates: false,
+    continuousInputFeedback: false,
+    authoredEscalation: true,
+    scoreAndResolution: false,
+    threeGameplaySounds: true,
+    noDebugChrome: false,
+    cameraSimulatorParity: false,
+    reducedMotionVerified: false,
+  },
+  evidence: {
+    gameplayScreenshot: null,
+    completionScreenshot: null,
+    playtestNotes: null,
+  },
+  releaseRule: "Do not mark approved or publish until every quality gate is true and every evidence path exists.",
+});
 await writeFile(join(audioRoot, "success.wav"), createToneWav(660, 180));
 await writeFile(join(audioRoot, "encourage.wav"), createToneWav(440, 160));
-await writeFile(join(outputRoot, "public", "thumbnail.png"), createThumbnailPng());
+await writeFile(join(audioRoot, "finale.wav"), createToneWav(784, 360));
+await writeFile(join(outputRoot, "public", "thumbnail.png"), thumbnailPng);
 await writeFile(join(outputRoot, "LICENSE"), mitLicense(creator, new Date().getUTCFullYear()), "utf8");
 
 const runtimeProvenance = JSON.parse(
@@ -493,7 +616,7 @@ await writeJson(join(outputRoot, "public", "asset-provenance.json"), {
       creator,
       createdAt,
       license: "MIT",
-      sha256: sha256(createThumbnailPng()),
+      sha256: sha256(thumbnailPng),
     },
     {
       path: `/packs/${slug}/assets/audio/success.wav`,
@@ -510,6 +633,14 @@ await writeJson(join(outputRoot, "public", "asset-provenance.json"), {
       createdAt,
       license: "MIT",
       sha256: sha256(createToneWav(440, 160)),
+    },
+    {
+      path: `/packs/${slug}/assets/audio/finale.wav`,
+      origin: "original-procedural",
+      creator,
+      createdAt,
+      license: "MIT",
+      sha256: sha256(createToneWav(784, 360)),
     },
     ...runtimeProvenance.assets.map((asset) => ({
       path: `/${asset.path}`,
@@ -564,6 +695,105 @@ function ageBands(minimum, maximum) {
   if (minimum <= 7 && maximum >= 6) bands.push("6-7");
   if (maximum >= 8) bands.push("8+");
   return bands;
+}
+
+function defaultPlayerVerb(mechanic) {
+  return {
+    touch_targets: "reach and hold",
+    freeze: "freeze and release",
+    body_zone: "move into position",
+    squat: "squat and rise",
+    pose_match: "shape and hold a pose",
+    jump: "jump and land softly",
+    velocity_hit: "strike with controlled speed",
+    step: "step to the cue",
+    sequence: "chain the movements",
+  }[mechanic] ?? "move with purpose";
+}
+
+function defaultTargetMetaphor(mechanic, theme) {
+  const object = {
+    touch_targets: "large responsive mission objects",
+    freeze: "a living scene that reacts to stillness",
+    body_zone: "themed safe zones",
+    squat: "world elements powered by rising",
+    pose_match: "character silhouettes",
+    jump: "launch pads and airborne rewards",
+    velocity_hit: "impact objects with readable recoil",
+    step: "floor cues with rhythmic trails",
+    sequence: "a transforming finale object",
+  }[mechanic] ?? "responsive mission objects";
+  return `${theme}: ${object}`;
+}
+
+function splitMissionBudget(totalMs) {
+  const first = Math.max(20_000, Math.round(totalMs * 0.28));
+  const second = Math.max(20_000, Math.round(totalMs * 0.32));
+  const third = Math.max(20_000, totalMs - first - second);
+  return [first, second, Math.min(300_000, third)];
+}
+
+function challengeForBeat(mechanic, preset, count, budget, audio, beat) {
+  const challenge = preset.challenge(count, budget, audio);
+  if (mechanic === "touch_targets") {
+    challenge.zone = ["reachable", "upper", "full"][beat];
+    challenge.targetScale = [1.45, 1.3, 1.16][beat];
+    challenge.dwellMs = [180, 260, 340][beat];
+  } else if (mechanic === "freeze") {
+    challenge.holdMs = [1_500, 2_100, 2_700][beat];
+    challenge.rounds = [1, Math.max(2, Math.min(6, count)), Math.max(3, Math.min(8, count + 1))][beat];
+  } else if (mechanic === "body_zone") {
+    challenge.zones = challenge.zones.slice(0, beat + 1);
+    challenge.holdMs = [350, 500, 650][beat];
+  } else if (mechanic === "squat") {
+    challenge.repetitions = [Math.max(1, count - 1), count, Math.min(10, count + 1)][beat];
+    challenge.depthRatio = [0.16, 0.19, 0.21][beat];
+  } else if (mechanic === "pose_match") {
+    challenge.matchRatio = [0.62, 0.68, 0.72][beat];
+  } else if (mechanic === "jump") {
+    challenge.repetitions = [Math.max(1, count - 1), count, Math.min(10, count + 1)][beat];
+    challenge.minRiseRatio = [0.09, 0.11, 0.12][beat];
+  } else if (mechanic === "velocity_hit") {
+    challenge.targetScale = [1.5, 1.32, 1.18][beat];
+    challenge.minSpeed = [0.5, 0.62, 0.72][beat];
+  } else if (mechanic === "step") {
+    challenge.stepRatio = [0.18, 0.22, 0.25][beat];
+    challenge.holdMs = [280, 220, 180][beat];
+  } else if (mechanic === "sequence") {
+    challenge.steps = challenge.steps.slice(0, beat + 1);
+    challenge.interStepGraceMs = [2_600, 2_100, 1_800][beat];
+  }
+  return challenge;
+}
+
+function createThemePalette(seed) {
+  const digest = createHash("sha256").update(seed).digest();
+  const hue = Math.round((digest[0] / 255) * 360);
+  const contrastHue = (hue + 128 + digest[1] % 72) % 360;
+  return {
+    background: hslToHex(hue, 42, 9),
+    surface: hslToHex(hue, 35, 16),
+    accent: hslToHex(contrastHue, 82, 62),
+    highlight: hslToHex((contrastHue + 54) % 360, 78, 69),
+    text: hslToHex(hue, 18, 96),
+    muted: hslToHex(hue, 18, 74),
+  };
+}
+
+function hslToHex(hue, saturation, lightness) {
+  const s = saturation / 100;
+  const l = lightness / 100;
+  const chroma = (1 - Math.abs(2 * l - 1)) * s;
+  const section = ((hue % 360) + 360) % 360 / 60;
+  const x = chroma * (1 - Math.abs(section % 2 - 1));
+  const [r1, g1, b1] = section < 1 ? [chroma, x, 0]
+    : section < 2 ? [x, chroma, 0]
+      : section < 3 ? [0, chroma, x]
+        : section < 4 ? [0, x, chroma]
+          : section < 5 ? [x, 0, chroma]
+            : [chroma, 0, x];
+  const m = l - chroma / 2;
+  return `#${[r1, g1, b1].map((value) => Math.round((value + m) * 255).toString(16).padStart(2, "0")).join("")}`;
 }
 
 async function replaceTemplateTokens(root, replacements) {
@@ -627,11 +857,12 @@ function createToneWav(frequency, durationMs) {
   return buffer;
 }
 
-function createThumbnailPng() {
+function createThumbnailPng(palette) {
   const width = 1200;
   const height = 630;
   const stride = width * 4 + 1;
   const raw = Buffer.alloc(stride * height);
+  const colors = Object.fromEntries(Object.entries(palette).map(([name, value]) => [name, hexToRgb(value)]));
   for (let y = 0; y < height; y += 1) {
     raw[y * stride] = 0;
     for (let x = 0; x < width; x += 1) {
@@ -640,12 +871,12 @@ function createThumbnailPng() {
       const right = (x - 860) ** 2 + (y - 315) ** 2 < 150 ** 2;
       const ribbon = Math.abs(y - (315 + Math.sin(x / 105) * 100)) < 24;
       const [red, green, blue] = left
-        ? [255, 100, 72]
+        ? colors.accent
         : right
-          ? [201, 244, 93]
+          ? colors.highlight
           : ribbon
-            ? [39, 116, 255]
-            : [247 - Math.round(y / 90), 243 - Math.round(y / 120), 234 - Math.round(y / 150)];
+            ? mixRgb(colors.accent, colors.highlight, x / width)
+            : mixRgb(colors.surface, colors.background, y / height);
       raw[index] = red;
       raw[index + 1] = green;
       raw[index + 2] = blue;
@@ -659,6 +890,14 @@ function createThumbnailPng() {
   ihdr[8] = 8;
   ihdr[9] = 6;
   return Buffer.concat([signature, pngChunk("IHDR", ihdr), pngChunk("IDAT", deflateSync(raw)), pngChunk("IEND", Buffer.alloc(0))]);
+}
+
+function hexToRgb(value) {
+  return [1, 3, 5].map((offset) => Number.parseInt(value.slice(offset, offset + 2), 16));
+}
+
+function mixRgb(first, second, amount) {
+  return first.map((value, index) => Math.round(value + (second[index] - value) * amount));
 }
 
 function pngChunk(type, data) {

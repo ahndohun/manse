@@ -14,7 +14,7 @@
           "min": 4
         },
         "contentProvenance": {
-          "hasGeneratedAssets": false,
+          "hasGeneratedAssets": true,
           "hasThirdPartyAssets": true,
           "provenanceUrl": "https://fire-hose-hero.ran584000.chatgpt.site/asset-provenance.json"
         },
@@ -94,7 +94,7 @@
           "min": 4
         },
         "contentProvenance": {
-          "hasGeneratedAssets": false,
+          "hasGeneratedAssets": true,
           "hasThirdPartyAssets": true,
           "provenanceUrl": "https://froggy-hops.ran584000.chatgpt.site/asset-provenance.json"
         },
@@ -174,7 +174,7 @@
           "min": 3
         },
         "contentProvenance": {
-          "hasGeneratedAssets": false,
+          "hasGeneratedAssets": true,
           "hasThirdPartyAssets": true,
           "provenanceUrl": "https://fruit-basket.ran584000.chatgpt.site/asset-provenance.json"
         },
@@ -254,7 +254,7 @@
           "min": 4
         },
         "contentProvenance": {
-          "hasGeneratedAssets": false,
+          "hasGeneratedAssets": true,
           "hasThirdPartyAssets": true,
           "provenanceUrl": "https://monkey-bananas.ran584000.chatgpt.site/asset-provenance.json"
         },
@@ -334,7 +334,7 @@
           "min": 3
         },
         "contentProvenance": {
-          "hasGeneratedAssets": false,
+          "hasGeneratedAssets": true,
           "hasThirdPartyAssets": true,
           "provenanceUrl": "https://morning-star-catch.ran584000.chatgpt.site/asset-provenance.json"
         },
@@ -414,7 +414,7 @@
           "min": 3
         },
         "contentProvenance": {
-          "hasGeneratedAssets": false,
+          "hasGeneratedAssets": true,
           "hasThirdPartyAssets": true,
           "provenanceUrl": "https://museum-statues.ran584000.chatgpt.site/asset-provenance.json"
         },

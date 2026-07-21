@@ -11,3 +11,6 @@ dist/
 coverage/
 *.tsbuildinfo
 
+# Locally rendered submission video and QA stills. Source clips and narration
+# under video/public stay versioned so the Remotion edit is reproducible.
+video/out/

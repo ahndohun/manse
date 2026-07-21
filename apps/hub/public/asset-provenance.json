@@ -11,6 +11,15 @@
       "sha256": "b95d58b4978ced30e47e8f063c22047d0de5e01c3c2f91e032a8a464b3e128d8"
     },
     {
+      "path": "/featured/fire-hose-hero-gameplay.png",
+      "origin": "original-capture",
+      "source": "Public Fire Hose Hero production deployment in pointer-simulator mode",
+      "createdAt": "2026-07-22",
+      "license": "MIT",
+      "promptSummary": "Automated full-stage capture taken during a real first-wave play session after the pointer arming window; the same run reached the 12/12 terminal victory state.",
+      "sha256": "a1d5a2278ec013ac67c96b8c04839e18c2e135ee544837e0bd7cd19992b112a5"
+    },
+    {
       "path": "/playground/success.wav",
       "origin": "original-procedural",
       "generator": "scripts/sync-runtime-assets.mjs",

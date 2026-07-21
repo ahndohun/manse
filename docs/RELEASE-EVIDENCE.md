@@ -14,7 +14,7 @@ actions. Update it whenever the release artifact or public URLs change.
   `https://manse-showcase.ran584000.chatgpt.site`
 - Current access state: **public; no Manse or ChatGPT account required**
 - Installed Manse Creator version:
-  `0.1.0+codex.20260721015359`
+  `0.1.0+codex.20260721210725`
 
 On 2026-07-21 KST, the owner approved public access, the saved release artifact
 was deployed again, and zero-cookie HTTPS requests returned 200 for the home,
@@ -56,7 +56,7 @@ heavy camera model and WebAssembly payloads lazy.
 | Game | Public Site | Deployed source commit |
 | --- | --- | --- |
 | Morning Star Catch | https://morning-star-catch.ran584000.chatgpt.site | `ca22e8cd845ebe37a6c3b34801191f03c609f4e2` |
-| Fire Hose Hero | https://fire-hose-hero.ran584000.chatgpt.site | `07ae0f8dfe5008feea73c217ea943f2bf106eb20` |
+| Fire Hose Hero | https://fire-hose-hero.ran584000.chatgpt.site | `c04a7223b73b1f46aafbc852a17843d6f2f42c0d` |
 | Fruit Basket Catch | https://fruit-basket.ran584000.chatgpt.site | `0e9534eace4ba0567824eca23c386a6965f762b8` |
 | Museum Statues | https://museum-statues.ran584000.chatgpt.site | `5db37be38fbb538cb98e8c8cfa199864a7c2200e` |
 | Froggy Hops | https://froggy-hops.ran584000.chatgpt.site | `428151a0e01f1e904df0f1d5f520cf516027bdae` |
@@ -75,6 +75,16 @@ and zero `github.com/replace-me` occurrences.
 Morning Star Catch was loaded online once, then reloaded successfully with
 browser networking disabled while still showing its title, pointer-play action,
 and corrected public source link under active service-worker control.
+
+Fire Hose Hero version 7 is the quality-reference release. Its public,
+signed-out production build passed complete pointer runs at 1280×900 and
+390×844 with reduced motion: 12/12 fires across three alarm zones, terminal
+victory, restart to 0/12, keyboard focus, captions, no horizontal overflow, and
+zero console, page, or request errors. The game also carries its own approved
+experience contract, real mid-play and completion captures, and a release gate
+covering themed entities, three reaction states, continuous hose feedback,
+authored escalation/audio, score/resolution, camera/simulator parity, and
+reduced-motion completion.
 
 ## Verified repository gate
 
@@ -127,8 +137,12 @@ The regenerated project also resolved the patched PostCSS build dependency and
 passed a full development-and-runtime `npm audit` with zero findings.
 
 The final plugin reinstall used cachebuster version
-`0.1.0+codex.20260721015359`. A second clean-room project generated from that
-source passed dependency installation, typecheck, production build, three Site
+`0.1.0+codex.20260721210725`. A clean-room contract run generated both touch and
+freeze projects with explicit player fantasies, physical verbs, and themed
+targets; validated their three distinct challenge beats; and proved that a
+brief missing the authored fantasy is rejected before scaffolding. An earlier
+clean-room project generated from the prior release source passed dependency
+installation, typecheck, production build, three Site
 tests including offline revisit, content validation, and a full audit with zero
 findings. Its release check rejected draft URLs and an unconnected Sites
 project as intended. Neither clean-room project was published or represented
@@ -193,9 +207,9 @@ reproducible across the developer Mac and the GitHub runner.
 | Real creator-owned game | Verified | Six independent public game Sites and their public source repositories are linked above. |
 | Full creator loop | Verified | Six public manifests passed catalog ingestion and render as six independent Showcase cards. |
 | Owner camera feel smoke | Outstanding, non-blocking | Run the mechanic diagnostic and real-camera aiming check; the release wrapper changes only MediaPipe frames and the published release remains shippable if feel tuning fails. |
-| Demo video | Not recorded | Record from `docs/DEMO-SCRIPT.md`, upload publicly to YouTube, and verify duration. |
-| Devpost project | Not drafted here | Owner creates/approves the external project, selects Developer Tools, and pastes the reviewed submission copy. |
-| `/feedback` ID | Not captured | Run `/feedback` in the primary Codex task and record the resulting Session ID. |
+| Demo video | Rendered; public upload pending | The reproducible Remotion edit is 146.62 seconds at 1920×1080/30 fps and includes signed-out live Showcase and judge-path captures. Upload the final post-deploy render publicly and recheck its duration. |
+| Devpost project | Draft created | The `Manse` project draft and thumbnail exist; Developer Tools answers are prepared for the final submission gate. |
+| `/feedback` ID | Captured | Primary integration task: `019f8035-dbb1-7213-8946-84a80b7343f8`. |
 
 ## Anonymous judge-path checklist
 

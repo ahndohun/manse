@@ -17,9 +17,36 @@ test("server-renders the anonymous game start experience", async () => {
   const response = await render();
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.match(html, /Play with pointer/);
-  assert.match(html, /Camera stays on this device/);
+  assert.match(html, /Play with pointer|포인터로 플레이/);
+  assert.match(html, /Camera frames stay on this device|카메라 영상은 이 기기에만 남습니다/);
+  assert.match(html, />KO<.*>EN</s);
+  assert.match(html, /class="hero-visual hero-fallback"/);
+  assert.doesNotMatch(html, /class="hero-image"/);
   assert.doesNotMatch(html, /signin-with-chatgpt|<iframe\b|<form\b/i);
+});
+
+test("generated UI wires localization, theme, source, and safe player reset contracts", async () => {
+  const manifest = JSON.parse(await readFile("public/.well-known/manse-game.json", "utf8"));
+  const [html, configSource, clientSource] = await Promise.all([
+    render().then((response) => response.text()),
+    readFile("app/game-config.ts", "utf8"),
+    readFile("app/GameClient.tsx", "utf8"),
+  ]);
+
+  assert.match(html, new RegExp(`href="${manifest.sourceUrl.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&")}"`));
+  assert.match(html, /style="--game-background:#[0-9a-f]{6};--game-surface:#[0-9a-f]{6};--game-accent:#[0-9a-f]{6}/i);
+  assert.match(configSource, /"title":\{"en":/);
+  assert.match(configSource, /"summary":\{"en":/);
+  assert.match(configSource, /"imageUrl":null/);
+  assert.match(configSource, /"theme":\{"background":"#[0-9a-f]{6}"/i);
+  assert.doesNotMatch(configSource, /__[A-Z][A-Z0-9_]*__/);
+  assert.match(clientSource, /createMansePlayer\(\{[\s\S]*?locale,/);
+  assert.match(clientSource, /navigator\.languages\[0\]/);
+  assert.match(clientSource, /await player\?\.destroy\(\)/);
+  assert.match(clientSource, /Play with pointer/);
+  assert.match(clientSource, /포인터로 플레이/);
+  assert.match(clientSource, /Local play · no analytics/);
+  assert.doesNotMatch(clientSource, /runtime ready|device tier|런타임 준비됨|기기 등급/i);
 });
 
 test("build bundles the public contract and pose runtime", async () => {

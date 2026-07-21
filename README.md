@@ -21,19 +21,18 @@ need a Manse account, a controller, a subscription, or a runtime AI service.
 
 ## Release links
 
-The platform and creator-game links below are live. Only the video and feedback
-placeholders remain unresolved until those owner-provided artifacts pass their
-release gates.
+The platform and creator-game links below are live. Only the video link remains
+unresolved until the final upload passes its public release gate.
 
 | Artifact | Release value |
 | --- | --- |
 | Public Showcase | [manse-showcase.ran584000.chatgpt.site](https://manse-showcase.ran584000.chatgpt.site) |
 | Engine/starter playground | [simulator judge path](https://manse-showcase.ran584000.chatgpt.site/playground?provider=simulated) |
-| Reference creator game | [Morning Star Catch](https://morning-star-catch.ran584000.chatgpt.site) |
+| Flagship creator game | [Fire Hose Hero](https://fire-hose-hero.ran584000.chatgpt.site) |
 | Source repository | [github.com/ahndohun/manse](https://github.com/ahndohun/manse) |
 | Manse Creator source | [repository marketplace plugin](https://github.com/ahndohun/manse/tree/main/plugins/manse-creator) |
 | Devpost demo video | `<DEMO_VIDEO_URL>` |
-| Primary Codex `/feedback` Session ID | `<CODEX_SESSION_ID>` |
+| Primary Codex `/feedback` Session ID | `019f8035-dbb1-7213-8946-84a80b7343f8` |
 
 Submission maintainers can use the prepared [Devpost copy](docs/DEVPOST-SUBMISSION.md),
 [three-minute demo script](docs/DEMO-SCRIPT.md), and
@@ -285,8 +284,8 @@ schema-constrained authoring, asset direction, iterative debugging, and release
 preparation. The published player does **not** call GPT-5.6 at runtime, and
 creators do not need a project API key for the P0 workflow.
 
-The primary integration task's `/feedback` Session ID will be recorded as
-`<CODEX_SESSION_ID>`.
+The primary integration task's `/feedback` Session ID is
+`019f8035-dbb1-7213-8946-84a80b7343f8`.
 
 ## Contributing
 
