@@ -1,4 +1,6 @@
+import Image from "next/image";
 import Link from "next/link";
+import logo from "../../../landing/src/assets/brand/manse-logo-trim.png";
 
 const navigation = [
   { href: "/#games", label: "Games" },
@@ -12,11 +14,7 @@ export function SiteHeader() {
     <header className="site-header">
       <div className="shell header-inner">
         <Link className="brand" href="/" aria-label="Manse home">
-          <span className="brand-mark" aria-hidden="true">
-            <span />
-            <span />
-          </span>
-          <span>manse</span>
+          <Image className="brand-image" src={logo} alt="Manse" priority />
         </Link>
 
         <nav className="site-nav" aria-label="Primary navigation">

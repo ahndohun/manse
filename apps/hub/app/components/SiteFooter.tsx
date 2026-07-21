@@ -1,4 +1,6 @@
+import Image from "next/image";
 import Link from "next/link";
+import logo from "../../../landing/src/assets/brand/manse-logo-trim.png";
 
 export function SiteFooter() {
   return (
@@ -6,11 +8,7 @@ export function SiteFooter() {
       <div className="shell footer-grid">
         <div>
           <Link className="brand brand-footer" href="/" aria-label="Manse home">
-            <span className="brand-mark" aria-hidden="true">
-              <span />
-              <span />
-            </span>
-            <span>manse</span>
+            <Image className="brand-image" src={logo} alt="Manse" />
           </Link>
           <p className="footer-note">
             Open-source active play for every camera-equipped screen.
@@ -49,8 +47,8 @@ export function SiteFooter() {
       </div>
 
       <div className="shell footer-bottom">
-        <span>© 2026 Manse contributors.</span>
-        <span>Built in the open. Played in the browser.</span>
+        <span>MIT licensed. Built in the open.</span>
+        <span>Manse is an independent open-source project.</span>
       </div>
     </footer>
   );

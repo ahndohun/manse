@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
+import brandMark from "../../landing/src/assets/brand/manse-mark-trim.png";
 import { catalogSnapshot } from "./catalog/catalog";
 import { CatalogExplorer } from "./components/CatalogExplorer";
+import { LandingHero } from "./components/LandingHero";
 import { PageShell } from "./components/PageShell";
 
 export const metadata: Metadata = {
@@ -28,32 +31,7 @@ const platformLayers = [
 export default function Home() {
   return (
     <PageShell>
-      <section className="hero">
-        <div className="shell hero-grid">
-          <div className="hero-copy">
-            <p className="eyebrow eyebrow-coral">Open-source active play</p>
-            <h1>Every screen can be a <em>playground.</em></h1>
-            <p className="hero-lede">Manse turns any camera-equipped browser into a motion game console. Anyone can make and publish their own games with Codex.</p>
-            <div className="button-row">
-              <Link className="button button-coral button-large" href="/playground">Try the engine <span aria-hidden="true">↗</span></Link>
-              <Link className="button button-ghost button-large" href="/docs#install">Get Manse Creator <span aria-hidden="true">↗</span></Link>
-            </div>
-          </div>
-          <div className="hero-demo" aria-label="Illustration of a Manse motion game">
-            <div className="demo-window">
-              <div className="demo-topbar"><span><i aria-hidden="true" /> LIVE MOTION</span><b>On device</b></div>
-              <div className="demo-playfield">
-                <span className="target target-left" aria-hidden="true" /><span className="target target-right" aria-hidden="true" /><span className="target target-top" aria-hidden="true" />
-                <div className="pose-person" aria-hidden="true"><span className="pose-head" /><span className="pose-body" /><span className="pose-arm pose-arm-left" /><span className="pose-arm pose-arm-right" /><span className="pose-leg pose-leg-left" /><span className="pose-leg pose-leg-right" /></div>
-                <div className="demo-prompt"><span>Reach up</span><strong>3</strong></div>
-              </div>
-              <div className="demo-bottombar"><span>Private</span><span>Device-aware</span><span>Browser native</span></div>
-            </div>
-            <div className="floating-card floating-card-device"><span>PLAY ON</span>Any screen, phone to TV</div>
-            <div className="floating-card floating-card-open"><strong>100%</strong> open source</div>
-          </div>
-        </div>
-      </section>
+      <LandingHero />
 
       <div className="verb-marquee" aria-hidden="true">
         <div className="verb-track">
@@ -86,7 +64,7 @@ export default function Home() {
 
       <section className="performance-section section">
         <div className="shell performance-grid">
-          <div className="performance-visual" aria-hidden="true"><div className="perf-ring perf-ring-a" /><div className="perf-ring perf-ring-b" /><div className="perf-core">MOVE</div><span className="perf-chip chip-one">Pose input</span><span className="perf-chip chip-two">Smooth render</span><span className="perf-chip chip-three">Device tiers</span></div>
+          <div className="performance-visual" aria-hidden="true"><Image className="perf-mark" src={brandMark} alt="" /><span className="perf-chip chip-one">Pose input</span><span className="perf-chip chip-two">Smooth render</span><span className="perf-chip chip-three">Device tiers</span></div>
           <div className="performance-copy"><h2>Designed to feel responsive across real-world devices.</h2><p>Manse separates pose inference from rendering, smooths motion without hiding intent, and selects a quality tier from the device&apos;s browser capabilities at startup.</p><dl className="performance-list"><div><dt>Local pose processing</dt><dd>Camera frames stay in the player&apos;s browser.</dd></div><div><dt>Device quality tiers</dt><dd>Each tier sets the model, inference cadence, pixel density, and effects budget.</dd></div><div><dt>Graceful input paths</dt><dd>Simulator and accessible alternatives keep games inclusive.</dd></div></dl><div className="device-row" aria-label="Target devices"><span>Phones</span><span>Tablets</span><span>Computers</span><span>Smart TVs</span></div></div>
         </div>
       </section>
