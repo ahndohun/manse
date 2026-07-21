@@ -4,7 +4,7 @@ import {
   resolveProvider,
   resolveTier,
 } from "./config.js";
-import { loadEpisodePack } from "./loader.js";
+import { loadEpisodePack, resolvePackAssetUrl } from "./loader.js";
 import { createBrowserPlatform } from "./platform.js";
 import {
   createDefaultPoseProvider,
@@ -19,6 +19,7 @@ import type {
   LoadedEpisodePack,
   MansePlayer,
   MansePlayerOptions,
+  NarrationCue,
   PlayerEvent,
   PlayerPhase,
   PlayerSnapshot,
@@ -63,6 +64,8 @@ class BrowserMansePlayer implements MansePlayer {
   private renderFramesInWindow = 0;
   private renderFps = 0;
   private inputToFeedbackMs: number | null = null;
+  private narrationAudio: HTMLAudioElement | null = null;
+  private effectAudio: HTMLAudioElement | null = null;
 
   constructor(options: MansePlayerOptions) {
     this.options = options;
@@ -260,13 +263,15 @@ class BrowserMansePlayer implements MansePlayer {
   private handleSessionEvent(event: TouchRuntimeEvent): void {
     switch (event.type) {
       case "target-hit":
-        this.inputToFeedbackMs = event.feedbackLatencyMs ?? null;
-        if (event.targetId !== undefined) {
-          this.options.onEvent?.({ type: "target-hit", sceneId: event.sceneId, targetId: event.targetId });
-        }
+        this.inputToFeedbackMs = event.feedbackLatencyMs;
+        this.options.onEvent?.({ type: "target-hit", sceneId: event.sceneId, targetId: event.targetId });
+        break;
+      case "audio-cue":
+        void this.playEffect(event.assetId).catch(() => undefined);
         break;
       case "scene-changed":
         this.options.onEvent?.({ type: "scene-changed", sceneId: event.sceneId });
+        void this.playSceneNarration(event.sceneId).catch(() => undefined);
         break;
       case "complete":
         this.setPhase("complete");
@@ -366,6 +371,8 @@ class BrowserMansePlayer implements MansePlayer {
   }
 
   private async releaseRuntimeResources(): Promise<void> {
+    await this.stopNarration();
+    this.stopAudio("effect");
     this.providerUnsubscribe?.();
     this.providerUnsubscribe = null;
     await this.provider?.destroy();
@@ -383,6 +390,71 @@ class BrowserMansePlayer implements MansePlayer {
     this.video = null;
     this.renderer?.destroy();
     this.renderer = null;
+  }
+
+  private async playSceneNarration(sceneId: string): Promise<void> {
+    await this.stopNarration();
+    const loaded = this.loaded;
+    if (loaded === null || this.phase === "destroyed") return;
+    const scene = loaded.pack.scenes.find((candidate) => candidate.id === sceneId);
+    if (scene === undefined) return;
+    const locale = this.options.locale ?? loaded.pack.meta.locales[0] ?? "en";
+    const item = scene.narration.items.find((candidate) => candidate.locale === locale)
+      ?? scene.narration.items[0];
+    if (item === undefined) return;
+    const cue: NarrationCue = {
+      sceneId,
+      locale: item.locale,
+      text: item.text,
+      audioUrl: item.audioAssetId === null
+        ? null
+        : resolvePackAssetUrl(loaded.pack, item.audioAssetId, loaded.baseUrl),
+    };
+    if (this.options.narration !== undefined) {
+      await this.options.narration.play(cue);
+    } else if (cue.audioUrl !== null) {
+      await this.playDefaultAudio(cue.audioUrl, "narration");
+    }
+  }
+
+  private async playEffect(assetId: string): Promise<void> {
+    const loaded = this.loaded;
+    if (loaded === null || this.phase === "destroyed") return;
+    await this.playDefaultAudio(resolvePackAssetUrl(loaded.pack, assetId, loaded.baseUrl), "effect");
+  }
+
+  private async playDefaultAudio(url: URL, channel: "narration" | "effect"): Promise<void> {
+    this.stopAudio(channel);
+    const audio = this.platform.document.createElement("audio");
+    audio.preload = "auto";
+    audio.src = url.toString();
+    if (channel === "narration") this.narrationAudio = audio;
+    else this.effectAudio = audio;
+    try {
+      await audio.play();
+    } catch (error) {
+      this.stopAudio(channel);
+      throw error;
+    }
+  }
+
+  private async stopNarration(): Promise<void> {
+    this.stopAudio("narration");
+    try {
+      await this.options.narration?.stop();
+    } catch {
+      // Audio cleanup must not prevent camera or renderer cleanup.
+    }
+  }
+
+  private stopAudio(channel: "narration" | "effect"): void {
+    const audio = channel === "narration" ? this.narrationAudio : this.effectAudio;
+    if (audio === null) return;
+    audio.pause();
+    audio.src = "";
+    audio.remove();
+    if (channel === "narration") this.narrationAudio = null;
+    else this.effectAudio = null;
   }
 }
 

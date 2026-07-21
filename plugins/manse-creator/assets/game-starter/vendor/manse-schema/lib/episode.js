@@ -17,49 +17,7 @@ export const TouchTargetsSchema = z
     ...ChallengeBaseShape,
 })
     .strict();
-export const JumpCountSchema = z
-    .object({
-    type: z.literal("jump_count"),
-    count: z.number().int().min(1).max(20),
-    countAloud: z.boolean(),
-    ...ChallengeBaseShape,
-})
-    .strict();
-export const SquatSchema = z
-    .object({ type: z.literal("squat"), reps: z.number().int().min(1).max(15), ...ChallengeBaseShape })
-    .strict();
-export const FreezeSchema = z
-    .object({
-    type: z.literal("freeze"),
-    holdMs: z.number().int().min(500).max(8_000),
-    cue: z.enum(["music-stop", "narration", "visual"]),
-    ...ChallengeBaseShape,
-})
-    .strict();
-export const RunInPlaceSchema = z
-    .object({
-    type: z.literal("run_in_place"),
-    durationMs: z.number().int().min(2_000).max(30_000),
-    intensity: z.enum(["stroll", "jog", "sprint"]),
-    ...ChallengeBaseShape,
-})
-    .strict();
-export const BalanceSchema = z
-    .object({
-    type: z.literal("balance"),
-    pose: z.enum(["one-leg", "airplane", "tiptoe", "statue"]),
-    holdMs: z.number().int().min(500).max(6_000),
-    ...ChallengeBaseShape,
-})
-    .strict();
-export const ChallengeSchema = z.discriminatedUnion("type", [
-    TouchTargetsSchema,
-    JumpCountSchema,
-    SquatSchema,
-    FreezeSchema,
-    RunInPlaceSchema,
-    BalanceSchema,
-]);
+export const ChallengeSchema = TouchTargetsSchema;
 export const LearningMomentSchema = z
     .object({
     kind: z.enum(["counting", "colors", "letters", "body-parts", "directions", "animals", "none"]),

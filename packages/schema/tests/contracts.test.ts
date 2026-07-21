@@ -51,4 +51,20 @@ describe("version 1 public contracts", () => {
     expect(validateEpisodePackIntegrity(pack)).toEqual([]);
     expect(validatePackProvenance(pack, provenance)).toEqual([]);
   });
+
+  it("rejects challenge mechanics that runtime 0.1 cannot execute", async () => {
+    const pack = structuredClone(await fixture("valid", "manse.pack.json")) as {
+      scenes: Array<{ challenge: unknown }>;
+    };
+    pack.scenes[1]!.challenge = {
+      type: "jump_count",
+      count: 3,
+      countAloud: true,
+      timeBudgetMs: 15_000,
+      successAudioId: "cue-sfx",
+      encourageAudioId: "cue-sfx",
+    };
+
+    expect(safeParseEpisodePack(pack).success).toBe(false);
+  });
 });

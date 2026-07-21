@@ -7,6 +7,12 @@ export const DEFAULT_RUNTIME_TUNING = {
     celebrationDurationMs: 1_500,
     maximumPoseDeltaMs: 120,
 };
+const IDENTITY_ADAPTATION = {
+    targetScaleMul: 1,
+    dwellMsMul: 1,
+    countDelta: 0,
+    timeBudgetMul: 1,
+};
 const DEFAULT_REACH_BOX = {
     x0: 0.16,
     y0: 0.16,
@@ -27,6 +33,8 @@ export class TouchEpisodeSession {
     lastPoseTimestampMs = null;
     targets = [];
     reachBox = DEFAULT_REACH_BOX;
+    runtimeChallenge = null;
+    pendingAdaptation = IDENTITY_ADAPTATION;
     constructor(pack, options) {
         this.pack = pack;
         this.scenes = new Map(pack.scenes.map((scene) => [scene.id, scene]));
@@ -38,10 +46,6 @@ export class TouchEpisodeSession {
         this.tier = options.tier;
         this.tuning = options.tuning ?? DEFAULT_RUNTIME_TUNING;
         this.onEvent = options.onEvent ?? (() => undefined);
-        const unsupported = pack.scenes.find((scene) => scene.challenge !== null && scene.challenge.type !== "touch_targets");
-        if (unsupported?.challenge !== null && unsupported?.challenge !== undefined) {
-            throw new Error(`Runtime v0.1 does not execute '${unsupported.challenge.type}' yet; use touch_targets in P0 packs.`);
-        }
     }
     setCalibration(result) {
         this.reachBox = result.reachBox;
@@ -54,13 +58,13 @@ export class TouchEpisodeSession {
         this.statusValue = "playing";
     }
     updatePose(frame) {
-        if (this.statusValue !== "playing" || this.currentScene.challenge?.type !== "touch_targets")
+        if (this.statusValue !== "playing" || this.runtimeChallenge === null)
             return;
         const deltaMs = this.lastPoseTimestampMs === null
             ? 0
             : Math.min(this.tuning.maximumPoseDeltaMs, Math.max(0, frame.timestampMs - this.lastPoseTimestampMs));
         this.lastPoseTimestampMs = frame.timestampMs;
-        const challenge = this.currentScene.challenge;
+        const challenge = this.runtimeChallenge;
         const points = getChallengePoints(frame, challenge.limb, this.tuning.minimumLandmarkConfidence);
         const dwellGoal = challenge.dwellMs * TIER_PROFILES[this.tier].dwellScale;
         for (const target of this.targets) {
@@ -83,6 +87,12 @@ export class TouchEpisodeSession {
                 break;
         }
         if (this.targets.length > 0 && this.targets.every((target) => target.hit)) {
+            this.onEvent({
+                type: "audio-cue",
+                sceneId: this.currentScene.id,
+                assetId: challenge.successAudioId,
+                purpose: "success",
+            });
             this.statusValue = "celebrating";
             this.celebrationStartedAtMs = frame.timestampMs;
         }
@@ -112,13 +122,22 @@ export class TouchEpisodeSession {
                 this.followTransition("always", timestampMs);
             return;
         }
-        if (timestampMs - this.sceneStartedAtMs >= this.currentScene.challenge.timeBudgetMs) {
+        const challenge = this.runtimeChallenge;
+        if (challenge === null)
+            throw new Error(`Scene '${this.currentScene.id}' has no executable challenge state.`);
+        if (timestampMs - this.sceneStartedAtMs >= challenge.timeBudgetMs) {
+            this.onEvent({
+                type: "audio-cue",
+                sceneId: this.currentScene.id,
+                assetId: challenge.encourageAudioId,
+                purpose: "encourage",
+            });
             this.followTransition("struggle", timestampMs);
         }
     }
     getSnapshot(timestampMs) {
-        const challenge = this.currentScene.challenge;
-        const dwellGoal = challenge?.type === "touch_targets"
+        const challenge = this.runtimeChallenge;
+        const dwellGoal = challenge !== null
             ? Math.max(1, challenge.dwellMs * TIER_PROFILES[this.tier].dwellScale)
             : 1;
         return {
@@ -139,7 +158,7 @@ export class TouchEpisodeSession {
                 : this.currentScene.kind === "celebration"
                     ? Math.min(1, Math.max(0, (timestampMs - this.sceneStartedAtMs) / this.tuning.celebrationDurationMs))
                     : 0,
-            poseRequired: this.statusValue === "playing" && challenge !== null,
+            poseRequired: this.statusValue === "playing" && this.currentScene.challenge !== null,
             completedTargets: this.targets.filter((target) => target.hit).length,
             totalTargets: this.targets.length,
         };
@@ -149,9 +168,15 @@ export class TouchEpisodeSession {
         this.sceneStartedAtMs = timestampMs;
         this.lastPoseTimestampMs = null;
         this.statusValue = "playing";
-        this.targets = scene.challenge?.type === "touch_targets"
-            ? createTargets(scene.id, scene.challenge.count, scene.challenge.zone, scene.challenge.targetScale * TIER_PROFILES[this.tier].targetScale, this.reachBox, this.tuning.baseTargetRadius)
-            : [];
+        if (scene.challenge === null) {
+            this.runtimeChallenge = null;
+            this.targets = [];
+        }
+        else {
+            this.runtimeChallenge = applyAdaptation(scene.challenge, this.pendingAdaptation);
+            this.pendingAdaptation = IDENTITY_ADAPTATION;
+            this.targets = createTargets(scene.id, this.runtimeChallenge.count, this.runtimeChallenge.zone, this.runtimeChallenge.targetScale * TIER_PROFILES[this.tier].targetScale, this.reachBox, this.tuning.baseTargetRadius);
+        }
         this.onEvent({ type: "scene-changed", sceneId: scene.id });
     }
     followTransition(event, timestampMs) {
@@ -164,6 +189,9 @@ export class TouchEpisodeSession {
         if (transition === undefined) {
             throw new Error(`Scene '${this.currentScene.id}' has no '${event}' transition.`);
         }
+        if (transition.adapt !== null) {
+            this.pendingAdaptation = combineAdaptation(this.pendingAdaptation, transition.adapt);
+        }
         const next = this.scenes.get(transition.to);
         if (next === undefined)
             throw new Error(`Transition target '${transition.to}' does not exist.`);
@@ -175,6 +203,26 @@ export class TouchEpisodeSession {
         this.statusValue = "complete";
         this.onEvent({ type: "complete", sceneId: this.currentScene.id });
     }
+}
+function applyAdaptation(challenge, adaptation) {
+    return {
+        count: Math.round(clamp(challenge.count + adaptation.countDelta, 1, 12)),
+        zone: challenge.zone,
+        targetScale: clamp(challenge.targetScale * adaptation.targetScaleMul, 0.5, 2),
+        dwellMs: Math.round(clamp(challenge.dwellMs * adaptation.dwellMsMul, 0, 1_500)),
+        limb: challenge.limb,
+        timeBudgetMs: Math.round(clamp(challenge.timeBudgetMs * adaptation.timeBudgetMul, 1, 300_000)),
+        successAudioId: challenge.successAudioId,
+        encourageAudioId: challenge.encourageAudioId,
+    };
+}
+function combineAdaptation(current, next) {
+    return {
+        targetScaleMul: current.targetScaleMul * next.targetScaleMul,
+        dwellMsMul: current.dwellMsMul * next.dwellMsMul,
+        countDelta: current.countDelta + next.countDelta,
+        timeBudgetMul: current.timeBudgetMul * next.timeBudgetMul,
+    };
 }
 function createTargets(sceneId, count, zone, scale, reachBox, baseRadius) {
     const bounds = zoneBounds(zone, reachBox);
@@ -233,6 +281,9 @@ function distanceSquared(x0, y0, x1, y1) {
 }
 function mix(a, b, t) {
     return a + (b - a) * t;
+}
+function clamp(value, minimum, maximum) {
+    return Math.min(maximum, Math.max(minimum, value));
 }
 function performanceNow() {
     return typeof performance === "undefined" ? Date.now() : performance.now();

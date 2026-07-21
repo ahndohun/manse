@@ -5,7 +5,6 @@ import { createMansePlayer, type MansePlayer, type PlayerSnapshot, type Provider
 import { GAME_CONFIG } from "./game-config";
 
 const PACK_URL = `/packs/${GAME_CONFIG.slug}/manse.pack.json`;
-const TONE_URL = `/packs/${GAME_CONFIG.slug}/assets/audio/success.wav`;
 const EMPTY: Pick<PlayerSnapshot, "phase" | "provider" | "tier" | "renderer" | "cameraActive" | "targetProgress" | "caption"> = {
   phase: "idle",
   provider: "simulated",
@@ -42,9 +41,6 @@ export function GameClient() {
       onEvent: (event) => {
         if (runId !== runIdRef.current) return;
         if (event.type === "error") setError(event.error.message);
-        if (event.type === "target-hit") {
-          void new Audio(TONE_URL).play().catch(() => undefined);
-        }
       },
     });
     playerRef.current = player;

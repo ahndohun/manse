@@ -104,6 +104,12 @@ The validator SHOULD report stable diagnostics with both the source file and a J
 
 A pack declares one entry scene and a finite graph of scenes connected by outcome transitions. Transition names, scene kinds, challenge kinds, and adaptive parameters are closed enums defined by the schema.
 
+The v0.1 version 1 contract admits only `touch_targets`. A validator must reject
+future mechanic names such as jump, squat, freeze, running, or balance until a
+released engine and schema version define and execute them together. This keeps
+a locally valid pack runnable instead of treating schema acceptance as a promise
+the player cannot fulfill.
+
 Every transition from a non-terminal scene MUST name an existing target scene. A terminal scene explicitly ends the episode and MUST NOT require an outbound transition. Reaching it causes the runtime to complete the session cleanly; it is not an error path or an implicit missing target.
 
 At least one terminal scene MUST be reachable from the entry scene. Creator tools SHOULD make all authored scenes reachable and SHOULD warn about outcome paths that cannot reach a terminal scene. The canonical validator remains the authority for which graph findings are errors in a particular schema release.

@@ -10,12 +10,15 @@ artifact or public URLs change.
 - Repository: https://github.com/ahndohun/manse
 - Packaged Showcase content hash:
   `sha256:dc23c089e34e7cf8eca93cd7887003befc4206eafad3531636cd6ca934d51862`
-- Showcase origin reserved at:
+- Public Showcase origin:
   `https://manse-showcase.ran584000.chatgpt.site`
-- Current access state: **owner-only; not yet a judge URL**
+- Current access state: **public; no Manse or ChatGPT account required**
 
-The reserved origin must not be described as public until a clean signed-out
-check succeeds.
+On 2026-07-21 KST, the owner approved public access, the saved release artifact
+was deployed again, and zero-cookie HTTPS requests returned 200 for the home,
+simulator playground, docs, submission guide, and provenance document. The
+bundled lite pose model also returned 200 and matched its recorded SHA-256 digest
+`59929e1d1ee95287735ddd833b19cf4ac46d29bc7afddbbf6753c459690d574a`.
 
 ## Verified repository gate
 
@@ -33,7 +36,7 @@ Evidence covered:
 - schema generation and one versioned contract across schema, CLI, runtime,
   starter, plugin, and catalog;
 - valid and intentionally invalid fixture behavior;
-- 26 unit and rendered-route tests across Showcase, CLI, runtime, and schema;
+- 30 unit and rendered-route tests across Showcase, CLI, runtime, and schema;
 - workspace typechecks and production builds;
 - exact catalog snapshot compatibility;
 - all seven Manse Creator skills and plugin manifest validation;
@@ -93,22 +96,21 @@ The pre-submission audit on 2026-07-21 KST found:
 This audit covers the repository and generated starter. The final owner game,
 public Site, video, and Devpost form still require their own release checks.
 
-## Private deployment smoke test
+## Public deployment smoke test
 
-The packaged static Showcase artifact was deployed owner-only and checked with a
-short-lived access bypass. The home route, simulator playground, asset
-provenance document, and exact bundled pose-model digest were reachable. The
-bypass was rotated after the test and was never written to the repository.
-
-This proves artifact packaging, not anonymous access. Public access remains a
-separate release gate.
+The packaged static Showcase artifact was first checked owner-only, then changed
+to public access with explicit owner approval and deployed as the same saved
+version. Anonymous requests reached the home route, simulator playground, docs,
+submission guide, asset provenance document, and exact bundled pose model. No
+access bypass, cookie, account, API key, or rebuild was used for the public
+check.
 
 ## Open release gates
 
 | Gate | Current state | Required evidence or owner action |
 | --- | --- | --- |
-| Public Showcase | Blocked on approval | Approve public access, deploy the current artifact, and verify signed out. |
-| D008 anonymous Sites decision | Waiting | Record the signed-out verdict and fallback decision in `DECISIONS.md`. |
+| Public Showcase | Verified | Public deployment and zero-cookie judge-path requests passed. |
+| D008 anonymous Sites decision | Recorded | Public Sites access is the v0.1 judge path; no fallback host is needed. |
 | GitHub catalog CI | Workflow prepared locally | Owner runs `gh auth refresh -h github.com -s workflow`; then commit and push `.github/workflows/ci.yml`. |
 | Real creator-owned game | Not published | Owner creates the game through Manse Creator, approves its Site publication, and submits its manifest. |
 | Full creator loop | Partially verified | Prove public manifest reachability, catalog contribution, CI, and Showcase rendering with the owner game. |

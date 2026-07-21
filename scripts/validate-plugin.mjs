@@ -102,6 +102,11 @@ try {
   const challenge = pack.scenes.find((scene) => scene.challenge !== null)?.challenge;
   assert(challenge?.type === "touch_targets", "Generated 0.1 games must use the implemented touch_targets primitive.");
   assert(challenge?.timeBudgetMs === 300_000, "Long briefs must respect the challenge time-budget schema ceiling.");
+  const firstRound = pack.scenes.find((scene) => scene.id === "touch-round");
+  const easierRound = pack.scenes.find((scene) => scene.id === "easier-round");
+  const struggle = firstRound?.transitions.find((transition) => transition.on === "struggle");
+  assert(struggle?.to === "easier-round" && struggle.adapt !== null, "Generated games must include an executable adaptive retry.");
+  assert(easierRound?.challenge?.type === "touch_targets", "The adaptive retry must remain inside the v0.1 runtime contract.");
   const wasmProvenance = siteProvenance.assets.filter((asset) => asset.path.startsWith("/vendor/mediapipe/wasm/"));
   assert(wasmProvenance.length === 4, "Generated games must record all four MediaPipe WASM files.");
   assert(wasmProvenance.every((asset) => /^[a-f0-9]{64}$/u.test(asset.sha256)), "WASM provenance must include SHA-256 integrity.");

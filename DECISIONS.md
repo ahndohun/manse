@@ -30,6 +30,15 @@ The initial proposal used D1, R2, and creator identity in the official platform.
 
 Every game is a self-contained Site owned and published by its creator. The official Manse Site is a static Showcase that links to those games and never hosts or executes their code. A game exposes a standard public manifest; listing is a small catalog contribution validated by CI and approved by a maintainer. This removes the central upload service, storage, authentication, and moderation backend from v0.1 while making Codex-to-Sites publishing the primary product workflow.
 
+### D008 — Public ChatGPT Sites is the v0.1 judge path
+
+With explicit owner approval, the packaged Showcase was changed from custom
+owner access to public access and deployed at
+`https://manse-showcase.ran584000.chatgpt.site`. Zero-cookie requests verified
+the home, simulator playground, documentation, submission guide, provenance,
+and same-origin pose model without a ChatGPT or Manse account. The official
+v0.1 experience therefore remains on ChatGPT Sites; no fallback host is needed.
+
 ### D009 — One public play-engine package for v0.1
 
 `@manse/runtime-web` is the sole v0.1 play engine. It owns deterministic scene execution, local camera and simulator pose providers, challenge evaluation, rendering, captions, and browser integration behind internal module boundaries. The partial `@manse/engine` and `@manse/pose` packages were removed before release so creators and judges see one coherent runtime contract rather than three independently versioned packages. Their useful P0 work was retained or reimplemented inside `runtime-web`; the baseline commit preserves the discarded drafts for reference.
@@ -37,3 +46,12 @@ Every game is a self-contained Site owned and published by its creator. The offi
 ### D010 — One catalog snapshot contract
 
 The public game manifest is the only source of Showcase metadata. It declares creator and energy alongside the existing discovery fields. The CLI resolves the small source catalog into the versioned `{ manifestUrl, manifest }` snapshot defined by `@manse/schema`, and the Showcase renders that exact checked-in snapshot without fetching creator Sites at runtime. A separate hand-maintained flattened Showcase format was removed to prevent schema and metadata drift.
+
+### D011 — A valid v0.1 pack is executable by runtime 0.1
+
+The version 1 challenge contract admits only `touch_targets`, the mechanic the
+released runtime actually executes. Names for jump, squat, freeze, running, and
+balance are not reserved inside the public v1 schema: adding one requires a
+reviewed engine implementation, deterministic tests, and a compatible schema
+release. This prevents the validator and creator plugin from accepting a pack
+that the player must reject at runtime.

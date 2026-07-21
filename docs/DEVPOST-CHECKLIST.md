@@ -24,7 +24,7 @@ Verified against the official Devpost overview, rules, resources, and FAQ on 202
 
 - [x] Installation instructions
 - [x] Supported platforms
-- [ ] Test path that does not require judges to rebuild: public Showcase Site, hosted engine/starter playground, and an installable plugin marketplace entry
+- [x] Test path that does not require judges to rebuild: public Showcase Site, hosted engine/starter playground, and an installable plugin marketplace entry
 - [ ] Working demo must match the video and written claims
 
 ## Repository and legal checks
@@ -38,8 +38,8 @@ Verified against the official Devpost overview, rules, resources, and FAQ on 202
 
 ## Judge experience
 
-- [ ] Public catalog opens without sign-in
-- [ ] Engine/starter playground starts without a build step or API key
+- [x] Public catalog opens without sign-in
+- [x] Engine/starter playground starts without a build step or API key
 - [x] Simulator path works when camera access is unavailable
 - [x] Plugin install can be completed from documented steps
 - [ ] Creator can produce, validate, and publish a new game Site, then prepare a Showcase catalog entry

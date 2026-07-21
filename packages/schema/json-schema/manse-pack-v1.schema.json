@@ -314,259 +314,68 @@
                   "challenge": {
                     "anyOf": [
                       {
-                        "anyOf": [
-                          {
-                            "type": "object",
-                            "properties": {
-                              "type": {
-                                "type": "string",
-                                "const": "touch_targets"
-                              },
-                              "count": {
-                                "type": "integer",
-                                "minimum": 1,
-                                "maximum": 12
-                              },
-                              "zone": {
-                                "type": "string",
-                                "enum": [
-                                  "upper",
-                                  "lower",
-                                  "full",
-                                  "reachable"
-                                ]
-                              },
-                              "targetScale": {
-                                "type": "number",
-                                "minimum": 0.5,
-                                "maximum": 2
-                              },
-                              "dwellMs": {
-                                "type": "integer",
-                                "minimum": 0,
-                                "maximum": 1500
-                              },
-                              "limb": {
-                                "type": "string",
-                                "enum": [
-                                  "hands",
-                                  "feet",
-                                  "any"
-                                ]
-                              },
-                              "timeBudgetMs": {
-                                "type": "integer",
-                                "exclusiveMinimum": 0,
-                                "maximum": 300000
-                              },
-                              "successAudioId": {
-                                "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
-                              },
-                              "encourageAudioId": {
-                                "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
-                              }
-                            },
-                            "required": [
-                              "type",
-                              "count",
-                              "zone",
-                              "targetScale",
-                              "dwellMs",
-                              "limb",
-                              "timeBudgetMs",
-                              "successAudioId",
-                              "encourageAudioId"
-                            ],
-                            "additionalProperties": false
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "const": "touch_targets"
                           },
-                          {
-                            "type": "object",
-                            "properties": {
-                              "type": {
-                                "type": "string",
-                                "const": "jump_count"
-                              },
-                              "count": {
-                                "type": "integer",
-                                "minimum": 1,
-                                "maximum": 20
-                              },
-                              "countAloud": {
-                                "type": "boolean"
-                              },
-                              "timeBudgetMs": {
-                                "$ref": "#/definitions/ManseEpisodePackV1/properties/scenes/items/anyOf/0/properties/challenge/anyOf/0/anyOf/0/properties/timeBudgetMs"
-                              },
-                              "successAudioId": {
-                                "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
-                              },
-                              "encourageAudioId": {
-                                "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
-                              }
-                            },
-                            "required": [
-                              "type",
-                              "count",
-                              "countAloud",
-                              "timeBudgetMs",
-                              "successAudioId",
-                              "encourageAudioId"
-                            ],
-                            "additionalProperties": false
+                          "count": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 12
                           },
-                          {
-                            "type": "object",
-                            "properties": {
-                              "type": {
-                                "type": "string",
-                                "const": "squat"
-                              },
-                              "reps": {
-                                "type": "integer",
-                                "minimum": 1,
-                                "maximum": 15
-                              },
-                              "timeBudgetMs": {
-                                "$ref": "#/definitions/ManseEpisodePackV1/properties/scenes/items/anyOf/0/properties/challenge/anyOf/0/anyOf/0/properties/timeBudgetMs"
-                              },
-                              "successAudioId": {
-                                "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
-                              },
-                              "encourageAudioId": {
-                                "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
-                              }
-                            },
-                            "required": [
-                              "type",
-                              "reps",
-                              "timeBudgetMs",
-                              "successAudioId",
-                              "encourageAudioId"
-                            ],
-                            "additionalProperties": false
+                          "zone": {
+                            "type": "string",
+                            "enum": [
+                              "upper",
+                              "lower",
+                              "full",
+                              "reachable"
+                            ]
                           },
-                          {
-                            "type": "object",
-                            "properties": {
-                              "type": {
-                                "type": "string",
-                                "const": "freeze"
-                              },
-                              "holdMs": {
-                                "type": "integer",
-                                "minimum": 500,
-                                "maximum": 8000
-                              },
-                              "cue": {
-                                "type": "string",
-                                "enum": [
-                                  "music-stop",
-                                  "narration",
-                                  "visual"
-                                ]
-                              },
-                              "timeBudgetMs": {
-                                "$ref": "#/definitions/ManseEpisodePackV1/properties/scenes/items/anyOf/0/properties/challenge/anyOf/0/anyOf/0/properties/timeBudgetMs"
-                              },
-                              "successAudioId": {
-                                "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
-                              },
-                              "encourageAudioId": {
-                                "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
-                              }
-                            },
-                            "required": [
-                              "type",
-                              "holdMs",
-                              "cue",
-                              "timeBudgetMs",
-                              "successAudioId",
-                              "encourageAudioId"
-                            ],
-                            "additionalProperties": false
+                          "targetScale": {
+                            "type": "number",
+                            "minimum": 0.5,
+                            "maximum": 2
                           },
-                          {
-                            "type": "object",
-                            "properties": {
-                              "type": {
-                                "type": "string",
-                                "const": "run_in_place"
-                              },
-                              "durationMs": {
-                                "type": "integer",
-                                "minimum": 2000,
-                                "maximum": 30000
-                              },
-                              "intensity": {
-                                "type": "string",
-                                "enum": [
-                                  "stroll",
-                                  "jog",
-                                  "sprint"
-                                ]
-                              },
-                              "timeBudgetMs": {
-                                "$ref": "#/definitions/ManseEpisodePackV1/properties/scenes/items/anyOf/0/properties/challenge/anyOf/0/anyOf/0/properties/timeBudgetMs"
-                              },
-                              "successAudioId": {
-                                "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
-                              },
-                              "encourageAudioId": {
-                                "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
-                              }
-                            },
-                            "required": [
-                              "type",
-                              "durationMs",
-                              "intensity",
-                              "timeBudgetMs",
-                              "successAudioId",
-                              "encourageAudioId"
-                            ],
-                            "additionalProperties": false
+                          "dwellMs": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 1500
                           },
-                          {
-                            "type": "object",
-                            "properties": {
-                              "type": {
-                                "type": "string",
-                                "const": "balance"
-                              },
-                              "pose": {
-                                "type": "string",
-                                "enum": [
-                                  "one-leg",
-                                  "airplane",
-                                  "tiptoe",
-                                  "statue"
-                                ]
-                              },
-                              "holdMs": {
-                                "type": "integer",
-                                "minimum": 500,
-                                "maximum": 6000
-                              },
-                              "timeBudgetMs": {
-                                "$ref": "#/definitions/ManseEpisodePackV1/properties/scenes/items/anyOf/0/properties/challenge/anyOf/0/anyOf/0/properties/timeBudgetMs"
-                              },
-                              "successAudioId": {
-                                "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
-                              },
-                              "encourageAudioId": {
-                                "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
-                              }
-                            },
-                            "required": [
-                              "type",
-                              "pose",
-                              "holdMs",
-                              "timeBudgetMs",
-                              "successAudioId",
-                              "encourageAudioId"
-                            ],
-                            "additionalProperties": false
+                          "limb": {
+                            "type": "string",
+                            "enum": [
+                              "hands",
+                              "feet",
+                              "any"
+                            ]
+                          },
+                          "timeBudgetMs": {
+                            "type": "integer",
+                            "exclusiveMinimum": 0,
+                            "maximum": 300000
+                          },
+                          "successAudioId": {
+                            "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
+                          },
+                          "encourageAudioId": {
+                            "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
                           }
-                        ]
+                        },
+                        "required": [
+                          "type",
+                          "count",
+                          "zone",
+                          "targetScale",
+                          "dwellMs",
+                          "limb",
+                          "timeBudgetMs",
+                          "successAudioId",
+                          "encourageAudioId"
+                        ],
+                        "additionalProperties": false
                       },
                       {
                         "type": "null"

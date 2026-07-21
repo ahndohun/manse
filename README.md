@@ -21,12 +21,13 @@ need a Manse account, a controller, a subscription, or a runtime AI service.
 
 ## Release links
 
-Remaining placeholders will be replaced after the corresponding public artifacts exist.
+The platform links below are live. Creator-game, video, and feedback placeholders
+remain unresolved until those separate artifacts pass their release gates.
 
 | Artifact | Release value |
 | --- | --- |
-| Public Showcase | `<SHOWCASE_URL>` |
-| Engine/starter playground | `<PLAYGROUND_URL>` |
+| Public Showcase | [manse-showcase.ran584000.chatgpt.site](https://manse-showcase.ran584000.chatgpt.site) |
+| Engine/starter playground | [simulator judge path](https://manse-showcase.ran584000.chatgpt.site/playground?provider=simulated) |
 | Source repository | [github.com/ahndohun/manse](https://github.com/ahndohun/manse) |
 | Manse Creator source | [repository marketplace plugin](https://github.com/ahndohun/manse/tree/main/plugins/manse-creator) |
 | Devpost demo video | `<DEMO_VIDEO_URL>` |

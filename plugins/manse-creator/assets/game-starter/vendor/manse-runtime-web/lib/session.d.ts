@@ -9,12 +9,23 @@ export interface RuntimeTuning {
     readonly maximumPoseDeltaMs: number;
 }
 export declare const DEFAULT_RUNTIME_TUNING: RuntimeTuning;
-export interface TouchRuntimeEvent {
-    readonly type: "target-hit" | "scene-changed" | "complete";
+export type TouchRuntimeEvent = {
+    readonly type: "target-hit";
     readonly sceneId: string;
-    readonly targetId?: string;
-    readonly feedbackLatencyMs?: number;
-}
+    readonly targetId: string;
+    readonly feedbackLatencyMs: number;
+} | {
+    readonly type: "audio-cue";
+    readonly sceneId: string;
+    readonly assetId: string;
+    readonly purpose: "success" | "encourage";
+} | {
+    readonly type: "scene-changed";
+    readonly sceneId: string;
+} | {
+    readonly type: "complete";
+    readonly sceneId: string;
+};
 export interface SessionSnapshot {
     readonly status: "idle" | "playing" | "celebrating" | "complete";
     readonly scene: Scene;
@@ -39,6 +50,8 @@ export declare class TouchEpisodeSession {
     private lastPoseTimestampMs;
     private targets;
     private reachBox;
+    private runtimeChallenge;
+    private pendingAdaptation;
     constructor(pack: EpisodePack, options: {
         readonly locale: string;
         readonly tier: DeviceTier;

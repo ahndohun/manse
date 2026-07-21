@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { access, readFile } from "node:fs/promises";
+import { access, readFile, readdir } from "node:fs/promises";
 import test from "node:test";
 
 async function render(pathname = "/") {
@@ -27,6 +27,16 @@ test("build bundles the public contract and pose runtime", async () => {
   assert.equal(typeof manifest.slug, "string");
   assert.equal(manifest.slug.length > 0, true);
   await access(`public/packs/${manifest.slug}/manse.pack.json`);
+  await access("dist/client/sw.js");
   await access("dist/client/models/pose_landmarker_lite.task");
   await access("dist/client/vendor/mediapipe/wasm/vision_wasm_internal.wasm");
+  const clientEntries = await readdir("dist/client", { recursive: true });
+  const scripts = await Promise.all(
+    clientEntries.filter((entry) => entry.endsWith(".js")).map((entry) => readFile(`dist/client/${entry}`, "utf8")),
+  );
+  assert.equal(
+    scripts.some((script) => script.includes("serviceWorker") && script.includes("/sw.js")),
+    true,
+    "the production client must register the bundled service worker",
+  );
 });

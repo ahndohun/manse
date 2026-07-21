@@ -30,114 +30,7 @@ export declare const TouchTargetsSchema: z.ZodObject<{
     successAudioId: string;
     encourageAudioId: string;
 }>;
-export declare const JumpCountSchema: z.ZodObject<{
-    timeBudgetMs: z.ZodNumber;
-    successAudioId: z.ZodString;
-    encourageAudioId: z.ZodString;
-    type: z.ZodLiteral<"jump_count">;
-    count: z.ZodNumber;
-    countAloud: z.ZodBoolean;
-}, "strict", z.ZodTypeAny, {
-    type: "jump_count";
-    count: number;
-    timeBudgetMs: number;
-    successAudioId: string;
-    encourageAudioId: string;
-    countAloud: boolean;
-}, {
-    type: "jump_count";
-    count: number;
-    timeBudgetMs: number;
-    successAudioId: string;
-    encourageAudioId: string;
-    countAloud: boolean;
-}>;
-export declare const SquatSchema: z.ZodObject<{
-    timeBudgetMs: z.ZodNumber;
-    successAudioId: z.ZodString;
-    encourageAudioId: z.ZodString;
-    type: z.ZodLiteral<"squat">;
-    reps: z.ZodNumber;
-}, "strict", z.ZodTypeAny, {
-    type: "squat";
-    timeBudgetMs: number;
-    successAudioId: string;
-    encourageAudioId: string;
-    reps: number;
-}, {
-    type: "squat";
-    timeBudgetMs: number;
-    successAudioId: string;
-    encourageAudioId: string;
-    reps: number;
-}>;
-export declare const FreezeSchema: z.ZodObject<{
-    timeBudgetMs: z.ZodNumber;
-    successAudioId: z.ZodString;
-    encourageAudioId: z.ZodString;
-    type: z.ZodLiteral<"freeze">;
-    holdMs: z.ZodNumber;
-    cue: z.ZodEnum<["music-stop", "narration", "visual"]>;
-}, "strict", z.ZodTypeAny, {
-    type: "freeze";
-    timeBudgetMs: number;
-    successAudioId: string;
-    encourageAudioId: string;
-    holdMs: number;
-    cue: "music-stop" | "narration" | "visual";
-}, {
-    type: "freeze";
-    timeBudgetMs: number;
-    successAudioId: string;
-    encourageAudioId: string;
-    holdMs: number;
-    cue: "music-stop" | "narration" | "visual";
-}>;
-export declare const RunInPlaceSchema: z.ZodObject<{
-    timeBudgetMs: z.ZodNumber;
-    successAudioId: z.ZodString;
-    encourageAudioId: z.ZodString;
-    type: z.ZodLiteral<"run_in_place">;
-    durationMs: z.ZodNumber;
-    intensity: z.ZodEnum<["stroll", "jog", "sprint"]>;
-}, "strict", z.ZodTypeAny, {
-    type: "run_in_place";
-    timeBudgetMs: number;
-    successAudioId: string;
-    encourageAudioId: string;
-    durationMs: number;
-    intensity: "stroll" | "jog" | "sprint";
-}, {
-    type: "run_in_place";
-    timeBudgetMs: number;
-    successAudioId: string;
-    encourageAudioId: string;
-    durationMs: number;
-    intensity: "stroll" | "jog" | "sprint";
-}>;
-export declare const BalanceSchema: z.ZodObject<{
-    timeBudgetMs: z.ZodNumber;
-    successAudioId: z.ZodString;
-    encourageAudioId: z.ZodString;
-    type: z.ZodLiteral<"balance">;
-    pose: z.ZodEnum<["one-leg", "airplane", "tiptoe", "statue"]>;
-    holdMs: z.ZodNumber;
-}, "strict", z.ZodTypeAny, {
-    type: "balance";
-    timeBudgetMs: number;
-    successAudioId: string;
-    encourageAudioId: string;
-    holdMs: number;
-    pose: "one-leg" | "airplane" | "tiptoe" | "statue";
-}, {
-    type: "balance";
-    timeBudgetMs: number;
-    successAudioId: string;
-    encourageAudioId: string;
-    holdMs: number;
-    pose: "one-leg" | "airplane" | "tiptoe" | "statue";
-}>;
-export declare const ChallengeSchema: z.ZodDiscriminatedUnion<"type", [z.ZodObject<{
+export declare const ChallengeSchema: z.ZodObject<{
     timeBudgetMs: z.ZodNumber;
     successAudioId: z.ZodString;
     encourageAudioId: z.ZodString;
@@ -167,109 +60,7 @@ export declare const ChallengeSchema: z.ZodDiscriminatedUnion<"type", [z.ZodObje
     timeBudgetMs: number;
     successAudioId: string;
     encourageAudioId: string;
-}>, z.ZodObject<{
-    timeBudgetMs: z.ZodNumber;
-    successAudioId: z.ZodString;
-    encourageAudioId: z.ZodString;
-    type: z.ZodLiteral<"jump_count">;
-    count: z.ZodNumber;
-    countAloud: z.ZodBoolean;
-}, "strict", z.ZodTypeAny, {
-    type: "jump_count";
-    count: number;
-    timeBudgetMs: number;
-    successAudioId: string;
-    encourageAudioId: string;
-    countAloud: boolean;
-}, {
-    type: "jump_count";
-    count: number;
-    timeBudgetMs: number;
-    successAudioId: string;
-    encourageAudioId: string;
-    countAloud: boolean;
-}>, z.ZodObject<{
-    timeBudgetMs: z.ZodNumber;
-    successAudioId: z.ZodString;
-    encourageAudioId: z.ZodString;
-    type: z.ZodLiteral<"squat">;
-    reps: z.ZodNumber;
-}, "strict", z.ZodTypeAny, {
-    type: "squat";
-    timeBudgetMs: number;
-    successAudioId: string;
-    encourageAudioId: string;
-    reps: number;
-}, {
-    type: "squat";
-    timeBudgetMs: number;
-    successAudioId: string;
-    encourageAudioId: string;
-    reps: number;
-}>, z.ZodObject<{
-    timeBudgetMs: z.ZodNumber;
-    successAudioId: z.ZodString;
-    encourageAudioId: z.ZodString;
-    type: z.ZodLiteral<"freeze">;
-    holdMs: z.ZodNumber;
-    cue: z.ZodEnum<["music-stop", "narration", "visual"]>;
-}, "strict", z.ZodTypeAny, {
-    type: "freeze";
-    timeBudgetMs: number;
-    successAudioId: string;
-    encourageAudioId: string;
-    holdMs: number;
-    cue: "music-stop" | "narration" | "visual";
-}, {
-    type: "freeze";
-    timeBudgetMs: number;
-    successAudioId: string;
-    encourageAudioId: string;
-    holdMs: number;
-    cue: "music-stop" | "narration" | "visual";
-}>, z.ZodObject<{
-    timeBudgetMs: z.ZodNumber;
-    successAudioId: z.ZodString;
-    encourageAudioId: z.ZodString;
-    type: z.ZodLiteral<"run_in_place">;
-    durationMs: z.ZodNumber;
-    intensity: z.ZodEnum<["stroll", "jog", "sprint"]>;
-}, "strict", z.ZodTypeAny, {
-    type: "run_in_place";
-    timeBudgetMs: number;
-    successAudioId: string;
-    encourageAudioId: string;
-    durationMs: number;
-    intensity: "stroll" | "jog" | "sprint";
-}, {
-    type: "run_in_place";
-    timeBudgetMs: number;
-    successAudioId: string;
-    encourageAudioId: string;
-    durationMs: number;
-    intensity: "stroll" | "jog" | "sprint";
-}>, z.ZodObject<{
-    timeBudgetMs: z.ZodNumber;
-    successAudioId: z.ZodString;
-    encourageAudioId: z.ZodString;
-    type: z.ZodLiteral<"balance">;
-    pose: z.ZodEnum<["one-leg", "airplane", "tiptoe", "statue"]>;
-    holdMs: z.ZodNumber;
-}, "strict", z.ZodTypeAny, {
-    type: "balance";
-    timeBudgetMs: number;
-    successAudioId: string;
-    encourageAudioId: string;
-    holdMs: number;
-    pose: "one-leg" | "airplane" | "tiptoe" | "statue";
-}, {
-    type: "balance";
-    timeBudgetMs: number;
-    successAudioId: string;
-    encourageAudioId: string;
-    holdMs: number;
-    pose: "one-leg" | "airplane" | "tiptoe" | "statue";
-}>]>;
+}>;
 export type Challenge = z.infer<typeof ChallengeSchema>;
 export declare const LearningMomentSchema: z.ZodObject<{
     kind: z.ZodEnum<["counting", "colors", "letters", "body-parts", "directions", "animals", "none"]>;
@@ -469,7 +260,7 @@ export declare const NonTerminalSceneSchema: z.ZodObject<{
         characterId: string;
         animation: string;
     }>>;
-    challenge: z.ZodNullable<z.ZodDiscriminatedUnion<"type", [z.ZodObject<{
+    challenge: z.ZodNullable<z.ZodObject<{
         timeBudgetMs: z.ZodNumber;
         successAudioId: z.ZodString;
         encourageAudioId: z.ZodString;
@@ -499,109 +290,7 @@ export declare const NonTerminalSceneSchema: z.ZodObject<{
         timeBudgetMs: number;
         successAudioId: string;
         encourageAudioId: string;
-    }>, z.ZodObject<{
-        timeBudgetMs: z.ZodNumber;
-        successAudioId: z.ZodString;
-        encourageAudioId: z.ZodString;
-        type: z.ZodLiteral<"jump_count">;
-        count: z.ZodNumber;
-        countAloud: z.ZodBoolean;
-    }, "strict", z.ZodTypeAny, {
-        type: "jump_count";
-        count: number;
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        countAloud: boolean;
-    }, {
-        type: "jump_count";
-        count: number;
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        countAloud: boolean;
-    }>, z.ZodObject<{
-        timeBudgetMs: z.ZodNumber;
-        successAudioId: z.ZodString;
-        encourageAudioId: z.ZodString;
-        type: z.ZodLiteral<"squat">;
-        reps: z.ZodNumber;
-    }, "strict", z.ZodTypeAny, {
-        type: "squat";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        reps: number;
-    }, {
-        type: "squat";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        reps: number;
-    }>, z.ZodObject<{
-        timeBudgetMs: z.ZodNumber;
-        successAudioId: z.ZodString;
-        encourageAudioId: z.ZodString;
-        type: z.ZodLiteral<"freeze">;
-        holdMs: z.ZodNumber;
-        cue: z.ZodEnum<["music-stop", "narration", "visual"]>;
-    }, "strict", z.ZodTypeAny, {
-        type: "freeze";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        holdMs: number;
-        cue: "music-stop" | "narration" | "visual";
-    }, {
-        type: "freeze";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        holdMs: number;
-        cue: "music-stop" | "narration" | "visual";
-    }>, z.ZodObject<{
-        timeBudgetMs: z.ZodNumber;
-        successAudioId: z.ZodString;
-        encourageAudioId: z.ZodString;
-        type: z.ZodLiteral<"run_in_place">;
-        durationMs: z.ZodNumber;
-        intensity: z.ZodEnum<["stroll", "jog", "sprint"]>;
-    }, "strict", z.ZodTypeAny, {
-        type: "run_in_place";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        durationMs: number;
-        intensity: "stroll" | "jog" | "sprint";
-    }, {
-        type: "run_in_place";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        durationMs: number;
-        intensity: "stroll" | "jog" | "sprint";
-    }>, z.ZodObject<{
-        timeBudgetMs: z.ZodNumber;
-        successAudioId: z.ZodString;
-        encourageAudioId: z.ZodString;
-        type: z.ZodLiteral<"balance">;
-        pose: z.ZodEnum<["one-leg", "airplane", "tiptoe", "statue"]>;
-        holdMs: z.ZodNumber;
-    }, "strict", z.ZodTypeAny, {
-        type: "balance";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        holdMs: number;
-        pose: "one-leg" | "airplane" | "tiptoe" | "statue";
-    }, {
-        type: "balance";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        holdMs: number;
-        pose: "one-leg" | "airplane" | "tiptoe" | "statue";
-    }>]>>;
+    }>>;
     learning: z.ZodNullable<z.ZodObject<{
         kind: z.ZodEnum<["counting", "colors", "letters", "body-parts", "directions", "animals", "none"]>;
         payload: z.ZodArray<z.ZodString, "many">;
@@ -618,14 +307,6 @@ export declare const NonTerminalSceneSchema: z.ZodObject<{
     kind: "story" | "calibration-check" | "challenge" | "rest" | "celebration";
     id: string;
     energy: "calm" | "medium" | "high";
-    narration: {
-        items: {
-            locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
-            text: string;
-            audioAssetId: string | null;
-        }[];
-        captionDefaultOn: true;
-    };
     challenge: {
         type: "touch_targets";
         count: number;
@@ -636,40 +317,6 @@ export declare const NonTerminalSceneSchema: z.ZodObject<{
         timeBudgetMs: number;
         successAudioId: string;
         encourageAudioId: string;
-    } | {
-        type: "jump_count";
-        count: number;
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        countAloud: boolean;
-    } | {
-        type: "squat";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        reps: number;
-    } | {
-        type: "freeze";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        holdMs: number;
-        cue: "music-stop" | "narration" | "visual";
-    } | {
-        type: "run_in_place";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        durationMs: number;
-        intensity: "stroll" | "jog" | "sprint";
-    } | {
-        type: "balance";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        holdMs: number;
-        pose: "one-leg" | "airplane" | "tiptoe" | "statue";
     } | null;
     terminal: false;
     transitions: {
@@ -682,6 +329,14 @@ export declare const NonTerminalSceneSchema: z.ZodObject<{
             timeBudgetMul: number;
         } | null;
     }[];
+    narration: {
+        items: {
+            locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
+            text: string;
+            audioAssetId: string | null;
+        }[];
+        captionDefaultOn: true;
+    };
     demo: {
         characterId: string;
         animation: string;
@@ -695,14 +350,6 @@ export declare const NonTerminalSceneSchema: z.ZodObject<{
     kind: "story" | "calibration-check" | "challenge" | "rest" | "celebration";
     id: string;
     energy: "calm" | "medium" | "high";
-    narration: {
-        items: {
-            locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
-            text: string;
-            audioAssetId: string | null;
-        }[];
-        captionDefaultOn: true;
-    };
     challenge: {
         type: "touch_targets";
         count: number;
@@ -713,40 +360,6 @@ export declare const NonTerminalSceneSchema: z.ZodObject<{
         timeBudgetMs: number;
         successAudioId: string;
         encourageAudioId: string;
-    } | {
-        type: "jump_count";
-        count: number;
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        countAloud: boolean;
-    } | {
-        type: "squat";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        reps: number;
-    } | {
-        type: "freeze";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        holdMs: number;
-        cue: "music-stop" | "narration" | "visual";
-    } | {
-        type: "run_in_place";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        durationMs: number;
-        intensity: "stroll" | "jog" | "sprint";
-    } | {
-        type: "balance";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        holdMs: number;
-        pose: "one-leg" | "airplane" | "tiptoe" | "statue";
     } | null;
     terminal: false;
     transitions: {
@@ -759,6 +372,14 @@ export declare const NonTerminalSceneSchema: z.ZodObject<{
             timeBudgetMul: number;
         } | null;
     }[];
+    narration: {
+        items: {
+            locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
+            text: string;
+            audioAssetId: string | null;
+        }[];
+        captionDefaultOn: true;
+    };
     demo: {
         characterId: string;
         animation: string;
@@ -852,7 +473,7 @@ export declare const TerminalSceneSchema: z.ZodObject<{
         characterId: string;
         animation: string;
     }>>;
-    challenge: z.ZodNullable<z.ZodDiscriminatedUnion<"type", [z.ZodObject<{
+    challenge: z.ZodNullable<z.ZodObject<{
         timeBudgetMs: z.ZodNumber;
         successAudioId: z.ZodString;
         encourageAudioId: z.ZodString;
@@ -882,109 +503,7 @@ export declare const TerminalSceneSchema: z.ZodObject<{
         timeBudgetMs: number;
         successAudioId: string;
         encourageAudioId: string;
-    }>, z.ZodObject<{
-        timeBudgetMs: z.ZodNumber;
-        successAudioId: z.ZodString;
-        encourageAudioId: z.ZodString;
-        type: z.ZodLiteral<"jump_count">;
-        count: z.ZodNumber;
-        countAloud: z.ZodBoolean;
-    }, "strict", z.ZodTypeAny, {
-        type: "jump_count";
-        count: number;
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        countAloud: boolean;
-    }, {
-        type: "jump_count";
-        count: number;
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        countAloud: boolean;
-    }>, z.ZodObject<{
-        timeBudgetMs: z.ZodNumber;
-        successAudioId: z.ZodString;
-        encourageAudioId: z.ZodString;
-        type: z.ZodLiteral<"squat">;
-        reps: z.ZodNumber;
-    }, "strict", z.ZodTypeAny, {
-        type: "squat";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        reps: number;
-    }, {
-        type: "squat";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        reps: number;
-    }>, z.ZodObject<{
-        timeBudgetMs: z.ZodNumber;
-        successAudioId: z.ZodString;
-        encourageAudioId: z.ZodString;
-        type: z.ZodLiteral<"freeze">;
-        holdMs: z.ZodNumber;
-        cue: z.ZodEnum<["music-stop", "narration", "visual"]>;
-    }, "strict", z.ZodTypeAny, {
-        type: "freeze";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        holdMs: number;
-        cue: "music-stop" | "narration" | "visual";
-    }, {
-        type: "freeze";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        holdMs: number;
-        cue: "music-stop" | "narration" | "visual";
-    }>, z.ZodObject<{
-        timeBudgetMs: z.ZodNumber;
-        successAudioId: z.ZodString;
-        encourageAudioId: z.ZodString;
-        type: z.ZodLiteral<"run_in_place">;
-        durationMs: z.ZodNumber;
-        intensity: z.ZodEnum<["stroll", "jog", "sprint"]>;
-    }, "strict", z.ZodTypeAny, {
-        type: "run_in_place";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        durationMs: number;
-        intensity: "stroll" | "jog" | "sprint";
-    }, {
-        type: "run_in_place";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        durationMs: number;
-        intensity: "stroll" | "jog" | "sprint";
-    }>, z.ZodObject<{
-        timeBudgetMs: z.ZodNumber;
-        successAudioId: z.ZodString;
-        encourageAudioId: z.ZodString;
-        type: z.ZodLiteral<"balance">;
-        pose: z.ZodEnum<["one-leg", "airplane", "tiptoe", "statue"]>;
-        holdMs: z.ZodNumber;
-    }, "strict", z.ZodTypeAny, {
-        type: "balance";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        holdMs: number;
-        pose: "one-leg" | "airplane" | "tiptoe" | "statue";
-    }, {
-        type: "balance";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        holdMs: number;
-        pose: "one-leg" | "airplane" | "tiptoe" | "statue";
-    }>]>>;
+    }>>;
     learning: z.ZodNullable<z.ZodObject<{
         kind: z.ZodEnum<["counting", "colors", "letters", "body-parts", "directions", "animals", "none"]>;
         payload: z.ZodArray<z.ZodString, "many">;
@@ -1001,14 +520,6 @@ export declare const TerminalSceneSchema: z.ZodObject<{
     kind: "story" | "calibration-check" | "challenge" | "rest" | "celebration";
     id: string;
     energy: "calm" | "medium" | "high";
-    narration: {
-        items: {
-            locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
-            text: string;
-            audioAssetId: string | null;
-        }[];
-        captionDefaultOn: true;
-    };
     challenge: {
         type: "touch_targets";
         count: number;
@@ -1019,40 +530,6 @@ export declare const TerminalSceneSchema: z.ZodObject<{
         timeBudgetMs: number;
         successAudioId: string;
         encourageAudioId: string;
-    } | {
-        type: "jump_count";
-        count: number;
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        countAloud: boolean;
-    } | {
-        type: "squat";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        reps: number;
-    } | {
-        type: "freeze";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        holdMs: number;
-        cue: "music-stop" | "narration" | "visual";
-    } | {
-        type: "run_in_place";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        durationMs: number;
-        intensity: "stroll" | "jog" | "sprint";
-    } | {
-        type: "balance";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        holdMs: number;
-        pose: "one-leg" | "airplane" | "tiptoe" | "statue";
     } | null;
     terminal: true;
     transitions: {
@@ -1065,6 +542,14 @@ export declare const TerminalSceneSchema: z.ZodObject<{
             timeBudgetMul: number;
         } | null;
     }[];
+    narration: {
+        items: {
+            locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
+            text: string;
+            audioAssetId: string | null;
+        }[];
+        captionDefaultOn: true;
+    };
     demo: {
         characterId: string;
         animation: string;
@@ -1078,14 +563,6 @@ export declare const TerminalSceneSchema: z.ZodObject<{
     kind: "story" | "calibration-check" | "challenge" | "rest" | "celebration";
     id: string;
     energy: "calm" | "medium" | "high";
-    narration: {
-        items: {
-            locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
-            text: string;
-            audioAssetId: string | null;
-        }[];
-        captionDefaultOn: true;
-    };
     challenge: {
         type: "touch_targets";
         count: number;
@@ -1096,40 +573,6 @@ export declare const TerminalSceneSchema: z.ZodObject<{
         timeBudgetMs: number;
         successAudioId: string;
         encourageAudioId: string;
-    } | {
-        type: "jump_count";
-        count: number;
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        countAloud: boolean;
-    } | {
-        type: "squat";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        reps: number;
-    } | {
-        type: "freeze";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        holdMs: number;
-        cue: "music-stop" | "narration" | "visual";
-    } | {
-        type: "run_in_place";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        durationMs: number;
-        intensity: "stroll" | "jog" | "sprint";
-    } | {
-        type: "balance";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        holdMs: number;
-        pose: "one-leg" | "airplane" | "tiptoe" | "statue";
     } | null;
     terminal: true;
     transitions: {
@@ -1142,6 +585,14 @@ export declare const TerminalSceneSchema: z.ZodObject<{
             timeBudgetMul: number;
         } | null;
     }[];
+    narration: {
+        items: {
+            locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
+            text: string;
+            audioAssetId: string | null;
+        }[];
+        captionDefaultOn: true;
+    };
     demo: {
         characterId: string;
         animation: string;
@@ -1235,7 +686,7 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
         characterId: string;
         animation: string;
     }>>;
-    challenge: z.ZodNullable<z.ZodDiscriminatedUnion<"type", [z.ZodObject<{
+    challenge: z.ZodNullable<z.ZodObject<{
         timeBudgetMs: z.ZodNumber;
         successAudioId: z.ZodString;
         encourageAudioId: z.ZodString;
@@ -1265,109 +716,7 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
         timeBudgetMs: number;
         successAudioId: string;
         encourageAudioId: string;
-    }>, z.ZodObject<{
-        timeBudgetMs: z.ZodNumber;
-        successAudioId: z.ZodString;
-        encourageAudioId: z.ZodString;
-        type: z.ZodLiteral<"jump_count">;
-        count: z.ZodNumber;
-        countAloud: z.ZodBoolean;
-    }, "strict", z.ZodTypeAny, {
-        type: "jump_count";
-        count: number;
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        countAloud: boolean;
-    }, {
-        type: "jump_count";
-        count: number;
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        countAloud: boolean;
-    }>, z.ZodObject<{
-        timeBudgetMs: z.ZodNumber;
-        successAudioId: z.ZodString;
-        encourageAudioId: z.ZodString;
-        type: z.ZodLiteral<"squat">;
-        reps: z.ZodNumber;
-    }, "strict", z.ZodTypeAny, {
-        type: "squat";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        reps: number;
-    }, {
-        type: "squat";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        reps: number;
-    }>, z.ZodObject<{
-        timeBudgetMs: z.ZodNumber;
-        successAudioId: z.ZodString;
-        encourageAudioId: z.ZodString;
-        type: z.ZodLiteral<"freeze">;
-        holdMs: z.ZodNumber;
-        cue: z.ZodEnum<["music-stop", "narration", "visual"]>;
-    }, "strict", z.ZodTypeAny, {
-        type: "freeze";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        holdMs: number;
-        cue: "music-stop" | "narration" | "visual";
-    }, {
-        type: "freeze";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        holdMs: number;
-        cue: "music-stop" | "narration" | "visual";
-    }>, z.ZodObject<{
-        timeBudgetMs: z.ZodNumber;
-        successAudioId: z.ZodString;
-        encourageAudioId: z.ZodString;
-        type: z.ZodLiteral<"run_in_place">;
-        durationMs: z.ZodNumber;
-        intensity: z.ZodEnum<["stroll", "jog", "sprint"]>;
-    }, "strict", z.ZodTypeAny, {
-        type: "run_in_place";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        durationMs: number;
-        intensity: "stroll" | "jog" | "sprint";
-    }, {
-        type: "run_in_place";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        durationMs: number;
-        intensity: "stroll" | "jog" | "sprint";
-    }>, z.ZodObject<{
-        timeBudgetMs: z.ZodNumber;
-        successAudioId: z.ZodString;
-        encourageAudioId: z.ZodString;
-        type: z.ZodLiteral<"balance">;
-        pose: z.ZodEnum<["one-leg", "airplane", "tiptoe", "statue"]>;
-        holdMs: z.ZodNumber;
-    }, "strict", z.ZodTypeAny, {
-        type: "balance";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        holdMs: number;
-        pose: "one-leg" | "airplane" | "tiptoe" | "statue";
-    }, {
-        type: "balance";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        holdMs: number;
-        pose: "one-leg" | "airplane" | "tiptoe" | "statue";
-    }>]>>;
+    }>>;
     learning: z.ZodNullable<z.ZodObject<{
         kind: z.ZodEnum<["counting", "colors", "letters", "body-parts", "directions", "animals", "none"]>;
         payload: z.ZodArray<z.ZodString, "many">;
@@ -1384,14 +733,6 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
     kind: "story" | "calibration-check" | "challenge" | "rest" | "celebration";
     id: string;
     energy: "calm" | "medium" | "high";
-    narration: {
-        items: {
-            locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
-            text: string;
-            audioAssetId: string | null;
-        }[];
-        captionDefaultOn: true;
-    };
     challenge: {
         type: "touch_targets";
         count: number;
@@ -1402,40 +743,6 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
         timeBudgetMs: number;
         successAudioId: string;
         encourageAudioId: string;
-    } | {
-        type: "jump_count";
-        count: number;
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        countAloud: boolean;
-    } | {
-        type: "squat";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        reps: number;
-    } | {
-        type: "freeze";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        holdMs: number;
-        cue: "music-stop" | "narration" | "visual";
-    } | {
-        type: "run_in_place";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        durationMs: number;
-        intensity: "stroll" | "jog" | "sprint";
-    } | {
-        type: "balance";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        holdMs: number;
-        pose: "one-leg" | "airplane" | "tiptoe" | "statue";
     } | null;
     terminal: false;
     transitions: {
@@ -1448,6 +755,14 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
             timeBudgetMul: number;
         } | null;
     }[];
+    narration: {
+        items: {
+            locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
+            text: string;
+            audioAssetId: string | null;
+        }[];
+        captionDefaultOn: true;
+    };
     demo: {
         characterId: string;
         animation: string;
@@ -1461,14 +776,6 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
     kind: "story" | "calibration-check" | "challenge" | "rest" | "celebration";
     id: string;
     energy: "calm" | "medium" | "high";
-    narration: {
-        items: {
-            locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
-            text: string;
-            audioAssetId: string | null;
-        }[];
-        captionDefaultOn: true;
-    };
     challenge: {
         type: "touch_targets";
         count: number;
@@ -1479,40 +786,6 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
         timeBudgetMs: number;
         successAudioId: string;
         encourageAudioId: string;
-    } | {
-        type: "jump_count";
-        count: number;
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        countAloud: boolean;
-    } | {
-        type: "squat";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        reps: number;
-    } | {
-        type: "freeze";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        holdMs: number;
-        cue: "music-stop" | "narration" | "visual";
-    } | {
-        type: "run_in_place";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        durationMs: number;
-        intensity: "stroll" | "jog" | "sprint";
-    } | {
-        type: "balance";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        holdMs: number;
-        pose: "one-leg" | "airplane" | "tiptoe" | "statue";
     } | null;
     terminal: false;
     transitions: {
@@ -1525,6 +798,14 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
             timeBudgetMul: number;
         } | null;
     }[];
+    narration: {
+        items: {
+            locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
+            text: string;
+            audioAssetId: string | null;
+        }[];
+        captionDefaultOn: true;
+    };
     demo: {
         characterId: string;
         animation: string;
@@ -1616,7 +897,7 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
         characterId: string;
         animation: string;
     }>>;
-    challenge: z.ZodNullable<z.ZodDiscriminatedUnion<"type", [z.ZodObject<{
+    challenge: z.ZodNullable<z.ZodObject<{
         timeBudgetMs: z.ZodNumber;
         successAudioId: z.ZodString;
         encourageAudioId: z.ZodString;
@@ -1646,109 +927,7 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
         timeBudgetMs: number;
         successAudioId: string;
         encourageAudioId: string;
-    }>, z.ZodObject<{
-        timeBudgetMs: z.ZodNumber;
-        successAudioId: z.ZodString;
-        encourageAudioId: z.ZodString;
-        type: z.ZodLiteral<"jump_count">;
-        count: z.ZodNumber;
-        countAloud: z.ZodBoolean;
-    }, "strict", z.ZodTypeAny, {
-        type: "jump_count";
-        count: number;
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        countAloud: boolean;
-    }, {
-        type: "jump_count";
-        count: number;
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        countAloud: boolean;
-    }>, z.ZodObject<{
-        timeBudgetMs: z.ZodNumber;
-        successAudioId: z.ZodString;
-        encourageAudioId: z.ZodString;
-        type: z.ZodLiteral<"squat">;
-        reps: z.ZodNumber;
-    }, "strict", z.ZodTypeAny, {
-        type: "squat";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        reps: number;
-    }, {
-        type: "squat";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        reps: number;
-    }>, z.ZodObject<{
-        timeBudgetMs: z.ZodNumber;
-        successAudioId: z.ZodString;
-        encourageAudioId: z.ZodString;
-        type: z.ZodLiteral<"freeze">;
-        holdMs: z.ZodNumber;
-        cue: z.ZodEnum<["music-stop", "narration", "visual"]>;
-    }, "strict", z.ZodTypeAny, {
-        type: "freeze";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        holdMs: number;
-        cue: "music-stop" | "narration" | "visual";
-    }, {
-        type: "freeze";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        holdMs: number;
-        cue: "music-stop" | "narration" | "visual";
-    }>, z.ZodObject<{
-        timeBudgetMs: z.ZodNumber;
-        successAudioId: z.ZodString;
-        encourageAudioId: z.ZodString;
-        type: z.ZodLiteral<"run_in_place">;
-        durationMs: z.ZodNumber;
-        intensity: z.ZodEnum<["stroll", "jog", "sprint"]>;
-    }, "strict", z.ZodTypeAny, {
-        type: "run_in_place";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        durationMs: number;
-        intensity: "stroll" | "jog" | "sprint";
-    }, {
-        type: "run_in_place";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        durationMs: number;
-        intensity: "stroll" | "jog" | "sprint";
-    }>, z.ZodObject<{
-        timeBudgetMs: z.ZodNumber;
-        successAudioId: z.ZodString;
-        encourageAudioId: z.ZodString;
-        type: z.ZodLiteral<"balance">;
-        pose: z.ZodEnum<["one-leg", "airplane", "tiptoe", "statue"]>;
-        holdMs: z.ZodNumber;
-    }, "strict", z.ZodTypeAny, {
-        type: "balance";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        holdMs: number;
-        pose: "one-leg" | "airplane" | "tiptoe" | "statue";
-    }, {
-        type: "balance";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        holdMs: number;
-        pose: "one-leg" | "airplane" | "tiptoe" | "statue";
-    }>]>>;
+    }>>;
     learning: z.ZodNullable<z.ZodObject<{
         kind: z.ZodEnum<["counting", "colors", "letters", "body-parts", "directions", "animals", "none"]>;
         payload: z.ZodArray<z.ZodString, "many">;
@@ -1765,14 +944,6 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
     kind: "story" | "calibration-check" | "challenge" | "rest" | "celebration";
     id: string;
     energy: "calm" | "medium" | "high";
-    narration: {
-        items: {
-            locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
-            text: string;
-            audioAssetId: string | null;
-        }[];
-        captionDefaultOn: true;
-    };
     challenge: {
         type: "touch_targets";
         count: number;
@@ -1783,40 +954,6 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
         timeBudgetMs: number;
         successAudioId: string;
         encourageAudioId: string;
-    } | {
-        type: "jump_count";
-        count: number;
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        countAloud: boolean;
-    } | {
-        type: "squat";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        reps: number;
-    } | {
-        type: "freeze";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        holdMs: number;
-        cue: "music-stop" | "narration" | "visual";
-    } | {
-        type: "run_in_place";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        durationMs: number;
-        intensity: "stroll" | "jog" | "sprint";
-    } | {
-        type: "balance";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        holdMs: number;
-        pose: "one-leg" | "airplane" | "tiptoe" | "statue";
     } | null;
     terminal: true;
     transitions: {
@@ -1829,6 +966,14 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
             timeBudgetMul: number;
         } | null;
     }[];
+    narration: {
+        items: {
+            locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
+            text: string;
+            audioAssetId: string | null;
+        }[];
+        captionDefaultOn: true;
+    };
     demo: {
         characterId: string;
         animation: string;
@@ -1842,14 +987,6 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
     kind: "story" | "calibration-check" | "challenge" | "rest" | "celebration";
     id: string;
     energy: "calm" | "medium" | "high";
-    narration: {
-        items: {
-            locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
-            text: string;
-            audioAssetId: string | null;
-        }[];
-        captionDefaultOn: true;
-    };
     challenge: {
         type: "touch_targets";
         count: number;
@@ -1860,40 +997,6 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
         timeBudgetMs: number;
         successAudioId: string;
         encourageAudioId: string;
-    } | {
-        type: "jump_count";
-        count: number;
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        countAloud: boolean;
-    } | {
-        type: "squat";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        reps: number;
-    } | {
-        type: "freeze";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        holdMs: number;
-        cue: "music-stop" | "narration" | "visual";
-    } | {
-        type: "run_in_place";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        durationMs: number;
-        intensity: "stroll" | "jog" | "sprint";
-    } | {
-        type: "balance";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
-        holdMs: number;
-        pose: "one-leg" | "airplane" | "tiptoe" | "statue";
     } | null;
     terminal: true;
     transitions: {
@@ -1906,6 +1009,14 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
             timeBudgetMul: number;
         } | null;
     }[];
+    narration: {
+        items: {
+            locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
+            text: string;
+            audioAssetId: string | null;
+        }[];
+        captionDefaultOn: true;
+    };
     demo: {
         characterId: string;
         animation: string;
@@ -2178,7 +1289,7 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
             characterId: string;
             animation: string;
         }>>;
-        challenge: z.ZodNullable<z.ZodDiscriminatedUnion<"type", [z.ZodObject<{
+        challenge: z.ZodNullable<z.ZodObject<{
             timeBudgetMs: z.ZodNumber;
             successAudioId: z.ZodString;
             encourageAudioId: z.ZodString;
@@ -2208,109 +1319,7 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
-        }>, z.ZodObject<{
-            timeBudgetMs: z.ZodNumber;
-            successAudioId: z.ZodString;
-            encourageAudioId: z.ZodString;
-            type: z.ZodLiteral<"jump_count">;
-            count: z.ZodNumber;
-            countAloud: z.ZodBoolean;
-        }, "strict", z.ZodTypeAny, {
-            type: "jump_count";
-            count: number;
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            countAloud: boolean;
-        }, {
-            type: "jump_count";
-            count: number;
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            countAloud: boolean;
-        }>, z.ZodObject<{
-            timeBudgetMs: z.ZodNumber;
-            successAudioId: z.ZodString;
-            encourageAudioId: z.ZodString;
-            type: z.ZodLiteral<"squat">;
-            reps: z.ZodNumber;
-        }, "strict", z.ZodTypeAny, {
-            type: "squat";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            reps: number;
-        }, {
-            type: "squat";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            reps: number;
-        }>, z.ZodObject<{
-            timeBudgetMs: z.ZodNumber;
-            successAudioId: z.ZodString;
-            encourageAudioId: z.ZodString;
-            type: z.ZodLiteral<"freeze">;
-            holdMs: z.ZodNumber;
-            cue: z.ZodEnum<["music-stop", "narration", "visual"]>;
-        }, "strict", z.ZodTypeAny, {
-            type: "freeze";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            cue: "music-stop" | "narration" | "visual";
-        }, {
-            type: "freeze";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            cue: "music-stop" | "narration" | "visual";
-        }>, z.ZodObject<{
-            timeBudgetMs: z.ZodNumber;
-            successAudioId: z.ZodString;
-            encourageAudioId: z.ZodString;
-            type: z.ZodLiteral<"run_in_place">;
-            durationMs: z.ZodNumber;
-            intensity: z.ZodEnum<["stroll", "jog", "sprint"]>;
-        }, "strict", z.ZodTypeAny, {
-            type: "run_in_place";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            durationMs: number;
-            intensity: "stroll" | "jog" | "sprint";
-        }, {
-            type: "run_in_place";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            durationMs: number;
-            intensity: "stroll" | "jog" | "sprint";
-        }>, z.ZodObject<{
-            timeBudgetMs: z.ZodNumber;
-            successAudioId: z.ZodString;
-            encourageAudioId: z.ZodString;
-            type: z.ZodLiteral<"balance">;
-            pose: z.ZodEnum<["one-leg", "airplane", "tiptoe", "statue"]>;
-            holdMs: z.ZodNumber;
-        }, "strict", z.ZodTypeAny, {
-            type: "balance";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            pose: "one-leg" | "airplane" | "tiptoe" | "statue";
-        }, {
-            type: "balance";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            pose: "one-leg" | "airplane" | "tiptoe" | "statue";
-        }>]>>;
+        }>>;
         learning: z.ZodNullable<z.ZodObject<{
             kind: z.ZodEnum<["counting", "colors", "letters", "body-parts", "directions", "animals", "none"]>;
             payload: z.ZodArray<z.ZodString, "many">;
@@ -2327,14 +1336,6 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
         kind: "story" | "calibration-check" | "challenge" | "rest" | "celebration";
         id: string;
         energy: "calm" | "medium" | "high";
-        narration: {
-            items: {
-                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
-                text: string;
-                audioAssetId: string | null;
-            }[];
-            captionDefaultOn: true;
-        };
         challenge: {
             type: "touch_targets";
             count: number;
@@ -2345,40 +1346,6 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
-        } | {
-            type: "jump_count";
-            count: number;
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            countAloud: boolean;
-        } | {
-            type: "squat";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            reps: number;
-        } | {
-            type: "freeze";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            cue: "music-stop" | "narration" | "visual";
-        } | {
-            type: "run_in_place";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            durationMs: number;
-            intensity: "stroll" | "jog" | "sprint";
-        } | {
-            type: "balance";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            pose: "one-leg" | "airplane" | "tiptoe" | "statue";
         } | null;
         terminal: false;
         transitions: {
@@ -2391,6 +1358,14 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
                 timeBudgetMul: number;
             } | null;
         }[];
+        narration: {
+            items: {
+                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
+                text: string;
+                audioAssetId: string | null;
+            }[];
+            captionDefaultOn: true;
+        };
         demo: {
             characterId: string;
             animation: string;
@@ -2404,14 +1379,6 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
         kind: "story" | "calibration-check" | "challenge" | "rest" | "celebration";
         id: string;
         energy: "calm" | "medium" | "high";
-        narration: {
-            items: {
-                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
-                text: string;
-                audioAssetId: string | null;
-            }[];
-            captionDefaultOn: true;
-        };
         challenge: {
             type: "touch_targets";
             count: number;
@@ -2422,40 +1389,6 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
-        } | {
-            type: "jump_count";
-            count: number;
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            countAloud: boolean;
-        } | {
-            type: "squat";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            reps: number;
-        } | {
-            type: "freeze";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            cue: "music-stop" | "narration" | "visual";
-        } | {
-            type: "run_in_place";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            durationMs: number;
-            intensity: "stroll" | "jog" | "sprint";
-        } | {
-            type: "balance";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            pose: "one-leg" | "airplane" | "tiptoe" | "statue";
         } | null;
         terminal: false;
         transitions: {
@@ -2468,6 +1401,14 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
                 timeBudgetMul: number;
             } | null;
         }[];
+        narration: {
+            items: {
+                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
+                text: string;
+                audioAssetId: string | null;
+            }[];
+            captionDefaultOn: true;
+        };
         demo: {
             characterId: string;
             animation: string;
@@ -2559,7 +1500,7 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
             characterId: string;
             animation: string;
         }>>;
-        challenge: z.ZodNullable<z.ZodDiscriminatedUnion<"type", [z.ZodObject<{
+        challenge: z.ZodNullable<z.ZodObject<{
             timeBudgetMs: z.ZodNumber;
             successAudioId: z.ZodString;
             encourageAudioId: z.ZodString;
@@ -2589,109 +1530,7 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
-        }>, z.ZodObject<{
-            timeBudgetMs: z.ZodNumber;
-            successAudioId: z.ZodString;
-            encourageAudioId: z.ZodString;
-            type: z.ZodLiteral<"jump_count">;
-            count: z.ZodNumber;
-            countAloud: z.ZodBoolean;
-        }, "strict", z.ZodTypeAny, {
-            type: "jump_count";
-            count: number;
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            countAloud: boolean;
-        }, {
-            type: "jump_count";
-            count: number;
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            countAloud: boolean;
-        }>, z.ZodObject<{
-            timeBudgetMs: z.ZodNumber;
-            successAudioId: z.ZodString;
-            encourageAudioId: z.ZodString;
-            type: z.ZodLiteral<"squat">;
-            reps: z.ZodNumber;
-        }, "strict", z.ZodTypeAny, {
-            type: "squat";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            reps: number;
-        }, {
-            type: "squat";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            reps: number;
-        }>, z.ZodObject<{
-            timeBudgetMs: z.ZodNumber;
-            successAudioId: z.ZodString;
-            encourageAudioId: z.ZodString;
-            type: z.ZodLiteral<"freeze">;
-            holdMs: z.ZodNumber;
-            cue: z.ZodEnum<["music-stop", "narration", "visual"]>;
-        }, "strict", z.ZodTypeAny, {
-            type: "freeze";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            cue: "music-stop" | "narration" | "visual";
-        }, {
-            type: "freeze";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            cue: "music-stop" | "narration" | "visual";
-        }>, z.ZodObject<{
-            timeBudgetMs: z.ZodNumber;
-            successAudioId: z.ZodString;
-            encourageAudioId: z.ZodString;
-            type: z.ZodLiteral<"run_in_place">;
-            durationMs: z.ZodNumber;
-            intensity: z.ZodEnum<["stroll", "jog", "sprint"]>;
-        }, "strict", z.ZodTypeAny, {
-            type: "run_in_place";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            durationMs: number;
-            intensity: "stroll" | "jog" | "sprint";
-        }, {
-            type: "run_in_place";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            durationMs: number;
-            intensity: "stroll" | "jog" | "sprint";
-        }>, z.ZodObject<{
-            timeBudgetMs: z.ZodNumber;
-            successAudioId: z.ZodString;
-            encourageAudioId: z.ZodString;
-            type: z.ZodLiteral<"balance">;
-            pose: z.ZodEnum<["one-leg", "airplane", "tiptoe", "statue"]>;
-            holdMs: z.ZodNumber;
-        }, "strict", z.ZodTypeAny, {
-            type: "balance";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            pose: "one-leg" | "airplane" | "tiptoe" | "statue";
-        }, {
-            type: "balance";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            pose: "one-leg" | "airplane" | "tiptoe" | "statue";
-        }>]>>;
+        }>>;
         learning: z.ZodNullable<z.ZodObject<{
             kind: z.ZodEnum<["counting", "colors", "letters", "body-parts", "directions", "animals", "none"]>;
             payload: z.ZodArray<z.ZodString, "many">;
@@ -2708,14 +1547,6 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
         kind: "story" | "calibration-check" | "challenge" | "rest" | "celebration";
         id: string;
         energy: "calm" | "medium" | "high";
-        narration: {
-            items: {
-                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
-                text: string;
-                audioAssetId: string | null;
-            }[];
-            captionDefaultOn: true;
-        };
         challenge: {
             type: "touch_targets";
             count: number;
@@ -2726,40 +1557,6 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
-        } | {
-            type: "jump_count";
-            count: number;
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            countAloud: boolean;
-        } | {
-            type: "squat";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            reps: number;
-        } | {
-            type: "freeze";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            cue: "music-stop" | "narration" | "visual";
-        } | {
-            type: "run_in_place";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            durationMs: number;
-            intensity: "stroll" | "jog" | "sprint";
-        } | {
-            type: "balance";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            pose: "one-leg" | "airplane" | "tiptoe" | "statue";
         } | null;
         terminal: true;
         transitions: {
@@ -2772,6 +1569,14 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
                 timeBudgetMul: number;
             } | null;
         }[];
+        narration: {
+            items: {
+                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
+                text: string;
+                audioAssetId: string | null;
+            }[];
+            captionDefaultOn: true;
+        };
         demo: {
             characterId: string;
             animation: string;
@@ -2785,14 +1590,6 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
         kind: "story" | "calibration-check" | "challenge" | "rest" | "celebration";
         id: string;
         energy: "calm" | "medium" | "high";
-        narration: {
-            items: {
-                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
-                text: string;
-                audioAssetId: string | null;
-            }[];
-            captionDefaultOn: true;
-        };
         challenge: {
             type: "touch_targets";
             count: number;
@@ -2803,40 +1600,6 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
-        } | {
-            type: "jump_count";
-            count: number;
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            countAloud: boolean;
-        } | {
-            type: "squat";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            reps: number;
-        } | {
-            type: "freeze";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            cue: "music-stop" | "narration" | "visual";
-        } | {
-            type: "run_in_place";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            durationMs: number;
-            intensity: "stroll" | "jog" | "sprint";
-        } | {
-            type: "balance";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            pose: "one-leg" | "airplane" | "tiptoe" | "statue";
         } | null;
         terminal: true;
         transitions: {
@@ -2849,6 +1612,14 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
                 timeBudgetMul: number;
             } | null;
         }[];
+        narration: {
+            items: {
+                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
+                text: string;
+                audioAssetId: string | null;
+            }[];
+            captionDefaultOn: true;
+        };
         demo: {
             characterId: string;
             animation: string;
@@ -3480,14 +2251,6 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
         kind: "story" | "calibration-check" | "challenge" | "rest" | "celebration";
         id: string;
         energy: "calm" | "medium" | "high";
-        narration: {
-            items: {
-                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
-                text: string;
-                audioAssetId: string | null;
-            }[];
-            captionDefaultOn: true;
-        };
         challenge: {
             type: "touch_targets";
             count: number;
@@ -3498,40 +2261,6 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
-        } | {
-            type: "jump_count";
-            count: number;
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            countAloud: boolean;
-        } | {
-            type: "squat";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            reps: number;
-        } | {
-            type: "freeze";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            cue: "music-stop" | "narration" | "visual";
-        } | {
-            type: "run_in_place";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            durationMs: number;
-            intensity: "stroll" | "jog" | "sprint";
-        } | {
-            type: "balance";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            pose: "one-leg" | "airplane" | "tiptoe" | "statue";
         } | null;
         terminal: false;
         transitions: {
@@ -3544,6 +2273,14 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
                 timeBudgetMul: number;
             } | null;
         }[];
+        narration: {
+            items: {
+                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
+                text: string;
+                audioAssetId: string | null;
+            }[];
+            captionDefaultOn: true;
+        };
         demo: {
             characterId: string;
             animation: string;
@@ -3557,14 +2294,6 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
         kind: "story" | "calibration-check" | "challenge" | "rest" | "celebration";
         id: string;
         energy: "calm" | "medium" | "high";
-        narration: {
-            items: {
-                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
-                text: string;
-                audioAssetId: string | null;
-            }[];
-            captionDefaultOn: true;
-        };
         challenge: {
             type: "touch_targets";
             count: number;
@@ -3575,40 +2304,6 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
-        } | {
-            type: "jump_count";
-            count: number;
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            countAloud: boolean;
-        } | {
-            type: "squat";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            reps: number;
-        } | {
-            type: "freeze";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            cue: "music-stop" | "narration" | "visual";
-        } | {
-            type: "run_in_place";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            durationMs: number;
-            intensity: "stroll" | "jog" | "sprint";
-        } | {
-            type: "balance";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            pose: "one-leg" | "airplane" | "tiptoe" | "statue";
         } | null;
         terminal: true;
         transitions: {
@@ -3621,6 +2316,14 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
                 timeBudgetMul: number;
             } | null;
         }[];
+        narration: {
+            items: {
+                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
+                text: string;
+                audioAssetId: string | null;
+            }[];
+            captionDefaultOn: true;
+        };
         demo: {
             characterId: string;
             animation: string;
@@ -3770,14 +2473,6 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
         kind: "story" | "calibration-check" | "challenge" | "rest" | "celebration";
         id: string;
         energy: "calm" | "medium" | "high";
-        narration: {
-            items: {
-                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
-                text: string;
-                audioAssetId: string | null;
-            }[];
-            captionDefaultOn: true;
-        };
         challenge: {
             type: "touch_targets";
             count: number;
@@ -3788,40 +2483,6 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
-        } | {
-            type: "jump_count";
-            count: number;
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            countAloud: boolean;
-        } | {
-            type: "squat";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            reps: number;
-        } | {
-            type: "freeze";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            cue: "music-stop" | "narration" | "visual";
-        } | {
-            type: "run_in_place";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            durationMs: number;
-            intensity: "stroll" | "jog" | "sprint";
-        } | {
-            type: "balance";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            pose: "one-leg" | "airplane" | "tiptoe" | "statue";
         } | null;
         terminal: false;
         transitions: {
@@ -3834,6 +2495,14 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
                 timeBudgetMul: number;
             } | null;
         }[];
+        narration: {
+            items: {
+                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
+                text: string;
+                audioAssetId: string | null;
+            }[];
+            captionDefaultOn: true;
+        };
         demo: {
             characterId: string;
             animation: string;
@@ -3847,14 +2516,6 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
         kind: "story" | "calibration-check" | "challenge" | "rest" | "celebration";
         id: string;
         energy: "calm" | "medium" | "high";
-        narration: {
-            items: {
-                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
-                text: string;
-                audioAssetId: string | null;
-            }[];
-            captionDefaultOn: true;
-        };
         challenge: {
             type: "touch_targets";
             count: number;
@@ -3865,40 +2526,6 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
-        } | {
-            type: "jump_count";
-            count: number;
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            countAloud: boolean;
-        } | {
-            type: "squat";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            reps: number;
-        } | {
-            type: "freeze";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            cue: "music-stop" | "narration" | "visual";
-        } | {
-            type: "run_in_place";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            durationMs: number;
-            intensity: "stroll" | "jog" | "sprint";
-        } | {
-            type: "balance";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            pose: "one-leg" | "airplane" | "tiptoe" | "statue";
         } | null;
         terminal: true;
         transitions: {
@@ -3911,6 +2538,14 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
                 timeBudgetMul: number;
             } | null;
         }[];
+        narration: {
+            items: {
+                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
+                text: string;
+                audioAssetId: string | null;
+            }[];
+            captionDefaultOn: true;
+        };
         demo: {
             characterId: string;
             animation: string;
@@ -4248,7 +2883,7 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
             characterId: string;
             animation: string;
         }>>;
-        challenge: z.ZodNullable<z.ZodDiscriminatedUnion<"type", [z.ZodObject<{
+        challenge: z.ZodNullable<z.ZodObject<{
             timeBudgetMs: z.ZodNumber;
             successAudioId: z.ZodString;
             encourageAudioId: z.ZodString;
@@ -4278,109 +2913,7 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
-        }>, z.ZodObject<{
-            timeBudgetMs: z.ZodNumber;
-            successAudioId: z.ZodString;
-            encourageAudioId: z.ZodString;
-            type: z.ZodLiteral<"jump_count">;
-            count: z.ZodNumber;
-            countAloud: z.ZodBoolean;
-        }, "strict", z.ZodTypeAny, {
-            type: "jump_count";
-            count: number;
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            countAloud: boolean;
-        }, {
-            type: "jump_count";
-            count: number;
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            countAloud: boolean;
-        }>, z.ZodObject<{
-            timeBudgetMs: z.ZodNumber;
-            successAudioId: z.ZodString;
-            encourageAudioId: z.ZodString;
-            type: z.ZodLiteral<"squat">;
-            reps: z.ZodNumber;
-        }, "strict", z.ZodTypeAny, {
-            type: "squat";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            reps: number;
-        }, {
-            type: "squat";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            reps: number;
-        }>, z.ZodObject<{
-            timeBudgetMs: z.ZodNumber;
-            successAudioId: z.ZodString;
-            encourageAudioId: z.ZodString;
-            type: z.ZodLiteral<"freeze">;
-            holdMs: z.ZodNumber;
-            cue: z.ZodEnum<["music-stop", "narration", "visual"]>;
-        }, "strict", z.ZodTypeAny, {
-            type: "freeze";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            cue: "music-stop" | "narration" | "visual";
-        }, {
-            type: "freeze";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            cue: "music-stop" | "narration" | "visual";
-        }>, z.ZodObject<{
-            timeBudgetMs: z.ZodNumber;
-            successAudioId: z.ZodString;
-            encourageAudioId: z.ZodString;
-            type: z.ZodLiteral<"run_in_place">;
-            durationMs: z.ZodNumber;
-            intensity: z.ZodEnum<["stroll", "jog", "sprint"]>;
-        }, "strict", z.ZodTypeAny, {
-            type: "run_in_place";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            durationMs: number;
-            intensity: "stroll" | "jog" | "sprint";
-        }, {
-            type: "run_in_place";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            durationMs: number;
-            intensity: "stroll" | "jog" | "sprint";
-        }>, z.ZodObject<{
-            timeBudgetMs: z.ZodNumber;
-            successAudioId: z.ZodString;
-            encourageAudioId: z.ZodString;
-            type: z.ZodLiteral<"balance">;
-            pose: z.ZodEnum<["one-leg", "airplane", "tiptoe", "statue"]>;
-            holdMs: z.ZodNumber;
-        }, "strict", z.ZodTypeAny, {
-            type: "balance";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            pose: "one-leg" | "airplane" | "tiptoe" | "statue";
-        }, {
-            type: "balance";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            pose: "one-leg" | "airplane" | "tiptoe" | "statue";
-        }>]>>;
+        }>>;
         learning: z.ZodNullable<z.ZodObject<{
             kind: z.ZodEnum<["counting", "colors", "letters", "body-parts", "directions", "animals", "none"]>;
             payload: z.ZodArray<z.ZodString, "many">;
@@ -4397,14 +2930,6 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
         kind: "story" | "calibration-check" | "challenge" | "rest" | "celebration";
         id: string;
         energy: "calm" | "medium" | "high";
-        narration: {
-            items: {
-                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
-                text: string;
-                audioAssetId: string | null;
-            }[];
-            captionDefaultOn: true;
-        };
         challenge: {
             type: "touch_targets";
             count: number;
@@ -4415,40 +2940,6 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
-        } | {
-            type: "jump_count";
-            count: number;
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            countAloud: boolean;
-        } | {
-            type: "squat";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            reps: number;
-        } | {
-            type: "freeze";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            cue: "music-stop" | "narration" | "visual";
-        } | {
-            type: "run_in_place";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            durationMs: number;
-            intensity: "stroll" | "jog" | "sprint";
-        } | {
-            type: "balance";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            pose: "one-leg" | "airplane" | "tiptoe" | "statue";
         } | null;
         terminal: false;
         transitions: {
@@ -4461,6 +2952,14 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
                 timeBudgetMul: number;
             } | null;
         }[];
+        narration: {
+            items: {
+                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
+                text: string;
+                audioAssetId: string | null;
+            }[];
+            captionDefaultOn: true;
+        };
         demo: {
             characterId: string;
             animation: string;
@@ -4474,14 +2973,6 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
         kind: "story" | "calibration-check" | "challenge" | "rest" | "celebration";
         id: string;
         energy: "calm" | "medium" | "high";
-        narration: {
-            items: {
-                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
-                text: string;
-                audioAssetId: string | null;
-            }[];
-            captionDefaultOn: true;
-        };
         challenge: {
             type: "touch_targets";
             count: number;
@@ -4492,40 +2983,6 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
-        } | {
-            type: "jump_count";
-            count: number;
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            countAloud: boolean;
-        } | {
-            type: "squat";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            reps: number;
-        } | {
-            type: "freeze";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            cue: "music-stop" | "narration" | "visual";
-        } | {
-            type: "run_in_place";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            durationMs: number;
-            intensity: "stroll" | "jog" | "sprint";
-        } | {
-            type: "balance";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            pose: "one-leg" | "airplane" | "tiptoe" | "statue";
         } | null;
         terminal: false;
         transitions: {
@@ -4538,6 +2995,14 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
                 timeBudgetMul: number;
             } | null;
         }[];
+        narration: {
+            items: {
+                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
+                text: string;
+                audioAssetId: string | null;
+            }[];
+            captionDefaultOn: true;
+        };
         demo: {
             characterId: string;
             animation: string;
@@ -4629,7 +3094,7 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
             characterId: string;
             animation: string;
         }>>;
-        challenge: z.ZodNullable<z.ZodDiscriminatedUnion<"type", [z.ZodObject<{
+        challenge: z.ZodNullable<z.ZodObject<{
             timeBudgetMs: z.ZodNumber;
             successAudioId: z.ZodString;
             encourageAudioId: z.ZodString;
@@ -4659,109 +3124,7 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
-        }>, z.ZodObject<{
-            timeBudgetMs: z.ZodNumber;
-            successAudioId: z.ZodString;
-            encourageAudioId: z.ZodString;
-            type: z.ZodLiteral<"jump_count">;
-            count: z.ZodNumber;
-            countAloud: z.ZodBoolean;
-        }, "strict", z.ZodTypeAny, {
-            type: "jump_count";
-            count: number;
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            countAloud: boolean;
-        }, {
-            type: "jump_count";
-            count: number;
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            countAloud: boolean;
-        }>, z.ZodObject<{
-            timeBudgetMs: z.ZodNumber;
-            successAudioId: z.ZodString;
-            encourageAudioId: z.ZodString;
-            type: z.ZodLiteral<"squat">;
-            reps: z.ZodNumber;
-        }, "strict", z.ZodTypeAny, {
-            type: "squat";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            reps: number;
-        }, {
-            type: "squat";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            reps: number;
-        }>, z.ZodObject<{
-            timeBudgetMs: z.ZodNumber;
-            successAudioId: z.ZodString;
-            encourageAudioId: z.ZodString;
-            type: z.ZodLiteral<"freeze">;
-            holdMs: z.ZodNumber;
-            cue: z.ZodEnum<["music-stop", "narration", "visual"]>;
-        }, "strict", z.ZodTypeAny, {
-            type: "freeze";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            cue: "music-stop" | "narration" | "visual";
-        }, {
-            type: "freeze";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            cue: "music-stop" | "narration" | "visual";
-        }>, z.ZodObject<{
-            timeBudgetMs: z.ZodNumber;
-            successAudioId: z.ZodString;
-            encourageAudioId: z.ZodString;
-            type: z.ZodLiteral<"run_in_place">;
-            durationMs: z.ZodNumber;
-            intensity: z.ZodEnum<["stroll", "jog", "sprint"]>;
-        }, "strict", z.ZodTypeAny, {
-            type: "run_in_place";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            durationMs: number;
-            intensity: "stroll" | "jog" | "sprint";
-        }, {
-            type: "run_in_place";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            durationMs: number;
-            intensity: "stroll" | "jog" | "sprint";
-        }>, z.ZodObject<{
-            timeBudgetMs: z.ZodNumber;
-            successAudioId: z.ZodString;
-            encourageAudioId: z.ZodString;
-            type: z.ZodLiteral<"balance">;
-            pose: z.ZodEnum<["one-leg", "airplane", "tiptoe", "statue"]>;
-            holdMs: z.ZodNumber;
-        }, "strict", z.ZodTypeAny, {
-            type: "balance";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            pose: "one-leg" | "airplane" | "tiptoe" | "statue";
-        }, {
-            type: "balance";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            pose: "one-leg" | "airplane" | "tiptoe" | "statue";
-        }>]>>;
+        }>>;
         learning: z.ZodNullable<z.ZodObject<{
             kind: z.ZodEnum<["counting", "colors", "letters", "body-parts", "directions", "animals", "none"]>;
             payload: z.ZodArray<z.ZodString, "many">;
@@ -4778,14 +3141,6 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
         kind: "story" | "calibration-check" | "challenge" | "rest" | "celebration";
         id: string;
         energy: "calm" | "medium" | "high";
-        narration: {
-            items: {
-                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
-                text: string;
-                audioAssetId: string | null;
-            }[];
-            captionDefaultOn: true;
-        };
         challenge: {
             type: "touch_targets";
             count: number;
@@ -4796,40 +3151,6 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
-        } | {
-            type: "jump_count";
-            count: number;
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            countAloud: boolean;
-        } | {
-            type: "squat";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            reps: number;
-        } | {
-            type: "freeze";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            cue: "music-stop" | "narration" | "visual";
-        } | {
-            type: "run_in_place";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            durationMs: number;
-            intensity: "stroll" | "jog" | "sprint";
-        } | {
-            type: "balance";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            pose: "one-leg" | "airplane" | "tiptoe" | "statue";
         } | null;
         terminal: true;
         transitions: {
@@ -4842,6 +3163,14 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
                 timeBudgetMul: number;
             } | null;
         }[];
+        narration: {
+            items: {
+                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
+                text: string;
+                audioAssetId: string | null;
+            }[];
+            captionDefaultOn: true;
+        };
         demo: {
             characterId: string;
             animation: string;
@@ -4855,14 +3184,6 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
         kind: "story" | "calibration-check" | "challenge" | "rest" | "celebration";
         id: string;
         energy: "calm" | "medium" | "high";
-        narration: {
-            items: {
-                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
-                text: string;
-                audioAssetId: string | null;
-            }[];
-            captionDefaultOn: true;
-        };
         challenge: {
             type: "touch_targets";
             count: number;
@@ -4873,40 +3194,6 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
-        } | {
-            type: "jump_count";
-            count: number;
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            countAloud: boolean;
-        } | {
-            type: "squat";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            reps: number;
-        } | {
-            type: "freeze";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            cue: "music-stop" | "narration" | "visual";
-        } | {
-            type: "run_in_place";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            durationMs: number;
-            intensity: "stroll" | "jog" | "sprint";
-        } | {
-            type: "balance";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            pose: "one-leg" | "airplane" | "tiptoe" | "statue";
         } | null;
         terminal: true;
         transitions: {
@@ -4919,6 +3206,14 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
                 timeBudgetMul: number;
             } | null;
         }[];
+        narration: {
+            items: {
+                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
+                text: string;
+                audioAssetId: string | null;
+            }[];
+            captionDefaultOn: true;
+        };
         demo: {
             characterId: string;
             animation: string;
@@ -5550,14 +3845,6 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
         kind: "story" | "calibration-check" | "challenge" | "rest" | "celebration";
         id: string;
         energy: "calm" | "medium" | "high";
-        narration: {
-            items: {
-                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
-                text: string;
-                audioAssetId: string | null;
-            }[];
-            captionDefaultOn: true;
-        };
         challenge: {
             type: "touch_targets";
             count: number;
@@ -5568,40 +3855,6 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
-        } | {
-            type: "jump_count";
-            count: number;
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            countAloud: boolean;
-        } | {
-            type: "squat";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            reps: number;
-        } | {
-            type: "freeze";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            cue: "music-stop" | "narration" | "visual";
-        } | {
-            type: "run_in_place";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            durationMs: number;
-            intensity: "stroll" | "jog" | "sprint";
-        } | {
-            type: "balance";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            pose: "one-leg" | "airplane" | "tiptoe" | "statue";
         } | null;
         terminal: false;
         transitions: {
@@ -5614,6 +3867,14 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
                 timeBudgetMul: number;
             } | null;
         }[];
+        narration: {
+            items: {
+                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
+                text: string;
+                audioAssetId: string | null;
+            }[];
+            captionDefaultOn: true;
+        };
         demo: {
             characterId: string;
             animation: string;
@@ -5627,14 +3888,6 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
         kind: "story" | "calibration-check" | "challenge" | "rest" | "celebration";
         id: string;
         energy: "calm" | "medium" | "high";
-        narration: {
-            items: {
-                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
-                text: string;
-                audioAssetId: string | null;
-            }[];
-            captionDefaultOn: true;
-        };
         challenge: {
             type: "touch_targets";
             count: number;
@@ -5645,40 +3898,6 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
-        } | {
-            type: "jump_count";
-            count: number;
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            countAloud: boolean;
-        } | {
-            type: "squat";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            reps: number;
-        } | {
-            type: "freeze";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            cue: "music-stop" | "narration" | "visual";
-        } | {
-            type: "run_in_place";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            durationMs: number;
-            intensity: "stroll" | "jog" | "sprint";
-        } | {
-            type: "balance";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            pose: "one-leg" | "airplane" | "tiptoe" | "statue";
         } | null;
         terminal: true;
         transitions: {
@@ -5691,6 +3910,14 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
                 timeBudgetMul: number;
             } | null;
         }[];
+        narration: {
+            items: {
+                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
+                text: string;
+                audioAssetId: string | null;
+            }[];
+            captionDefaultOn: true;
+        };
         demo: {
             characterId: string;
             animation: string;
@@ -5840,14 +4067,6 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
         kind: "story" | "calibration-check" | "challenge" | "rest" | "celebration";
         id: string;
         energy: "calm" | "medium" | "high";
-        narration: {
-            items: {
-                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
-                text: string;
-                audioAssetId: string | null;
-            }[];
-            captionDefaultOn: true;
-        };
         challenge: {
             type: "touch_targets";
             count: number;
@@ -5858,40 +4077,6 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
-        } | {
-            type: "jump_count";
-            count: number;
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            countAloud: boolean;
-        } | {
-            type: "squat";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            reps: number;
-        } | {
-            type: "freeze";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            cue: "music-stop" | "narration" | "visual";
-        } | {
-            type: "run_in_place";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            durationMs: number;
-            intensity: "stroll" | "jog" | "sprint";
-        } | {
-            type: "balance";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            pose: "one-leg" | "airplane" | "tiptoe" | "statue";
         } | null;
         terminal: false;
         transitions: {
@@ -5904,6 +4089,14 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
                 timeBudgetMul: number;
             } | null;
         }[];
+        narration: {
+            items: {
+                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
+                text: string;
+                audioAssetId: string | null;
+            }[];
+            captionDefaultOn: true;
+        };
         demo: {
             characterId: string;
             animation: string;
@@ -5917,14 +4110,6 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
         kind: "story" | "calibration-check" | "challenge" | "rest" | "celebration";
         id: string;
         energy: "calm" | "medium" | "high";
-        narration: {
-            items: {
-                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
-                text: string;
-                audioAssetId: string | null;
-            }[];
-            captionDefaultOn: true;
-        };
         challenge: {
             type: "touch_targets";
             count: number;
@@ -5935,40 +4120,6 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
-        } | {
-            type: "jump_count";
-            count: number;
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            countAloud: boolean;
-        } | {
-            type: "squat";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            reps: number;
-        } | {
-            type: "freeze";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            cue: "music-stop" | "narration" | "visual";
-        } | {
-            type: "run_in_place";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            durationMs: number;
-            intensity: "stroll" | "jog" | "sprint";
-        } | {
-            type: "balance";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            pose: "one-leg" | "airplane" | "tiptoe" | "statue";
         } | null;
         terminal: true;
         transitions: {
@@ -5981,6 +4132,14 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
                 timeBudgetMul: number;
             } | null;
         }[];
+        narration: {
+            items: {
+                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
+                text: string;
+                audioAssetId: string | null;
+            }[];
+            captionDefaultOn: true;
+        };
         demo: {
             characterId: string;
             animation: string;
@@ -6130,14 +4289,6 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
         kind: "story" | "calibration-check" | "challenge" | "rest" | "celebration";
         id: string;
         energy: "calm" | "medium" | "high";
-        narration: {
-            items: {
-                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
-                text: string;
-                audioAssetId: string | null;
-            }[];
-            captionDefaultOn: true;
-        };
         challenge: {
             type: "touch_targets";
             count: number;
@@ -6148,40 +4299,6 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
-        } | {
-            type: "jump_count";
-            count: number;
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            countAloud: boolean;
-        } | {
-            type: "squat";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            reps: number;
-        } | {
-            type: "freeze";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            cue: "music-stop" | "narration" | "visual";
-        } | {
-            type: "run_in_place";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            durationMs: number;
-            intensity: "stroll" | "jog" | "sprint";
-        } | {
-            type: "balance";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            pose: "one-leg" | "airplane" | "tiptoe" | "statue";
         } | null;
         terminal: false;
         transitions: {
@@ -6194,6 +4311,14 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
                 timeBudgetMul: number;
             } | null;
         }[];
+        narration: {
+            items: {
+                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
+                text: string;
+                audioAssetId: string | null;
+            }[];
+            captionDefaultOn: true;
+        };
         demo: {
             characterId: string;
             animation: string;
@@ -6207,14 +4332,6 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
         kind: "story" | "calibration-check" | "challenge" | "rest" | "celebration";
         id: string;
         energy: "calm" | "medium" | "high";
-        narration: {
-            items: {
-                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
-                text: string;
-                audioAssetId: string | null;
-            }[];
-            captionDefaultOn: true;
-        };
         challenge: {
             type: "touch_targets";
             count: number;
@@ -6225,40 +4342,6 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
-        } | {
-            type: "jump_count";
-            count: number;
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            countAloud: boolean;
-        } | {
-            type: "squat";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            reps: number;
-        } | {
-            type: "freeze";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            cue: "music-stop" | "narration" | "visual";
-        } | {
-            type: "run_in_place";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            durationMs: number;
-            intensity: "stroll" | "jog" | "sprint";
-        } | {
-            type: "balance";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            pose: "one-leg" | "airplane" | "tiptoe" | "statue";
         } | null;
         terminal: true;
         transitions: {
@@ -6271,6 +4354,14 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
                 timeBudgetMul: number;
             } | null;
         }[];
+        narration: {
+            items: {
+                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
+                text: string;
+                audioAssetId: string | null;
+            }[];
+            captionDefaultOn: true;
+        };
         demo: {
             characterId: string;
             animation: string;
@@ -6420,14 +4511,6 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
         kind: "story" | "calibration-check" | "challenge" | "rest" | "celebration";
         id: string;
         energy: "calm" | "medium" | "high";
-        narration: {
-            items: {
-                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
-                text: string;
-                audioAssetId: string | null;
-            }[];
-            captionDefaultOn: true;
-        };
         challenge: {
             type: "touch_targets";
             count: number;
@@ -6438,40 +4521,6 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
-        } | {
-            type: "jump_count";
-            count: number;
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            countAloud: boolean;
-        } | {
-            type: "squat";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            reps: number;
-        } | {
-            type: "freeze";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            cue: "music-stop" | "narration" | "visual";
-        } | {
-            type: "run_in_place";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            durationMs: number;
-            intensity: "stroll" | "jog" | "sprint";
-        } | {
-            type: "balance";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            pose: "one-leg" | "airplane" | "tiptoe" | "statue";
         } | null;
         terminal: false;
         transitions: {
@@ -6484,6 +4533,14 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
                 timeBudgetMul: number;
             } | null;
         }[];
+        narration: {
+            items: {
+                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
+                text: string;
+                audioAssetId: string | null;
+            }[];
+            captionDefaultOn: true;
+        };
         demo: {
             characterId: string;
             animation: string;
@@ -6497,14 +4554,6 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
         kind: "story" | "calibration-check" | "challenge" | "rest" | "celebration";
         id: string;
         energy: "calm" | "medium" | "high";
-        narration: {
-            items: {
-                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
-                text: string;
-                audioAssetId: string | null;
-            }[];
-            captionDefaultOn: true;
-        };
         challenge: {
             type: "touch_targets";
             count: number;
@@ -6515,40 +4564,6 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
-        } | {
-            type: "jump_count";
-            count: number;
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            countAloud: boolean;
-        } | {
-            type: "squat";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            reps: number;
-        } | {
-            type: "freeze";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            cue: "music-stop" | "narration" | "visual";
-        } | {
-            type: "run_in_place";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            durationMs: number;
-            intensity: "stroll" | "jog" | "sprint";
-        } | {
-            type: "balance";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            pose: "one-leg" | "airplane" | "tiptoe" | "statue";
         } | null;
         terminal: true;
         transitions: {
@@ -6561,6 +4576,14 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
                 timeBudgetMul: number;
             } | null;
         }[];
+        narration: {
+            items: {
+                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
+                text: string;
+                audioAssetId: string | null;
+            }[];
+            captionDefaultOn: true;
+        };
         demo: {
             characterId: string;
             animation: string;

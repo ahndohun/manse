@@ -10,8 +10,8 @@ against the final video and deployed build before submitting.
 - **Tagline:** An open-source motion-game engine and Codex publishing pipeline for every screen.
 - **Track:** Developer Tools
 - **Repository:** https://github.com/ahndohun/manse
-- **Public Showcase:** `<SHOWCASE_URL>`
-- **No-camera playground:** `<SHOWCASE_URL>/playground?provider=simulated`
+- **Public Showcase:** https://manse-showcase.ran584000.chatgpt.site
+- **No-camera playground:** https://manse-showcase.ran584000.chatgpt.site/playground?provider=simulated
 - **Creator game used in the demo:** `<OWNER_GAME_URL>`
 - **Public YouTube demo:** `<DEMO_VIDEO_URL>`
 - **Primary Codex `/feedback` Session ID:** `<CODEX_SESSION_ID>`
@@ -123,8 +123,8 @@ extensions. The contracts and platform remain MIT licensed and self-hostable.
 
 ## Judge test path
 
-1. Open `<SHOWCASE_URL>` without signing in.
-2. Open `<SHOWCASE_URL>/playground?provider=simulated` and complete the target
+1. Open `https://manse-showcase.ran584000.chatgpt.site` without signing in.
+2. Open `https://manse-showcase.ran584000.chatgpt.site/playground?provider=simulated` and complete the target
    sequence with mouse or touch input.
 3. Follow the creator-game link to `<OWNER_GAME_URL>` and verify that it is an
    independent Site.

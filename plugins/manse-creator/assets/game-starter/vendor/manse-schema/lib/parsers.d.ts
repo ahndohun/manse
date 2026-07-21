@@ -288,14 +288,6 @@ export declare function safeParseEpisodePack(input: unknown): import("zod").Safe
         kind: "story" | "calibration-check" | "challenge" | "rest" | "celebration";
         id: string;
         energy: "calm" | "medium" | "high";
-        narration: {
-            items: {
-                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
-                text: string;
-                audioAssetId: string | null;
-            }[];
-            captionDefaultOn: true;
-        };
         challenge: {
             type: "touch_targets";
             count: number;
@@ -306,40 +298,6 @@ export declare function safeParseEpisodePack(input: unknown): import("zod").Safe
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
-        } | {
-            type: "jump_count";
-            count: number;
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            countAloud: boolean;
-        } | {
-            type: "squat";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            reps: number;
-        } | {
-            type: "freeze";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            cue: "music-stop" | "narration" | "visual";
-        } | {
-            type: "run_in_place";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            durationMs: number;
-            intensity: "stroll" | "jog" | "sprint";
-        } | {
-            type: "balance";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            pose: "one-leg" | "airplane" | "tiptoe" | "statue";
         } | null;
         terminal: false;
         transitions: {
@@ -352,6 +310,14 @@ export declare function safeParseEpisodePack(input: unknown): import("zod").Safe
                 timeBudgetMul: number;
             } | null;
         }[];
+        narration: {
+            items: {
+                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
+                text: string;
+                audioAssetId: string | null;
+            }[];
+            captionDefaultOn: true;
+        };
         demo: {
             characterId: string;
             animation: string;
@@ -365,14 +331,6 @@ export declare function safeParseEpisodePack(input: unknown): import("zod").Safe
         kind: "story" | "calibration-check" | "challenge" | "rest" | "celebration";
         id: string;
         energy: "calm" | "medium" | "high";
-        narration: {
-            items: {
-                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
-                text: string;
-                audioAssetId: string | null;
-            }[];
-            captionDefaultOn: true;
-        };
         challenge: {
             type: "touch_targets";
             count: number;
@@ -383,40 +341,6 @@ export declare function safeParseEpisodePack(input: unknown): import("zod").Safe
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
-        } | {
-            type: "jump_count";
-            count: number;
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            countAloud: boolean;
-        } | {
-            type: "squat";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            reps: number;
-        } | {
-            type: "freeze";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            cue: "music-stop" | "narration" | "visual";
-        } | {
-            type: "run_in_place";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            durationMs: number;
-            intensity: "stroll" | "jog" | "sprint";
-        } | {
-            type: "balance";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            pose: "one-leg" | "airplane" | "tiptoe" | "statue";
         } | null;
         terminal: true;
         transitions: {
@@ -429,6 +353,14 @@ export declare function safeParseEpisodePack(input: unknown): import("zod").Safe
                 timeBudgetMul: number;
             } | null;
         }[];
+        narration: {
+            items: {
+                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
+                text: string;
+                audioAssetId: string | null;
+            }[];
+            captionDefaultOn: true;
+        };
         demo: {
             characterId: string;
             animation: string;
@@ -578,14 +510,6 @@ export declare function safeParseEpisodePack(input: unknown): import("zod").Safe
         kind: "story" | "calibration-check" | "challenge" | "rest" | "celebration";
         id: string;
         energy: "calm" | "medium" | "high";
-        narration: {
-            items: {
-                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
-                text: string;
-                audioAssetId: string | null;
-            }[];
-            captionDefaultOn: true;
-        };
         challenge: {
             type: "touch_targets";
             count: number;
@@ -596,40 +520,6 @@ export declare function safeParseEpisodePack(input: unknown): import("zod").Safe
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
-        } | {
-            type: "jump_count";
-            count: number;
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            countAloud: boolean;
-        } | {
-            type: "squat";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            reps: number;
-        } | {
-            type: "freeze";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            cue: "music-stop" | "narration" | "visual";
-        } | {
-            type: "run_in_place";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            durationMs: number;
-            intensity: "stroll" | "jog" | "sprint";
-        } | {
-            type: "balance";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            pose: "one-leg" | "airplane" | "tiptoe" | "statue";
         } | null;
         terminal: false;
         transitions: {
@@ -642,6 +532,14 @@ export declare function safeParseEpisodePack(input: unknown): import("zod").Safe
                 timeBudgetMul: number;
             } | null;
         }[];
+        narration: {
+            items: {
+                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
+                text: string;
+                audioAssetId: string | null;
+            }[];
+            captionDefaultOn: true;
+        };
         demo: {
             characterId: string;
             animation: string;
@@ -655,14 +553,6 @@ export declare function safeParseEpisodePack(input: unknown): import("zod").Safe
         kind: "story" | "calibration-check" | "challenge" | "rest" | "celebration";
         id: string;
         energy: "calm" | "medium" | "high";
-        narration: {
-            items: {
-                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
-                text: string;
-                audioAssetId: string | null;
-            }[];
-            captionDefaultOn: true;
-        };
         challenge: {
             type: "touch_targets";
             count: number;
@@ -673,40 +563,6 @@ export declare function safeParseEpisodePack(input: unknown): import("zod").Safe
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
-        } | {
-            type: "jump_count";
-            count: number;
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            countAloud: boolean;
-        } | {
-            type: "squat";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            reps: number;
-        } | {
-            type: "freeze";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            cue: "music-stop" | "narration" | "visual";
-        } | {
-            type: "run_in_place";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            durationMs: number;
-            intensity: "stroll" | "jog" | "sprint";
-        } | {
-            type: "balance";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
-            holdMs: number;
-            pose: "one-leg" | "airplane" | "tiptoe" | "statue";
         } | null;
         terminal: true;
         transitions: {
@@ -719,6 +575,14 @@ export declare function safeParseEpisodePack(input: unknown): import("zod").Safe
                 timeBudgetMul: number;
             } | null;
         }[];
+        narration: {
+            items: {
+                locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
+                text: string;
+                audioAssetId: string | null;
+            }[];
+            captionDefaultOn: true;
+        };
         demo: {
             characterId: string;
             animation: string;

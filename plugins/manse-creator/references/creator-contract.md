@@ -6,7 +6,7 @@ Apply this contract to every Manse game project.
 
 - A game is an independent, creator-owned Site. The Manse Showcase only links to it.
 - A version 1 pack is declarative JSON. Never put JavaScript, HTML, executable WebAssembly, eval-like text, credentials, or remote code in a pack.
-- The current 0.1 runtime implements `touch_targets`. The schema reserves other challenge names for future engines; do not generate or claim those experiences until the installed runtime implements them.
+- The version 1 contract admits only `touch_targets`, the mechanic implemented by runtime 0.1. Future mechanics require a reviewed engine change and a new compatible schema release; do not generate or claim them early.
 - A published game must run without a Manse account, ChatGPT sign-in, an OpenAI API key, or a runtime AI call.
 
 ## Privacy and safety
