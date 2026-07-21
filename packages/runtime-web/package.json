@@ -1,6 +1,6 @@
 {
   "name": "@manse/runtime-web",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Framework-neutral browser player for Manse motion games",
   "license": "MIT",
   "type": "module",
@@ -29,7 +29,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@manse/schema": "0.1.0",
+    "@manse/schema": "0.2.0",
     "@mediapipe/tasks-vision": "0.10.35"
   },
   "devDependencies": {

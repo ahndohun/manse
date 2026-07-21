@@ -1,6 +1,6 @@
 {
   "name": "@manse/cli",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Safe local tooling for validating, packaging, and listing Manse games",
   "license": "MIT",
   "type": "module",
@@ -29,7 +29,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@manse/schema": "0.1.0"
+    "@manse/schema": "0.2.0"
   },
   "devDependencies": {
     "@types/node": "22.19.19",

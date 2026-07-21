@@ -32,7 +32,7 @@ export declare function safeParseGameManifest(input: unknown): import("zod").Saf
         min: number;
         max: number;
     };
-    movementTags: "touch"[];
+    movementTags: ("freeze" | "squat" | "jump" | "step" | "touch" | "dodge" | "pose" | "strike" | "combo")[];
     accessibility: {
         captions: boolean;
         seatedMode: boolean;
@@ -85,7 +85,7 @@ export declare function safeParseGameManifest(input: unknown): import("zod").Saf
         min: number;
         max: number;
     };
-    movementTags: "touch"[];
+    movementTags: ("freeze" | "squat" | "jump" | "step" | "touch" | "dodge" | "pose" | "strike" | "combo")[];
     accessibility: {
         captions: boolean;
         seatedMode: boolean;
@@ -156,7 +156,7 @@ export declare function safeParseCatalogSnapshot(input: unknown): import("zod").
                 min: number;
                 max: number;
             };
-            movementTags: "touch"[];
+            movementTags: ("freeze" | "squat" | "jump" | "step" | "touch" | "dodge" | "pose" | "strike" | "combo")[];
             accessibility: {
                 captions: boolean;
                 seatedMode: boolean;
@@ -215,7 +215,7 @@ export declare function safeParseCatalogSnapshot(input: unknown): import("zod").
                 min: number;
                 max: number;
             };
-            movementTags: "touch"[];
+            movementTags: ("freeze" | "squat" | "jump" | "step" | "touch" | "dodge" | "pose" | "strike" | "combo")[];
             accessibility: {
                 captions: boolean;
                 seatedMode: boolean;
@@ -245,7 +245,7 @@ export declare function safeParseCatalogSnapshot(input: unknown): import("zod").
 }>;
 export declare function parseEpisodePack(input: unknown): EpisodePack;
 export declare function safeParseEpisodePack(input: unknown): import("zod").SafeParseReturnType<{
-    schemaVersion: 1;
+    schemaVersion: 1 | 2;
     permissions: {
         camera: boolean;
         deviceLocalStorage: boolean;
@@ -273,6 +273,11 @@ export declare function safeParseEpisodePack(input: unknown): import("zod").Safe
             generatedAt: string;
             reasoningEffort: string;
         } | null;
+        players?: {
+            min: number;
+            max: number;
+            mode: "solo" | "coop" | "versus";
+        } | undefined;
     };
     cast: {
         name: {
@@ -290,14 +295,169 @@ export declare function safeParseEpisodePack(input: unknown): import("zod").Safe
         energy: "calm" | "medium" | "high";
         challenge: {
             type: "touch_targets";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
             count: number;
             zone: "upper" | "lower" | "full" | "reachable";
             targetScale: number;
             dwellMs: number;
             limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        } | {
+            type: "sequence";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            steps: ({
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            } | {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            } | {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            } | {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            } | {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            } | {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            } | {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            } | {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            })[];
+            interStepGraceMs: number;
         } | null;
         terminal: false;
         transitions: {
@@ -308,6 +468,11 @@ export declare function safeParseEpisodePack(input: unknown): import("zod").Safe
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             } | null;
         }[];
         narration: {
@@ -333,14 +498,169 @@ export declare function safeParseEpisodePack(input: unknown): import("zod").Safe
         energy: "calm" | "medium" | "high";
         challenge: {
             type: "touch_targets";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
             count: number;
             zone: "upper" | "lower" | "full" | "reachable";
             targetScale: number;
             dwellMs: number;
             limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        } | {
+            type: "sequence";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            steps: ({
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            } | {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            } | {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            } | {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            } | {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            } | {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            } | {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            } | {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            })[];
+            interStepGraceMs: number;
         } | null;
         terminal: true;
         transitions: {
@@ -351,6 +671,11 @@ export declare function safeParseEpisodePack(input: unknown): import("zod").Safe
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             } | null;
         }[];
         narration: {
@@ -467,7 +792,7 @@ export declare function safeParseEpisodePack(input: unknown): import("zod").Safe
         }[];
     };
 }, {
-    schemaVersion: 1;
+    schemaVersion: 1 | 2;
     permissions: {
         camera: boolean;
         deviceLocalStorage: boolean;
@@ -495,6 +820,11 @@ export declare function safeParseEpisodePack(input: unknown): import("zod").Safe
             generatedAt: string;
             reasoningEffort: string;
         } | null;
+        players?: {
+            min: number;
+            max: number;
+            mode: "solo" | "coop" | "versus";
+        } | undefined;
     };
     cast: {
         name: {
@@ -512,14 +842,169 @@ export declare function safeParseEpisodePack(input: unknown): import("zod").Safe
         energy: "calm" | "medium" | "high";
         challenge: {
             type: "touch_targets";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
             count: number;
             zone: "upper" | "lower" | "full" | "reachable";
             targetScale: number;
             dwellMs: number;
             limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        } | {
+            type: "sequence";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            steps: ({
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            } | {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            } | {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            } | {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            } | {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            } | {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            } | {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            } | {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            })[];
+            interStepGraceMs: number;
         } | null;
         terminal: false;
         transitions: {
@@ -530,6 +1015,11 @@ export declare function safeParseEpisodePack(input: unknown): import("zod").Safe
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             } | null;
         }[];
         narration: {
@@ -555,14 +1045,169 @@ export declare function safeParseEpisodePack(input: unknown): import("zod").Safe
         energy: "calm" | "medium" | "high";
         challenge: {
             type: "touch_targets";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
             count: number;
             zone: "upper" | "lower" | "full" | "reachable";
             targetScale: number;
             dwellMs: number;
             limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        } | {
+            type: "sequence";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            steps: ({
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            } | {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            } | {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            } | {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            } | {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            } | {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            } | {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            } | {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            })[];
+            interStepGraceMs: number;
         } | null;
         terminal: true;
         transitions: {
@@ -573,6 +1218,11 @@ export declare function safeParseEpisodePack(input: unknown): import("zod").Safe
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             } | null;
         }[];
         narration: {
@@ -770,7 +1420,7 @@ export declare function safeParsePlayerProfile(input: unknown): import("zod").Sa
     abilities: {
         seatedMode: boolean;
         canJump: boolean;
-        activeSide: "both" | "left" | "right";
+        activeSide: "left" | "right" | "both";
     };
     sensory: {
         captions: boolean;
@@ -780,11 +1430,14 @@ export declare function safeParsePlayerProfile(input: unknown): import("zod").Sa
     };
     skill: {
         touch_targets: number;
-        jump_count: number;
-        squat: number;
         freeze: number;
-        run_in_place: number;
-        balance: number;
+        body_zone: number;
+        squat: number;
+        pose_match: number;
+        jump: number;
+        velocity_hit: number;
+        step: number;
+        sequence: number;
     };
 }, {
     locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
@@ -808,7 +1461,7 @@ export declare function safeParsePlayerProfile(input: unknown): import("zod").Sa
     abilities: {
         seatedMode: boolean;
         canJump: boolean;
-        activeSide: "both" | "left" | "right";
+        activeSide: "left" | "right" | "both";
     };
     sensory: {
         captions: boolean;
@@ -818,11 +1471,14 @@ export declare function safeParsePlayerProfile(input: unknown): import("zod").Sa
     };
     skill: {
         touch_targets: number;
-        jump_count: number;
-        squat: number;
         freeze: number;
-        run_in_place: number;
-        balance: number;
+        body_zone: number;
+        squat: number;
+        pose_match: number;
+        jump: number;
+        velocity_hit: number;
+        step: number;
+        sequence: number;
     };
 }>;
 export declare function parseSessionStats(input: unknown): SessionStats;
@@ -831,7 +1487,7 @@ export declare function safeParseSessionStats(input: unknown): import("zod").Saf
     scenes: {
         reactionMsP50: number | null;
         sceneId: string;
-        challengeType: "touch_targets" | null;
+        challengeType: "touch_targets" | "freeze" | "body_zone" | "squat" | "pose_match" | "jump" | "velocity_hit" | "step" | "sequence" | null;
         outcome: "success" | "partial" | "struggle" | null;
         attempts: number;
         activeMs: number;
@@ -848,7 +1504,7 @@ export declare function safeParseSessionStats(input: unknown): import("zod").Saf
     scenes: {
         reactionMsP50: number | null;
         sceneId: string;
-        challengeType: "touch_targets" | null;
+        challengeType: "touch_targets" | "freeze" | "body_zone" | "squat" | "pose_match" | "jump" | "velocity_hit" | "step" | "sequence" | null;
         outcome: "success" | "partial" | "struggle" | null;
         attempts: number;
         activeMs: number;

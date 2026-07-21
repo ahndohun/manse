@@ -1,5 +1,7 @@
 import { TIER_PROFILES } from "../config.js";
 import type {
+  ChallengeGuide,
+  PlayerRenderState,
   RendererFactory,
   RendererFactoryOptions,
   RuntimeLandmark,
@@ -7,6 +9,9 @@ import type {
   RuntimeRenderer,
   RuntimeTarget,
 } from "../types.js";
+
+/** Distinct skeleton colors per multiplayer lane, matching lane colorIndex. */
+const PLAYER_COLORS = ["#8ee7ff", "#ffd166", "#80ed99", "#ff9ecb"] as const;
 
 const SKELETON_CONNECTIONS: readonly (readonly [number, number])[] = [
   [11, 12], [11, 13], [13, 15], [12, 14], [14, 16],
@@ -223,6 +228,30 @@ class DomRenderer extends BaseRenderer {
       line.setAttribute("stroke-width", "8");
       this.overlay.append(line);
     }
+    const guide = frame.challenge ?? null;
+    if (guide !== null) {
+      for (const zone of guide.zones) {
+        const rect = this.options.document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        rect.setAttribute("x", String(zone.box.x0 * 1000));
+        rect.setAttribute("y", String(zone.box.y0 * 1000));
+        rect.setAttribute("width", String((zone.box.x1 - zone.box.x0) * 1000));
+        rect.setAttribute("height", String((zone.box.y1 - zone.box.y0) * 1000));
+        rect.setAttribute("rx", "20");
+        rect.setAttribute("fill", zone.state === "done" ? "rgba(128,237,153,.2)" : "rgba(142,231,255,.14)");
+        rect.setAttribute("stroke", zone.state === "danger" ? "#ff6b6b" : "#8ee7ff");
+        rect.setAttribute("stroke-width", "6");
+        this.overlay.append(rect);
+      }
+      const progress = this.options.document.createElementNS("http://www.w3.org/2000/svg", "text");
+      progress.setAttribute("x", "960");
+      progress.setAttribute("y", "80");
+      progress.setAttribute("text-anchor", "end");
+      progress.setAttribute("font-size", "56");
+      progress.setAttribute("font-family", "system-ui, sans-serif");
+      progress.setAttribute("fill", "white");
+      progress.textContent = `${guide.completedUnits}/${guide.totalUnits}`;
+      this.overlay.append(progress);
+    }
     for (const target of frame.targets) this.appendDomTarget(target);
     if (frame.celebrationProgress > 0) {
       const badge = this.options.document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -300,10 +329,45 @@ function drawOverlay(
   frame: RuntimeRenderFrame,
 ): void {
   context.clearRect(0, 0, canvas.width, canvas.height);
-  const landmarks = bestLandmarks(frame);
   context.lineCap = "round";
   context.lineJoin = "round";
-  context.strokeStyle = "rgba(142, 231, 255, .86)";
+
+  const players = frame.players ?? [];
+  if (players.length > 0) {
+    for (const player of players) {
+      drawSkeleton(context, canvas, player.landmarks, PLAYER_COLORS[player.colorIndex] ?? "#8ee7ff");
+    }
+  } else {
+    drawSkeleton(context, canvas, bestLandmarks(frame), "#8ee7ff");
+  }
+
+  const guide = frame.challenge ?? null;
+  if (guide !== null) {
+    drawZones(context, canvas, guide);
+    drawSilhouette(context, canvas, guide, frame.reducedStimulation);
+    drawJointFeedback(context, canvas, guide);
+  }
+  for (const target of frame.targets) drawTarget(context, canvas, target, frame.timestampMs, frame.reducedStimulation);
+  if (guide !== null) {
+    drawProgressRing(context, canvas, guide);
+    drawRepetitionCounter(context, canvas, guide);
+    drawArrow(context, canvas, guide, frame.timestampMs, frame.reducedStimulation);
+    drawStepLabel(context, canvas, guide);
+    drawFramingHint(context, canvas, guide);
+  }
+  if (players.length > 1) drawPlayerChips(context, canvas, players);
+  if (frame.celebrationProgress > 0) drawCelebration(context, canvas, frame);
+  if (frame.caption !== null) drawCaption(context, canvas, frame.caption);
+}
+
+function drawSkeleton(
+  context: CanvasRenderingContext2D,
+  canvas: HTMLCanvasElement,
+  landmarks: readonly RuntimeLandmark[],
+  color: string,
+): void {
+  context.strokeStyle = color;
+  context.globalAlpha = 0.86;
   context.lineWidth = Math.max(3, canvas.width * 0.006);
   for (const [startIndex, endIndex] of SKELETON_CONNECTIONS) {
     const start = landmarks[startIndex];
@@ -314,9 +378,241 @@ function drawOverlay(
     context.lineTo(end.x * canvas.width, end.y * canvas.height);
     context.stroke();
   }
-  for (const target of frame.targets) drawTarget(context, canvas, target, frame.timestampMs, frame.reducedStimulation);
-  if (frame.celebrationProgress > 0) drawCelebration(context, canvas, frame);
-  if (frame.caption !== null) drawCaption(context, canvas, frame.caption);
+  context.globalAlpha = 1;
+}
+
+function drawZones(
+  context: CanvasRenderingContext2D,
+  canvas: HTMLCanvasElement,
+  guide: ChallengeGuide,
+): void {
+  for (const zone of guide.zones) {
+    const x = zone.box.x0 * canvas.width;
+    const y = zone.box.y0 * canvas.height;
+    const width = (zone.box.x1 - zone.box.x0) * canvas.width;
+    const height = (zone.box.y1 - zone.box.y0) * canvas.height;
+    const palette = zone.state === "done"
+      ? { fill: "rgba(128, 237, 153, .18)", stroke: "rgba(128, 237, 153, .9)" }
+      : zone.state === "danger"
+        ? { fill: "rgba(255, 107, 107, .24)", stroke: "rgba(255, 107, 107, .95)" }
+        : zone.state === "active"
+          ? zone.mode === "avoid"
+            ? { fill: "rgba(255, 107, 107, .12)", stroke: "rgba(255, 154, 154, .8)" }
+            : { fill: "rgba(142, 231, 255, .16)", stroke: "rgba(142, 231, 255, .9)" }
+          : { fill: "rgba(255, 255, 255, .05)", stroke: "rgba(255, 255, 255, .3)" };
+    context.fillStyle = palette.fill;
+    context.strokeStyle = palette.stroke;
+    context.lineWidth = Math.max(2, canvas.width * 0.004);
+    roundedRect(context, x, y, width, height, Math.min(24, width * 0.1));
+    context.fill();
+    context.stroke();
+    if (zone.state === "active" && guide.holdProgress > 0) {
+      context.fillStyle = zone.mode === "avoid" ? "rgba(128, 237, 153, .5)" : "rgba(142, 231, 255, .5)";
+      const barHeight = Math.max(4, canvas.height * 0.012);
+      context.fillRect(x, y + height - barHeight, width * Math.min(1, guide.holdProgress), barHeight);
+    }
+  }
+}
+
+function drawSilhouette(
+  context: CanvasRenderingContext2D,
+  canvas: HTMLCanvasElement,
+  guide: ChallengeGuide,
+  reduced: boolean,
+): void {
+  if (guide.silhouette.length === 0) return;
+  context.strokeStyle = reduced ? "rgba(255,255,255,.4)" : "rgba(255, 243, 163, .55)";
+  context.lineWidth = Math.max(4, canvas.width * 0.009);
+  context.setLineDash([canvas.width * 0.014, canvas.width * 0.012]);
+  for (const segment of guide.silhouette) {
+    context.beginPath();
+    context.moveTo(segment.x0 * canvas.width, segment.y0 * canvas.height);
+    context.lineTo(segment.x1 * canvas.width, segment.y1 * canvas.height);
+    context.stroke();
+  }
+  context.setLineDash([]);
+}
+
+function drawJointFeedback(
+  context: CanvasRenderingContext2D,
+  canvas: HTMLCanvasElement,
+  guide: ChallengeGuide,
+): void {
+  for (const feedback of guide.jointFeedback) {
+    if (feedback.x === null || feedback.y === null) continue;
+    context.beginPath();
+    context.arc(
+      feedback.x * canvas.width,
+      feedback.y * canvas.height,
+      Math.max(5, canvas.width * 0.011),
+      0,
+      Math.PI * 2,
+    );
+    context.fillStyle = feedback.ok ? "rgba(128, 237, 153, .9)" : "rgba(255, 209, 102, .9)";
+    context.fill();
+    context.strokeStyle = "rgba(0,0,0,.4)";
+    context.lineWidth = 2;
+    context.stroke();
+  }
+}
+
+function drawProgressRing(
+  context: CanvasRenderingContext2D,
+  canvas: HTMLCanvasElement,
+  guide: ChallengeGuide,
+): void {
+  const radius = Math.max(18, Math.min(canvas.width, canvas.height) * 0.045);
+  const x = canvas.width - radius - canvas.width * 0.03;
+  const y = radius + canvas.height * 0.045;
+  context.beginPath();
+  context.arc(x, y, radius, 0, Math.PI * 2);
+  context.strokeStyle = "rgba(255,255,255,.25)";
+  context.lineWidth = Math.max(4, radius * 0.22);
+  context.stroke();
+  if (guide.progress > 0) {
+    context.beginPath();
+    context.arc(x, y, radius, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.min(1, guide.progress));
+    context.strokeStyle = guide.phase === "done" ? "#80ed99" : "#8ee7ff";
+    context.stroke();
+  }
+  if (guide.holdProgress > 0 && guide.phase === "holding") {
+    context.beginPath();
+    context.arc(x, y, radius * 0.62, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.min(1, guide.holdProgress));
+    context.strokeStyle = "#fff3a3";
+    context.lineWidth = Math.max(3, radius * 0.16);
+    context.stroke();
+  }
+  context.fillStyle = "white";
+  context.font = `700 ${Math.round(radius * 0.62)}px system-ui, sans-serif`;
+  context.textAlign = "center";
+  context.textBaseline = "middle";
+  context.fillText(`${guide.completedUnits}/${guide.totalUnits}`, x, y);
+}
+
+function drawRepetitionCounter(
+  context: CanvasRenderingContext2D,
+  canvas: HTMLCanvasElement,
+  guide: ChallengeGuide,
+): void {
+  if (guide.repetitionCount === null) return;
+  const fontSize = Math.max(40, canvas.height * 0.16);
+  context.font = `800 ${fontSize}px system-ui, sans-serif`;
+  context.textAlign = "left";
+  context.textBaseline = "middle";
+  context.fillStyle = "rgba(255,255,255,.92)";
+  context.strokeStyle = "rgba(0,0,0,.45)";
+  context.lineWidth = fontSize * 0.06;
+  const x = canvas.width * 0.04;
+  const y = canvas.height * 0.18;
+  context.strokeText(String(guide.repetitionCount), x, y);
+  context.fillText(String(guide.repetitionCount), x, y);
+}
+
+function drawArrow(
+  context: CanvasRenderingContext2D,
+  canvas: HTMLCanvasElement,
+  guide: ChallengeGuide,
+  timestampMs: number,
+  reduced: boolean,
+): void {
+  if (guide.arrow === null || guide.phase === "done") return;
+  const size = Math.max(24, Math.min(canvas.width, canvas.height) * 0.07);
+  const bounce = reduced ? 0 : Math.sin(timestampMs / 240) * size * 0.16;
+  let x = canvas.width / 2;
+  let y = canvas.height * 0.2;
+  let angle = 0;
+  switch (guide.arrow) {
+    case "up": angle = -Math.PI / 2; y = canvas.height * 0.16 + bounce; break;
+    case "down": angle = Math.PI / 2; y = canvas.height * 0.24 + bounce; break;
+    case "left": angle = Math.PI; x = canvas.width * 0.2 + bounce; break;
+    case "right": angle = 0; x = canvas.width * 0.8 + bounce; break;
+  }
+  context.save();
+  context.translate(x, y);
+  context.rotate(angle);
+  context.beginPath();
+  context.moveTo(size * 0.7, 0);
+  context.lineTo(-size * 0.4, -size * 0.55);
+  context.lineTo(-size * 0.4, size * 0.55);
+  context.closePath();
+  context.fillStyle = "rgba(255, 243, 163, .9)";
+  context.fill();
+  context.strokeStyle = "rgba(0,0,0,.35)";
+  context.lineWidth = Math.max(2, size * 0.08);
+  context.stroke();
+  context.restore();
+}
+
+function drawStepLabel(
+  context: CanvasRenderingContext2D,
+  canvas: HTMLCanvasElement,
+  guide: ChallengeGuide,
+): void {
+  if (guide.stepLabel === null) return;
+  const fontSize = Math.max(14, Math.min(26, canvas.width * 0.024));
+  context.font = `700 ${fontSize}px system-ui, sans-serif`;
+  context.textAlign = "left";
+  context.textBaseline = "middle";
+  const text = guide.stepLabel;
+  const width = context.measureText(text).width + fontSize * 1.4;
+  const height = fontSize * 1.9;
+  const x = canvas.width * 0.03;
+  const y = canvas.height * 0.045;
+  context.fillStyle = "rgba(0,0,0,.6)";
+  roundedRect(context, x, y, width, height, height / 2);
+  context.fill();
+  context.fillStyle = "white";
+  context.fillText(text, x + fontSize * 0.7, y + height / 2);
+}
+
+function drawFramingHint(
+  context: CanvasRenderingContext2D,
+  canvas: HTMLCanvasElement,
+  guide: ChallengeGuide,
+): void {
+  if (guide.framing === null) return;
+  const text = guide.framing === "closer" ? "Step closer to the camera" : "Step back a little";
+  const fontSize = Math.max(14, Math.min(24, canvas.width * 0.022));
+  context.font = `600 ${fontSize}px system-ui, sans-serif`;
+  context.textAlign = "center";
+  context.textBaseline = "middle";
+  const width = context.measureText(text).width + fontSize * 2;
+  const height = fontSize * 2;
+  const x = (canvas.width - width) / 2;
+  const y = canvas.height * 0.08;
+  context.fillStyle = "rgba(255, 209, 102, .92)";
+  roundedRect(context, x, y, width, height, height / 2);
+  context.fill();
+  context.fillStyle = "#221a00";
+  context.fillText(text, canvas.width / 2, y + height / 2);
+}
+
+function drawPlayerChips(
+  context: CanvasRenderingContext2D,
+  canvas: HTMLCanvasElement,
+  players: readonly PlayerRenderState[],
+): void {
+  const fontSize = Math.max(13, Math.min(22, canvas.width * 0.02));
+  const chipHeight = fontSize * 1.9;
+  let y = canvas.height - chipHeight * players.length - canvas.height * 0.12;
+  for (const player of players) {
+    const label = `P${player.playerId + 1}  ${player.guide?.completedUnits ?? 0}/${player.guide?.totalUnits ?? 0}`;
+    context.font = `700 ${fontSize}px system-ui, sans-serif`;
+    context.textAlign = "left";
+    context.textBaseline = "middle";
+    const width = context.measureText(label).width + fontSize * 2.4;
+    const x = canvas.width * 0.03;
+    context.fillStyle = "rgba(0,0,0,.55)";
+    roundedRect(context, x, y, width, chipHeight, chipHeight / 2);
+    context.fill();
+    context.beginPath();
+    context.arc(x + fontSize, y + chipHeight / 2, fontSize * 0.5, 0, Math.PI * 2);
+    context.fillStyle = PLAYER_COLORS[player.colorIndex] ?? "#8ee7ff";
+    context.fill();
+    context.fillStyle = "white";
+    context.fillText(label, x + fontSize * 1.8, y + chipHeight / 2);
+    y += chipHeight + 6;
+  }
 }
 
 function drawTarget(

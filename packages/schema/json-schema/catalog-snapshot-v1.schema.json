@@ -133,7 +133,15 @@
                     "items": {
                       "type": "string",
                       "enum": [
-                        "touch"
+                        "touch",
+                        "freeze",
+                        "dodge",
+                        "squat",
+                        "pose",
+                        "jump",
+                        "strike",
+                        "step",
+                        "combo"
                       ]
                     },
                     "minItems": 1

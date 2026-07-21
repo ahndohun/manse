@@ -1,0 +1,37 @@
+{
+  "primitive": "pose_match",
+  "success": {
+    "fps": 30,
+    "durationMs": 2200,
+    "keyframes": [
+      { "atMs": 0 },
+      { "atMs": 400 },
+      { "atMs": 700, "joints": {
+        "left_wrist": { "dx": 0.15, "dy": -0.08 },
+        "right_wrist": { "dx": -0.15, "dy": -0.08 }
+      } },
+      { "atMs": 2200, "joints": {
+        "left_wrist": { "dx": 0.15, "dy": -0.08 },
+        "right_wrist": { "dx": -0.15, "dy": -0.08 }
+      } }
+    ]
+  },
+  "failure": {
+    "fps": 30,
+    "durationMs": 2600,
+    "keyframes": [
+      { "atMs": 0 },
+      { "atMs": 2600 }
+    ]
+  },
+  "boundary": {
+    "fps": 30,
+    "durationMs": 2200,
+    "keyframes": [
+      { "atMs": 0 },
+      { "atMs": 400 },
+      { "atMs": 700, "joints": { "right_wrist": { "dx": -0.15, "dy": -0.08 } } },
+      { "atMs": 2200, "joints": { "right_wrist": { "dx": -0.15, "dy": -0.08 } } }
+    ]
+  }
+}

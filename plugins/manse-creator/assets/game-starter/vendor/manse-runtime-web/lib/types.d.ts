@@ -63,6 +63,69 @@ export interface RuntimeTarget {
     readonly dwellProgress: number;
     readonly hit: boolean;
     readonly color: readonly [number, number, number, number];
+    /** Direction the limb must travel for velocity targets; null for touch. */
+    readonly requiredDirection?: "any" | "up" | "down" | "left" | "right" | null;
+}
+export type ChallengePhase = "idle" | "active" | "holding" | "cooldown" | "done";
+export interface ChallengeZoneOverlay {
+    readonly id: string;
+    readonly box: {
+        readonly x0: number;
+        readonly y0: number;
+        readonly x1: number;
+        readonly y1: number;
+    };
+    readonly mode: "enter" | "avoid";
+    readonly state: "pending" | "active" | "done" | "danger";
+}
+export interface SilhouetteSegment {
+    readonly x0: number;
+    readonly y0: number;
+    readonly x1: number;
+    readonly y1: number;
+}
+export interface JointFeedback {
+    readonly joint: string;
+    /** Normalized screen position of the joint being judged, when known. */
+    readonly x: number | null;
+    readonly y: number | null;
+    readonly ok: boolean;
+}
+/**
+ * Renderer- and app-facing progress contract shared by every challenge
+ * primitive. touch counts targets, squat counts repetitions, freeze fills a
+ * hold — all through the same fields, so UIs never special-case a mechanic.
+ */
+export interface ChallengeGuide {
+    readonly kind: "touch_targets" | "freeze" | "body_zone" | "squat" | "pose_match" | "jump" | "velocity_hit" | "step" | "sequence";
+    readonly phase: ChallengePhase;
+    /** Overall completion, 0..1. */
+    readonly progress: number;
+    readonly completedUnits: number;
+    readonly totalUnits: number;
+    /** Progress of the current hold/dwell/stability window, 0..1. */
+    readonly holdProgress: number;
+    /** Mean confidence of the joints this evaluator is currently judging. */
+    readonly confidence: number;
+    /** Large-number display for repetition mechanics; null hides the counter. */
+    readonly repetitionCount: number | null;
+    readonly zones: readonly ChallengeZoneOverlay[];
+    /** Ghost skeleton for pose_match; empty for other mechanics. */
+    readonly silhouette: readonly SilhouetteSegment[];
+    readonly jointFeedback: readonly JointFeedback[];
+    /** Direction cue for step/velocity mechanics. */
+    readonly arrow: "left" | "right" | "up" | "down" | null;
+    /** Active inner step for sequences: e.g. "2/3 jump". */
+    readonly stepLabel: string | null;
+    /** Body-distance guidance; null when framing is fine or unknown. */
+    readonly framing: "closer" | "farther" | null;
+}
+export interface PlayerRenderState {
+    readonly playerId: number;
+    readonly colorIndex: number;
+    readonly guide: ChallengeGuide | null;
+    readonly targets: readonly RuntimeTarget[];
+    readonly landmarks: readonly RuntimeLandmark[];
 }
 export interface CalibrationResult {
     readonly sampleCount: number;
@@ -84,6 +147,10 @@ export interface RuntimeRenderFrame {
     readonly mirror: boolean;
     readonly reducedStimulation: boolean;
     readonly tier: DeviceTier;
+    /** Generic challenge feedback; null on story/rest/celebration scenes. */
+    readonly challenge?: ChallengeGuide | null;
+    /** Per-player overlays for multiplayer packs; empty in solo play. */
+    readonly players?: readonly PlayerRenderState[];
 }
 export interface RuntimeRenderer {
     readonly kind: RendererKind;
@@ -134,6 +201,10 @@ export interface PlayerSnapshot {
         readonly completed: number;
         readonly total: number;
     } | null;
+    /** Generic challenge progress; null outside challenge scenes. */
+    readonly challenge: ChallengeGuide | null;
+    /** Per-player progress for multiplayer packs; empty in solo play. */
+    readonly players: readonly PlayerRenderState[];
     readonly metrics: PlayerMetrics;
     readonly error: Error | null;
 }
@@ -154,6 +225,14 @@ export type PlayerEvent = {
     readonly type: "target-hit";
     readonly sceneId: string;
     readonly targetId: string;
+    readonly playerId?: number;
+} | {
+    readonly type: "challenge-progress";
+    readonly sceneId: string;
+    readonly unit: number;
+    readonly total: number;
+    readonly label: string;
+    readonly playerId?: number;
 } | {
     readonly type: "scene-changed";
     readonly sceneId: string;
@@ -193,6 +272,8 @@ export interface ProviderFactoryOptions {
     readonly replayFrames?: readonly RuntimePoseFrame[];
     readonly document: Document;
     readonly timing: Pick<RuntimePlatform, "now" | "setTimeout" | "clearTimeout">;
+    /** Number of bodies the provider should track; from pack.meta.players. */
+    readonly maxPoses?: number;
 }
 export type ProviderFactory = (options: ProviderFactoryOptions) => RuntimePoseProvider | Promise<RuntimePoseProvider>;
 export interface RuntimePlatform {

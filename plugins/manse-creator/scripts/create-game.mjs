@@ -29,6 +29,7 @@ const { values } = parseArgs({
     locale: { type: "string", default: "en" },
     creator: { type: "string", default: "Game creator" },
     energy: { type: "string", default: "moderate" },
+    mechanic: { type: "string", default: "touch_targets" },
     "source-url": { type: "string" },
     "age-min": { type: "string", default: "6" },
     "age-max": { type: "string", default: "12" },
@@ -52,8 +53,13 @@ Required:
 Optional:
   --locale en --creator <name> --source-url <https-url>
   --energy gentle|moderate|active
+  --mechanic touch_targets|freeze|body_zone|squat|pose_match|jump|velocity_hit|step|sequence
   --age-min 6 --age-max 12 --minutes 3 --target-count 3
-  --intro <caption> --instruction <caption> --celebration <caption>`);
+  --intro <caption> --instruction <caption> --celebration <caption>
+
+--target-count sets touch/strike targets, or rounds/repetitions/steps for
+motion mechanics. touch_targets emits a schemaVersion 1 pack runnable by every
+engine; other mechanics emit schemaVersion 2 packs requiring engine 0.2.`);
   process.exit(0);
 }
 
@@ -69,8 +75,183 @@ const ageMin = integer(values["age-min"], "--age-min", 2, 120);
 const ageMax = integer(values["age-max"], "--age-max", ageMin, 120);
 const minutes = integer(values.minutes, "--minutes", 1, 60);
 const targetCount = integer(values["target-count"], "--target-count", 1, 12);
+const mechanic = values.mechanic ?? "touch_targets";
+
+/**
+ * Every mechanic ships with conservative, child-safe tunables. Creators adjust
+ * them later in pack data; the generator never emits an unsafe starting point.
+ */
+const MECHANICS = {
+  touch_targets: {
+    movementTag: "touch",
+    instruction: (count) => `Touch all ${count} targets. Move at a pace that feels comfortable.`,
+    challenge: (count, timeBudgetMs, audio) => ({
+      type: "touch_targets",
+      count,
+      zone: "reachable",
+      targetScale: 1.2,
+      dwellMs: 140,
+      limb: "hands",
+      timeBudgetMs,
+      ...audio,
+    }),
+    adapt: { targetScaleMul: 1.2, dwellMsMul: 0.8, countDelta: -1, timeBudgetMul: 1.2 },
+  },
+  freeze: {
+    movementTag: "freeze",
+    instruction: (count) => `Freeze like a statue ${count} ${count === 1 ? "time" : "times"}!`,
+    challenge: (count, timeBudgetMs, audio) => ({
+      type: "freeze",
+      holdMs: 2_500,
+      motionThreshold: 0.04,
+      graceMs: 400,
+      rounds: Math.min(10, count),
+      minVisibleJoints: 8,
+      timeBudgetMs,
+      ...audio,
+    }),
+    adapt: { targetScaleMul: 1, dwellMsMul: 1, countDelta: 0, timeBudgetMul: 1.2, holdMsMul: 0.8, motionThresholdMul: 1.3 },
+  },
+  body_zone: {
+    movementTag: "dodge",
+    instruction: () => "Move your hands into each glowing bubble.",
+    challenge: (_count, timeBudgetMs, audio) => ({
+      type: "body_zone",
+      part: "hands",
+      mode: "enter",
+      zones: [
+        { id: "left-bubble", box: { x0: 0.06, y0: 0.15, x1: 0.38, y1: 0.6 } },
+        { id: "top-bubble", box: { x0: 0.32, y0: 0.05, x1: 0.68, y1: 0.35 } },
+        { id: "right-bubble", box: { x0: 0.62, y0: 0.15, x1: 0.94, y1: 0.6 } },
+      ],
+      holdMs: 500,
+      timeBudgetMs,
+      ...audio,
+    }),
+    adapt: { targetScaleMul: 1, dwellMsMul: 1, countDelta: 0, timeBudgetMul: 1.2, holdMsMul: 0.8 },
+  },
+  squat: {
+    movementTag: "squat",
+    instruction: (count) => `Do ${count} gentle ${count === 1 ? "squat" : "squats"} at your own pace.`,
+    challenge: (count, timeBudgetMs, audio) => ({
+      type: "squat",
+      repetitions: Math.min(10, count),
+      depthRatio: 0.2,
+      kneeAngleMaxDeg: 140,
+      holdMs: 0,
+      cooldownMs: 700,
+      timeBudgetMs,
+      ...audio,
+    }),
+    adapt: { targetScaleMul: 1, dwellMsMul: 1, countDelta: 0, timeBudgetMul: 1.2, repetitionsDelta: -1, toleranceMul: 1.2 },
+  },
+  pose_match: {
+    movementTag: "pose",
+    instruction: () => "Copy the glowing pose and hold it steady.",
+    challenge: (count, timeBudgetMs, audio) => ({
+      type: "pose_match",
+      poses: [
+        {
+          id: "star-arms",
+          joints: [
+            { joint: "left_elbow", angleDeg: 170, toleranceDeg: 30 },
+            { joint: "right_elbow", angleDeg: 170, toleranceDeg: 30 },
+            { joint: "left_shoulder", angleDeg: 150, toleranceDeg: 35 },
+            { joint: "right_shoulder", angleDeg: 150, toleranceDeg: 35 },
+          ],
+          holdMs: 1_500,
+        },
+        {
+          id: "goal-arms",
+          joints: [
+            { joint: "left_elbow", angleDeg: 90, toleranceDeg: 30 },
+            { joint: "right_elbow", angleDeg: 90, toleranceDeg: 30 },
+          ],
+          holdMs: 1_500,
+        },
+        {
+          id: "one-wing",
+          joints: [
+            { joint: "left_shoulder", angleDeg: 160, toleranceDeg: 30 },
+            { joint: "left_elbow", angleDeg: 170, toleranceDeg: 30 },
+          ],
+          holdMs: 1_200,
+        },
+      ].slice(0, Math.max(1, Math.min(3, count))),
+      matchRatio: 0.7,
+      mirrorPolicy: "either",
+      timeBudgetMs,
+      ...audio,
+    }),
+    adapt: { targetScaleMul: 1, dwellMsMul: 1, countDelta: 0, timeBudgetMul: 1.2, toleranceMul: 1.25, holdMsMul: 0.8 },
+  },
+  jump: {
+    movementTag: "jump",
+    instruction: (count) => `Jump ${count} ${count === 1 ? "time" : "times"} and land softly.`,
+    challenge: (count, timeBudgetMs, audio) => ({
+      type: "jump",
+      repetitions: Math.min(10, count),
+      minRiseRatio: 0.12,
+      landingStableMs: 300,
+      cooldownMs: 800,
+      timeBudgetMs,
+      ...audio,
+    }),
+    adapt: { targetScaleMul: 1, dwellMsMul: 1, countDelta: 0, timeBudgetMul: 1.2, repetitionsDelta: -1, toleranceMul: 1.2 },
+  },
+  velocity_hit: {
+    movementTag: "strike",
+    instruction: (count) => `Tap the drums with a quick hand — ${count} to go!`,
+    challenge: (count, timeBudgetMs, audio) => ({
+      type: "velocity_hit",
+      count,
+      zone: "reachable",
+      targetScale: 1.3,
+      limb: "hands",
+      minSpeed: 0.7,
+      direction: "any",
+      timeBudgetMs,
+      ...audio,
+    }),
+    adapt: { targetScaleMul: 1.2, dwellMsMul: 1, countDelta: -1, timeBudgetMul: 1.2, speedMul: 0.8 },
+  },
+  step: {
+    movementTag: "step",
+    instruction: () => "Step side to side, following the arrows.",
+    challenge: (count, timeBudgetMs, audio) => ({
+      type: "step",
+      pattern: Array.from({ length: Math.max(2, Math.min(8, count)) }, (_, i) => (i % 2 === 0 ? "left" : "right")),
+      stepRatio: 0.25,
+      holdMs: 200,
+      timeBudgetMs,
+      ...audio,
+    }),
+    adapt: { targetScaleMul: 1, dwellMsMul: 1, countDelta: 0, timeBudgetMul: 1.2, toleranceMul: 1.25 },
+  },
+  sequence: {
+    movementTag: "combo",
+    instruction: () => "Squat, jump, then freeze like a statue!",
+    challenge: (_count, timeBudgetMs, audio) => ({
+      type: "sequence",
+      steps: [
+        { type: "squat", repetitions: 1, depthRatio: 0.2, kneeAngleMaxDeg: 140, holdMs: 0, cooldownMs: 700 },
+        { type: "jump", repetitions: 1, minRiseRatio: 0.12, landingStableMs: 300, cooldownMs: 800 },
+        { type: "freeze", holdMs: 1_500, motionThreshold: 0.04, graceMs: 400, rounds: 1, minVisibleJoints: 8 },
+      ],
+      interStepGraceMs: 2_000,
+      timeBudgetMs,
+      ...audio,
+    }),
+    adapt: { targetScaleMul: 1, dwellMsMul: 1, countDelta: 0, timeBudgetMul: 1.2, toleranceMul: 1.2, holdMsMul: 0.85 },
+  },
+};
+
+if (!(mechanic in MECHANICS)) {
+  throw new Error(`--mechanic must be one of: ${Object.keys(MECHANICS).join(", ")}.`);
+}
+const mechanicPreset = MECHANICS[mechanic];
 const intro = values.intro ?? `Welcome to ${title}. Make room around you, then choose simulator or camera.`;
-const instruction = values.instruction ?? `Touch all ${targetCount} targets. Move at a pace that feels comfortable.`;
+const instruction = values.instruction ?? mechanicPreset.instruction(targetCount);
 const celebration = values.celebration ?? "You completed the round.";
 
 if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/u.test(slug) || slug.length > 80) {
@@ -125,8 +306,13 @@ await mkdir(join(outputRoot, "public", ".well-known"), { recursive: true });
 await mkdir(audioRoot, { recursive: true });
 await mkdir(join(outputRoot, ".manse"), { recursive: true });
 
+const challengeAudio = { successAudioId: "success-tone", encourageAudioId: "encourage-tone" };
+const roundBudgetMs = Math.min(300_000, Math.max(20_000, minutes * 60_000 - 8_000));
+
 const pack = {
-  schemaVersion: 1,
+  // touch_targets stays a v1 pack every released engine executes; motion
+  // mechanics require the 0.2 contract and say so explicitly.
+  schemaVersion: mechanic === "touch_targets" ? 1 : 2,
   meta: {
     id: gameId,
     title: [{ locale, text: title }],
@@ -135,7 +321,9 @@ const pack = {
     locales: [locale],
     ageBands: ageBands(ageMin, ageMax),
     estMinutes: minutes,
-    engine: { minimumVersion: "0.1.0", maximumVersion: "0.1.0" },
+    engine: mechanic === "touch_targets"
+      ? { minimumVersion: "0.1.0", maximumVersion: "0.2.0" }
+      : { minimumVersion: "0.2.0", maximumVersion: "0.2.0" },
     compiler: {
       model: "GPT-5.6 via Codex",
       reasoningEffort: "creator-session",
@@ -161,53 +349,29 @@ const pack = {
       artAssetId: null,
       energy: "calm",
       terminal: false,
-      transitions: [{ on: "always", to: "touch-round", adapt: null }],
+      transitions: [{ on: "always", to: "round-one", adapt: null }],
     },
     {
-      id: "touch-round",
+      id: "round-one",
       kind: "challenge",
       narration: { items: [{ locale, text: instruction, audioAssetId: null }], captionDefaultOn: true },
       demo: null,
-      challenge: {
-        type: "touch_targets",
-        count: targetCount,
-        zone: "reachable",
-        targetScale: 1.2,
-        dwellMs: 140,
-        limb: "hands",
-        timeBudgetMs: Math.min(300_000, Math.max(20_000, minutes * 60_000 - 8_000)),
-        successAudioId: "success-tone",
-        encourageAudioId: "encourage-tone",
-      },
+      challenge: mechanicPreset.challenge(targetCount, roundBudgetMs, challengeAudio),
       learning: { kind: "none", payload: [] },
       artAssetId: null,
       energy: "medium",
       terminal: false,
       transitions: [
         { on: "success", to: "complete", adapt: null },
-        {
-          on: "struggle",
-          to: "easier-round",
-          adapt: { targetScaleMul: 1.2, dwellMsMul: 0.8, countDelta: -1, timeBudgetMul: 1.2 },
-        },
+        { on: "struggle", to: "round-two", adapt: mechanicPreset.adapt },
       ],
     },
     {
-      id: "easier-round",
+      id: "round-two",
       kind: "challenge",
       narration: { items: [{ locale, text: instruction, audioAssetId: null }], captionDefaultOn: true },
       demo: null,
-      challenge: {
-        type: "touch_targets",
-        count: targetCount,
-        zone: "reachable",
-        targetScale: 1.2,
-        dwellMs: 140,
-        limb: "hands",
-        timeBudgetMs: Math.min(300_000, Math.max(20_000, minutes * 60_000 - 8_000)),
-        successAudioId: "success-tone",
-        encourageAudioId: "encourage-tone",
-      },
+      challenge: mechanicPreset.challenge(targetCount, roundBudgetMs, challengeAudio),
       learning: { kind: "none", payload: [] },
       artAssetId: null,
       energy: "medium",
@@ -277,10 +441,10 @@ const manifest = {
   energy,
   gameUrl: `${draftOrigin}/`,
   sourceUrl,
-  engineVersion: "0.1.0",
+  engineVersion: "0.2.0",
   locales: [locale],
   ageRange: { min: ageMin, max: ageMax },
-  movementTags: ["touch"],
+  movementTags: [mechanicPreset.movementTag],
   accessibility: {
     captions: true,
     seatedMode: true,
@@ -308,7 +472,7 @@ await writeJson(join(outputRoot, "public", ".well-known", "manse-game.json"), ma
 await writeJson(join(outputRoot, ".manse", "project.json"), {
   schemaVersion: 1,
   state: "draft",
-  createdBy: "Manse Creator 0.1.0",
+  createdBy: "Manse Creator 0.2.0",
   createdAt,
   placeholders: ["gameUrl", "thumbnail.url", "contentProvenance.provenanceUrl", ...(sourceUrl.includes("replace-me") ? ["sourceUrl"] : [])],
 });

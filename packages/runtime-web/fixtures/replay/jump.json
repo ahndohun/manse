@@ -1,0 +1,39 @@
+{
+  "primitive": "jump",
+  "success": {
+    "fps": 30,
+    "durationMs": 2400,
+    "keyframes": [
+      { "atMs": 0 },
+      { "atMs": 900 },
+      { "atMs": 1050, "body": { "dy": -0.08 } },
+      { "atMs": 1250, "body": { "dy": -0.08 } },
+      { "atMs": 1400 },
+      { "atMs": 2400 }
+    ]
+  },
+  "failure": {
+    "fps": 30,
+    "durationMs": 2400,
+    "keyframes": [
+      { "atMs": 0 },
+      { "atMs": 900 },
+      { "atMs": 1050, "body": { "dy": -0.02 } },
+      { "atMs": 1250, "body": { "dy": -0.02 } },
+      { "atMs": 1400 },
+      { "atMs": 2400 }
+    ]
+  },
+  "boundary": {
+    "fps": 30,
+    "durationMs": 2600,
+    "keyframes": [
+      { "atMs": 0 },
+      { "atMs": 900 },
+      { "atMs": 1050, "body": { "dy": -0.06 } },
+      { "atMs": 1250, "body": { "dy": -0.06 } },
+      { "atMs": 1400 },
+      { "atMs": 2600 }
+    ]
+  }
+}

@@ -12,7 +12,7 @@ const packages = [
     destination: "manse-schema",
     manifest: {
       name: "@manse/schema",
-      version: "0.1.0",
+      version: "0.2.0",
       license: "MIT",
       type: "module",
       sideEffects: false,
@@ -27,14 +27,14 @@ const packages = [
     destination: "manse-cli",
     manifest: {
       name: "@manse/cli",
-      version: "0.1.0",
+      version: "0.2.0",
       license: "MIT",
       type: "module",
       main: "./lib/index.js",
       types: "./lib/index.d.ts",
       bin: { manse: "./lib/cli.js" },
       exports: { ".": { types: "./lib/index.d.ts", import: "./lib/index.js" } },
-      dependencies: { "@manse/schema": "0.1.0" },
+      dependencies: { "@manse/schema": "0.2.0" },
     },
   },
   {
@@ -42,7 +42,7 @@ const packages = [
     destination: "manse-runtime-web",
     manifest: {
       name: "@manse/runtime-web",
-      version: "0.1.0",
+      version: "0.2.0",
       license: "MIT",
       type: "module",
       sideEffects: false,
@@ -53,7 +53,7 @@ const packages = [
         "./testing": { types: "./lib/testing.d.ts", import: "./lib/testing.js" },
       },
       dependencies: {
-        "@manse/schema": "0.1.0",
+        "@manse/schema": "0.2.0",
         "@mediapipe/tasks-vision": "0.10.35",
       },
     },
@@ -86,4 +86,4 @@ for (const packageSpec of packages) {
   }
 }
 
-console.log(`Synced Manse 0.1.0 packages to ${vendorRoot}`);
+console.log(`Synced Manse 0.2.0 packages to ${vendorRoot}`);

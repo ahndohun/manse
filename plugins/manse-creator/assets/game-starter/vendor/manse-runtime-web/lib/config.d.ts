@@ -7,6 +7,8 @@ export interface TierProfile {
     readonly particleCount: number;
     readonly targetScale: number;
     readonly dwellScale: number;
+    /** Lite models at low frame rates jitter more; motion thresholds scale up. */
+    readonly noiseScale: number;
 }
 export declare const TIER_PROFILES: Readonly<Record<DeviceTier, TierProfile>>;
 export declare const DEFAULT_MEDIAPIPE_ASSETS: MediaPipeAssetOptions;

@@ -70,3 +70,80 @@ a Showcase release is accepted. The repository provides a real-browser command
 and a manually dispatchable GitHub Actions workflow for this post-deployment
 gate; two renderer canvases are expected because the WebGL renderer separates
 the camera and overlay layers.
+
+### D013 — The landing hero is a purpose-built constrained puppet, not a general skeleton renderer
+
+The hero is the product's proof: a visitor presses one button and becomes the
+Manse dot character. That magic tolerates zero broken frames, so the renderer
+removes every degree of freedom that could break the form instead of trying to
+patch a general skeleton renderer:
+
+- Bone lengths are fixed anatomical ratios of the torso length; on-device pose
+  tracking supplies joint ANGLES only. Arms cannot stretch or detach by
+  construction.
+- Joint angles are clamped to human-plausible ranges. Elbow flexion is clamped
+  by magnitude (no fold beyond ~160 degrees): in 2D projection the signed bend
+  is pose-dependent, so a per-side sign clamp mangles legitimate poses such as
+  a goalpost — verified in the /pose-lab/ QA harness (scripts/verify-pose-lab.mjs).
+  The head never leaves the neck and the torso never folds by construction.
+- Upper body only. Legs are never estimated or drawn; the pelvis is fixed. A
+  limb the camera cannot see confidently is faded out with hysteresis, never
+  guessed, and its angles freeze while unseen.
+- Idle and live tracking emit the same parametric pose, so the idle greeter and
+  the mirror blend without a broken intermediate shape; on tracking loss the
+  last pose freezes briefly, then relaxes back to the greeter.
+- The figure is pinned to a stage strip below the hero copy with a hard size
+  clamp derived from the strip height, so no camera distance can push it into
+  the text. Mirror scale still responds to distance (lean in = larger bust).
+- The dot field is the page's background language; the hero canvas paints the
+  crisp field and the figure, the body continues it faintly down the page.
+
+Finger-level mirroring is deliberately deferred: it requires a hand landmarker
+and the same constrained-treatment design before it ships. Camera frames remain
+on-device and the camera starts only on click, per the platform privacy
+invariants.
+
+### D014 — Pack schemaVersion 2: nine motion primitives behind one evaluator seam
+
+The engine grew from touch-only to a motion platform without breaking a single
+released contract. The mechanism is a version split plus a runtime seam:
+
+- Pack `schemaVersion` stays `1` for touch-only packs — byte-for-byte
+  compatible, runnable by 0.1 and 0.2 engines. `schemaVersion: 2` unlocks the
+  full challenge union (`touch_targets`, `freeze`, `body_zone`, `squat`,
+  `pose_match`, `jump`, `velocity_hit`, `step`, `sequence`) and must declare
+  `engine.minimumVersion >= 0.2.0`, so 0.1 runtimes reject v2 packs on the
+  version literal instead of misbehaving mid-game.
+- `TouchEpisodeSession` became the generic `EpisodeSession` (the old name is a
+  compatibility alias). Scene flow, transitions, adaptation, and audio stay in
+  the session; per-mechanic detection lives in pluggable evaluators behind one
+  `ChallengeEvaluator` interface. Adding the next mechanic touches one
+  evaluator file and one registry case. The touch mechanic moved verbatim and
+  its 0.1 regression tests pass unchanged.
+- All detectors judge body-relative signals — ratios of the player's own torso
+  length and joint angles in degrees, with per-joint confidence gating and
+  occlusion hysteresis — never absolute pixels. Thresholds, holds, tolerances,
+  and repetitions are designer-tunable pack data; `ParamDelta` gained optional
+  v2 keys (`toleranceMul`, `holdMsMul`, `repetitionsDelta`, `speedMul`,
+  `motionThresholdMul`) that v1 packs cannot use.
+- Every evaluator ships deterministic success/failure/boundary replay fixtures
+  (`packages/runtime-web/fixtures/replay/`) expanded to full 33-landmark
+  frames by `synthesizePoseFrames`, so detection logic is testable and
+  benchmarkable without a camera. The canonical v2 fixture pack drives all
+  nine mechanics through a complete session in CI.
+- Multiplayer (2–4, coop/versus) is a schemaVersion 2 pack declaration
+  (`meta.players`). `PlayerTracker` keeps frame-to-frame identity with
+  nearest-centroid matching, join persistence, leave grace, and no ID reuse;
+  sessions run one evaluator lane per player and degrade to solo on
+  single-pose devices. This is verified with deterministic two-person replays
+  (including crossing paths); real-device multi-person tracking remains under
+  qualification and is not advertised as device-tested.
+- `velocity_hit` measures on-screen limb speed and the creator contract
+  requires copy to say so; the engine cannot measure real-world force and
+  never claims to.
+
+The Creator plugin generates all nine mechanics (`--mechanic`), keeps
+`touch_targets` on schemaVersion 1 for maximum reach, and pins motion packs to
+the 0.2 engine it bundles. The Playground gained a mechanic selector with live
+evaluator diagnostics and deterministic replay drives for body mechanics that a
+pointer cannot simulate.

@@ -1,0 +1,186 @@
+{
+  "primitive": "sequence",
+  "success": {
+    "fps": 30,
+    "durationMs": 5600,
+    "keyframes": [
+      {
+        "atMs": 0
+      },
+      {
+        "atMs": 800
+      },
+      {
+        "atMs": 1200,
+        "joints": {
+          "left_hip": {
+            "dy": 0.1
+          },
+          "right_hip": {
+            "dy": 0.1
+          },
+          "left_knee": {
+            "dx": 0.06,
+            "dy": 0.02
+          },
+          "right_knee": {
+            "dx": -0.06,
+            "dy": 0.02
+          },
+          "left_shoulder": {
+            "dy": 0.1
+          },
+          "right_shoulder": {
+            "dy": 0.1
+          },
+          "nose": {
+            "dy": 0.1
+          }
+        }
+      },
+      {
+        "atMs": 1600
+      },
+      {
+        "atMs": 2400
+      },
+      {
+        "atMs": 2550,
+        "body": {
+          "dy": -0.08
+        }
+      },
+      {
+        "atMs": 2750,
+        "body": {
+          "dy": -0.08
+        }
+      },
+      {
+        "atMs": 2900
+      },
+      {
+        "atMs": 5600
+      }
+    ]
+  },
+  "failure": {
+    "fps": 30,
+    "durationMs": 4000,
+    "keyframes": [
+      {
+        "atMs": 0
+      },
+      {
+        "atMs": 800
+      },
+      {
+        "atMs": 1200,
+        "joints": {
+          "left_hip": {
+            "dy": 0.1
+          },
+          "right_hip": {
+            "dy": 0.1
+          },
+          "left_knee": {
+            "dx": 0.06,
+            "dy": 0.02
+          },
+          "right_knee": {
+            "dx": -0.06,
+            "dy": 0.02
+          },
+          "left_shoulder": {
+            "dy": 0.1
+          },
+          "right_shoulder": {
+            "dy": 0.1
+          },
+          "nose": {
+            "dy": 0.1
+          }
+        }
+      },
+      {
+        "atMs": 1600
+      },
+      {
+        "atMs": 4000
+      }
+    ]
+  },
+  "boundary": {
+    "fps": 30,
+    "durationMs": 6000,
+    "keyframes": [
+      {
+        "atMs": 0
+      },
+      {
+        "atMs": 800
+      },
+      {
+        "atMs": 1200,
+        "joints": {
+          "left_hip": {
+            "dy": 0.1
+          },
+          "right_hip": {
+            "dy": 0.1
+          },
+          "left_knee": {
+            "dx": 0.06,
+            "dy": 0.02
+          },
+          "right_knee": {
+            "dx": -0.06,
+            "dy": 0.02
+          },
+          "left_shoulder": {
+            "dy": 0.1
+          },
+          "right_shoulder": {
+            "dy": 0.1
+          },
+          "nose": {
+            "dy": 0.1
+          }
+        }
+      },
+      {
+        "atMs": 1600
+      },
+      {
+        "atMs": 2400
+      },
+      {
+        "atMs": 2550,
+        "body": {
+          "dy": -0.08
+        }
+      },
+      {
+        "atMs": 2750,
+        "body": {
+          "dy": -0.08
+        }
+      },
+      {
+        "atMs": 2900
+      },
+      {
+        "atMs": 3300,
+        "body": {
+          "dx": 0.04
+        }
+      },
+      {
+        "atMs": 3700
+      },
+      {
+        "atMs": 6000
+      }
+    ]
+  }
+}

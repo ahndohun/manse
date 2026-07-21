@@ -69,11 +69,11 @@ export declare const PlayerProfileSchema: z.ZodObject<{
     }, "strict", z.ZodTypeAny, {
         seatedMode: boolean;
         canJump: boolean;
-        activeSide: "both" | "left" | "right";
+        activeSide: "left" | "right" | "both";
     }, {
         seatedMode: boolean;
         canJump: boolean;
-        activeSide: "both" | "left" | "right";
+        activeSide: "left" | "right" | "both";
     }>;
     sensory: z.ZodObject<{
         reducedStimulation: z.ZodBoolean;
@@ -93,25 +93,34 @@ export declare const PlayerProfileSchema: z.ZodObject<{
     }>;
     skill: z.ZodObject<{
         touch_targets: z.ZodNumber;
-        jump_count: z.ZodNumber;
-        squat: z.ZodNumber;
         freeze: z.ZodNumber;
-        run_in_place: z.ZodNumber;
-        balance: z.ZodNumber;
+        body_zone: z.ZodNumber;
+        squat: z.ZodNumber;
+        pose_match: z.ZodNumber;
+        jump: z.ZodNumber;
+        velocity_hit: z.ZodNumber;
+        step: z.ZodNumber;
+        sequence: z.ZodNumber;
     }, "strict", z.ZodTypeAny, {
         touch_targets: number;
-        jump_count: number;
-        squat: number;
         freeze: number;
-        run_in_place: number;
-        balance: number;
+        body_zone: number;
+        squat: number;
+        pose_match: number;
+        jump: number;
+        velocity_hit: number;
+        step: number;
+        sequence: number;
     }, {
         touch_targets: number;
-        jump_count: number;
-        squat: number;
         freeze: number;
-        run_in_place: number;
-        balance: number;
+        body_zone: number;
+        squat: number;
+        pose_match: number;
+        jump: number;
+        velocity_hit: number;
+        step: number;
+        sequence: number;
     }>;
 }, "strict", z.ZodTypeAny, {
     locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
@@ -135,7 +144,7 @@ export declare const PlayerProfileSchema: z.ZodObject<{
     abilities: {
         seatedMode: boolean;
         canJump: boolean;
-        activeSide: "both" | "left" | "right";
+        activeSide: "left" | "right" | "both";
     };
     sensory: {
         captions: boolean;
@@ -145,11 +154,14 @@ export declare const PlayerProfileSchema: z.ZodObject<{
     };
     skill: {
         touch_targets: number;
-        jump_count: number;
-        squat: number;
         freeze: number;
-        run_in_place: number;
-        balance: number;
+        body_zone: number;
+        squat: number;
+        pose_match: number;
+        jump: number;
+        velocity_hit: number;
+        step: number;
+        sequence: number;
     };
 }, {
     locale: "en" | "ko" | "es" | "ja" | "zh" | "fr" | "de" | "ar";
@@ -173,7 +185,7 @@ export declare const PlayerProfileSchema: z.ZodObject<{
     abilities: {
         seatedMode: boolean;
         canJump: boolean;
-        activeSide: "both" | "left" | "right";
+        activeSide: "left" | "right" | "both";
     };
     sensory: {
         captions: boolean;
@@ -183,17 +195,20 @@ export declare const PlayerProfileSchema: z.ZodObject<{
     };
     skill: {
         touch_targets: number;
-        jump_count: number;
-        squat: number;
         freeze: number;
-        run_in_place: number;
-        balance: number;
+        body_zone: number;
+        squat: number;
+        pose_match: number;
+        jump: number;
+        velocity_hit: number;
+        step: number;
+        sequence: number;
     };
 }>;
 export type PlayerProfile = z.infer<typeof PlayerProfileSchema>;
 export declare const SceneStatSchema: z.ZodObject<{
     sceneId: z.ZodString;
-    challengeType: z.ZodNullable<z.ZodEnum<["touch_targets"]>>;
+    challengeType: z.ZodNullable<z.ZodEnum<["touch_targets", "freeze", "body_zone", "squat", "pose_match", "jump", "velocity_hit", "step", "sequence"]>>;
     outcome: z.ZodNullable<z.ZodEnum<["success", "partial", "struggle"]>>;
     attempts: z.ZodNumber;
     reactionMsP50: z.ZodNullable<z.ZodNumber>;
@@ -201,14 +216,14 @@ export declare const SceneStatSchema: z.ZodObject<{
 }, "strict", z.ZodTypeAny, {
     reactionMsP50: number | null;
     sceneId: string;
-    challengeType: "touch_targets" | null;
+    challengeType: "touch_targets" | "freeze" | "body_zone" | "squat" | "pose_match" | "jump" | "velocity_hit" | "step" | "sequence" | null;
     outcome: "success" | "partial" | "struggle" | null;
     attempts: number;
     activeMs: number;
 }, {
     reactionMsP50: number | null;
     sceneId: string;
-    challengeType: "touch_targets" | null;
+    challengeType: "touch_targets" | "freeze" | "body_zone" | "squat" | "pose_match" | "jump" | "velocity_hit" | "step" | "sequence" | null;
     outcome: "success" | "partial" | "struggle" | null;
     attempts: number;
     activeMs: number;
@@ -220,7 +235,7 @@ export declare const SessionStatsSchema: z.ZodObject<{
     startedAt: z.ZodString;
     scenes: z.ZodArray<z.ZodObject<{
         sceneId: z.ZodString;
-        challengeType: z.ZodNullable<z.ZodEnum<["touch_targets"]>>;
+        challengeType: z.ZodNullable<z.ZodEnum<["touch_targets", "freeze", "body_zone", "squat", "pose_match", "jump", "velocity_hit", "step", "sequence"]>>;
         outcome: z.ZodNullable<z.ZodEnum<["success", "partial", "struggle"]>>;
         attempts: z.ZodNumber;
         reactionMsP50: z.ZodNullable<z.ZodNumber>;
@@ -228,14 +243,14 @@ export declare const SessionStatsSchema: z.ZodObject<{
     }, "strict", z.ZodTypeAny, {
         reactionMsP50: number | null;
         sceneId: string;
-        challengeType: "touch_targets" | null;
+        challengeType: "touch_targets" | "freeze" | "body_zone" | "squat" | "pose_match" | "jump" | "velocity_hit" | "step" | "sequence" | null;
         outcome: "success" | "partial" | "struggle" | null;
         attempts: number;
         activeMs: number;
     }, {
         reactionMsP50: number | null;
         sceneId: string;
-        challengeType: "touch_targets" | null;
+        challengeType: "touch_targets" | "freeze" | "body_zone" | "squat" | "pose_match" | "jump" | "velocity_hit" | "step" | "sequence" | null;
         outcome: "success" | "partial" | "struggle" | null;
         attempts: number;
         activeMs: number;
@@ -258,7 +273,7 @@ export declare const SessionStatsSchema: z.ZodObject<{
     scenes: {
         reactionMsP50: number | null;
         sceneId: string;
-        challengeType: "touch_targets" | null;
+        challengeType: "touch_targets" | "freeze" | "body_zone" | "squat" | "pose_match" | "jump" | "velocity_hit" | "step" | "sequence" | null;
         outcome: "success" | "partial" | "struggle" | null;
         attempts: number;
         activeMs: number;
@@ -275,7 +290,7 @@ export declare const SessionStatsSchema: z.ZodObject<{
     scenes: {
         reactionMsP50: number | null;
         sceneId: string;
-        challengeType: "touch_targets" | null;
+        challengeType: "touch_targets" | "freeze" | "body_zone" | "squat" | "pose_match" | "jump" | "velocity_hit" | "step" | "sequence" | null;
         outcome: "success" | "partial" | "struggle" | null;
         attempts: number;
         activeMs: number;

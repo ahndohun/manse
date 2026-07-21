@@ -7,6 +7,7 @@ export const TIER_PROFILES = {
         particleCount: 72,
         targetScale: 1,
         dwellScale: 1,
+        noiseScale: 1,
     },
     A: {
         tier: "A",
@@ -16,6 +17,7 @@ export const TIER_PROFILES = {
         particleCount: 44,
         targetScale: 1,
         dwellScale: 1,
+        noiseScale: 1.1,
     },
     B: {
         tier: "B",
@@ -25,6 +27,7 @@ export const TIER_PROFILES = {
         particleCount: 20,
         targetScale: 1.12,
         dwellScale: 0.9,
+        noiseScale: 1.2,
     },
     C: {
         tier: "C",
@@ -34,6 +37,7 @@ export const TIER_PROFILES = {
         particleCount: 8,
         targetScale: 1.25,
         dwellScale: 0.8,
+        noiseScale: 1.35,
     },
 };
 export const DEFAULT_MEDIAPIPE_ASSETS = {

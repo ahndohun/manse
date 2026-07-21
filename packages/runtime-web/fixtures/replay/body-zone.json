@@ -1,0 +1,37 @@
+{
+  "primitive": "body_zone",
+  "success": {
+    "fps": 30,
+    "durationMs": 2600,
+    "keyframes": [
+      { "atMs": 0 },
+      { "atMs": 500 },
+      { "atMs": 800, "joints": { "nose": { "dx": -0.2 } } },
+      { "atMs": 1400, "joints": { "nose": { "dx": -0.2 } } },
+      { "atMs": 1700, "joints": { "nose": { "dx": 0.2 } } },
+      { "atMs": 2400, "joints": { "nose": { "dx": 0.2 } } },
+      { "atMs": 2600, "joints": { "nose": { "dx": 0.2 } } }
+    ]
+  },
+  "failure": {
+    "fps": 30,
+    "durationMs": 3000,
+    "keyframes": [
+      { "atMs": 0 },
+      { "atMs": 3000 }
+    ]
+  },
+  "boundary": {
+    "fps": 30,
+    "durationMs": 2600,
+    "keyframes": [
+      { "atMs": 0 },
+      { "atMs": 500 },
+      { "atMs": 800, "joints": { "nose": { "dx": -0.101 } } },
+      { "atMs": 1400, "joints": { "nose": { "dx": -0.101 } } },
+      { "atMs": 1700, "joints": { "nose": { "dx": 0.2 } } },
+      { "atMs": 2400, "joints": { "nose": { "dx": 0.2 } } },
+      { "atMs": 2600, "joints": { "nose": { "dx": 0.2 } } }
+    ]
+  }
+}

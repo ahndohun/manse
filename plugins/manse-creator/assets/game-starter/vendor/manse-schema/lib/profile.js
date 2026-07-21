@@ -34,11 +34,14 @@ export const PlayerProfileSchema = z
     skill: z
         .object({
         touch_targets: z.number().min(0).max(1),
-        jump_count: z.number().min(0).max(1),
-        squat: z.number().min(0).max(1),
         freeze: z.number().min(0).max(1),
-        run_in_place: z.number().min(0).max(1),
-        balance: z.number().min(0).max(1),
+        body_zone: z.number().min(0).max(1),
+        squat: z.number().min(0).max(1),
+        pose_match: z.number().min(0).max(1),
+        jump: z.number().min(0).max(1),
+        velocity_hit: z.number().min(0).max(1),
+        step: z.number().min(0).max(1),
+        sequence: z.number().min(0).max(1),
     })
         .strict(),
 })

@@ -119,6 +119,7 @@ class BrowserMansePlayer implements MansePlayer {
         replayFrames: this.options.replayFrames,
         document: this.platform.document,
         timing: this.platform,
+        maxPoses: this.loaded?.pack.meta.players?.max ?? 1,
       });
       this.providerUnsubscribe = this.provider.subscribe((frame) => this.handlePose(frame));
       await this.provider.initialize();
@@ -207,6 +208,8 @@ class BrowserMansePlayer implements MansePlayer {
       targetProgress: session === null || session.totalTargets === 0
         ? null
         : { completed: session.completedTargets, total: session.totalTargets },
+      challenge: session?.challenge ?? null,
+      players: session?.players ?? [],
       metrics: {
         renderFps: this.renderFps,
         inferenceHz: providerMetrics?.inferenceHz ?? 0,
@@ -264,7 +267,22 @@ class BrowserMansePlayer implements MansePlayer {
     switch (event.type) {
       case "target-hit":
         this.inputToFeedbackMs = event.feedbackLatencyMs;
-        this.options.onEvent?.({ type: "target-hit", sceneId: event.sceneId, targetId: event.targetId });
+        this.options.onEvent?.({
+          type: "target-hit",
+          sceneId: event.sceneId,
+          targetId: event.targetId,
+          ...(event.playerId === undefined ? {} : { playerId: event.playerId }),
+        });
+        break;
+      case "challenge-progress":
+        this.options.onEvent?.({
+          type: "challenge-progress",
+          sceneId: event.sceneId,
+          unit: event.unit,
+          total: event.total,
+          label: event.label,
+          ...(event.playerId === undefined ? {} : { playerId: event.playerId }),
+        });
         break;
       case "audio-cue":
         void this.playEffect(event.assetId).catch(() => undefined);
@@ -325,6 +343,8 @@ class BrowserMansePlayer implements MansePlayer {
       mirror: this.mirror,
       reducedStimulation: this.reducedStimulation,
       tier: this.tier,
+      challenge: state.challenge,
+      players: state.players,
     });
     this.trackRenderRate(timestampMs);
     this.emitSnapshot();

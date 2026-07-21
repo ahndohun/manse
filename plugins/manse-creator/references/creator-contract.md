@@ -5,8 +5,11 @@ Apply this contract to every Manse game project.
 ## Product boundary
 
 - A game is an independent, creator-owned Site. The Manse Showcase only links to it.
-- A version 1 pack is declarative JSON. Never put JavaScript, HTML, executable WebAssembly, eval-like text, credentials, or remote code in a pack.
-- The version 1 contract admits only `touch_targets`, the mechanic implemented by runtime 0.1. Future mechanics require a reviewed engine change and a new compatible schema release; do not generate or claim them early.
+- A pack is declarative JSON. Never put JavaScript, HTML, executable WebAssembly, eval-like text, credentials, or remote code in a pack.
+- Pack `schemaVersion` 1 admits only `touch_targets` and runs on every released engine. Pack `schemaVersion` 2 (engine 0.2+) additionally admits `freeze`, `body_zone`, `squat`, `pose_match`, `jump`, `velocity_hit`, `step`, and `sequence`, each fully tunable through pack data (thresholds, holds, tolerances, repetitions). A v2 pack must declare `engine.minimumVersion` >= 0.2.0 so older runtimes reject it cleanly.
+- Mechanics outside that list — running in place, balance scoring, fine finger tracking, object/ball tracking, or live AI — are not implemented. Do not generate or claim them; offer the nearest supported mechanic instead.
+- `meta.players` (2–4, coop or versus) is an engine-supported contract validated with deterministic multi-person replays; real-device multi-person tracking is still being qualified. Generate multiplayer packs only when the creator explicitly accepts that experimental status, and never advertise multiplayer as broadly device-tested.
+- `velocity_hit` measures on-screen limb speed. Copy must say "speed", never real-world force or punch strength.
 - A published game must run without a Manse account, ChatGPT sign-in, an OpenAI API key, or a runtime AI call.
 
 ## Privacy and safety

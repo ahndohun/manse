@@ -100,18 +100,56 @@ try {
   const pack = await readJson(join(gameRoot, "public/packs/contract-game/manse.pack.json"));
   const siteProvenance = await readJson(join(gameRoot, "public/asset-provenance.json"));
   const challenge = pack.scenes.find((scene) => scene.challenge !== null)?.challenge;
-  assert(challenge?.type === "touch_targets", "Generated 0.1 games must use the implemented touch_targets primitive.");
+  assert(challenge?.type === "touch_targets", "The default mechanic must remain the universally runnable touch_targets.");
+  assert(pack.schemaVersion === 1, "touch_targets games must stay schemaVersion 1 packs runnable by every engine.");
   assert(challenge?.timeBudgetMs === 300_000, "Long briefs must respect the challenge time-budget schema ceiling.");
-  const firstRound = pack.scenes.find((scene) => scene.id === "touch-round");
-  const easierRound = pack.scenes.find((scene) => scene.id === "easier-round");
+  const firstRound = pack.scenes.find((scene) => scene.id === "round-one");
+  const easierRound = pack.scenes.find((scene) => scene.id === "round-two");
   const struggle = firstRound?.transitions.find((transition) => transition.on === "struggle");
-  assert(struggle?.to === "easier-round" && struggle.adapt !== null, "Generated games must include an executable adaptive retry.");
-  assert(easierRound?.challenge?.type === "touch_targets", "The adaptive retry must remain inside the v0.1 runtime contract.");
+  assert(struggle?.to === "round-two" && struggle.adapt !== null, "Generated games must include an executable adaptive retry.");
+  assert(easierRound?.challenge?.type === "touch_targets", "The adaptive retry must keep the declared mechanic.");
   const wasmProvenance = siteProvenance.assets.filter((asset) => asset.path.startsWith("/vendor/mediapipe/wasm/"));
   assert(wasmProvenance.length === 4, "Generated games must record all four MediaPipe WASM files.");
   assert(wasmProvenance.every((asset) => /^[a-f0-9]{64}$/u.test(asset.sha256)), "WASM provenance must include SHA-256 integrity.");
   const config = await readFile(join(gameRoot, "app/game-config.ts"), "utf8");
   assert(config.includes('Contract \\"Game\\" <QA>'), "Generated source must safely encode creator text.");
+
+  // A motion mechanic must generate a valid schemaVersion 2 pack pinned to the
+  // 0.2 engine it bundles.
+  const motionRoot = join(qaRoot, "motion-game");
+  run(process.execPath, [
+    join(pluginRoot, "scripts/create-game.mjs"),
+    "--output", motionRoot,
+    "--slug", "motion-game",
+    "--title", "Motion QA",
+    "--summary", "Generated freeze mechanic from the bundled Manse starter.",
+    "--theme", "Statue garden",
+    "--mechanic", "freeze",
+    "--target-count", "3",
+  ]);
+  await mkdir(join(motionRoot, "node_modules/@manse"), { recursive: true });
+  await symlink(join(motionRoot, "vendor/manse-schema"), join(motionRoot, "node_modules/@manse/schema"));
+  await symlink(join(repositoryRoot, "packages/schema/node_modules/zod"), join(motionRoot, "node_modules/zod"));
+  const motionResult = run(process.execPath, [
+    join(motionRoot, "vendor/manse-cli/lib/cli.js"),
+    "validate",
+    motionRoot,
+    "--json",
+  ], motionRoot);
+  assert(JSON.parse(motionResult.stdout).ok === true, "Generated motion games must pass the vendored Manse validator.");
+  const motionPack = await readJson(join(motionRoot, "public/packs/motion-game/manse.pack.json"));
+  assert(motionPack.schemaVersion === 2, "Motion mechanics must emit schemaVersion 2 packs.");
+  assert(
+    motionPack.meta.engine.minimumVersion === "0.2.0",
+    "Motion packs must demand the 0.2 engine so older runtimes reject them cleanly.",
+  );
+  const motionChallenge = motionPack.scenes.find((scene) => scene.challenge !== null)?.challenge;
+  assert(motionChallenge?.type === "freeze", "The requested mechanic must be generated, not reinterpreted.");
+  const motionManifest = await readJson(join(motionRoot, "public/.well-known/manse-game.json"));
+  assert(
+    Array.isArray(motionManifest.movementTags) && motionManifest.movementTags.includes("freeze"),
+    "Motion games must advertise their movement tag honestly.",
+  );
 } finally {
   await rm(qaRoot, { recursive: true, force: true });
 }

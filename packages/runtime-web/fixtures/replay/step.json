@@ -1,0 +1,38 @@
+{
+  "primitive": "step",
+  "success": {
+    "fps": 30,
+    "durationMs": 2200,
+    "keyframes": [
+      { "atMs": 0 },
+      { "atMs": 500 },
+      { "atMs": 800, "joints": { "left_ankle": { "dx": -0.12 } } },
+      { "atMs": 1100, "joints": { "left_ankle": { "dx": -0.12 } } },
+      { "atMs": 1200, "joints": { "left_ankle": { "dx": -0.12 } } },
+      { "atMs": 1500, "joints": { "left_ankle": { "dx": -0.12 }, "right_ankle": { "dx": 0.12 } } },
+      { "atMs": 2200, "joints": { "left_ankle": { "dx": -0.12 }, "right_ankle": { "dx": 0.12 } } }
+    ]
+  },
+  "failure": {
+    "fps": 30,
+    "durationMs": 2600,
+    "keyframes": [
+      { "atMs": 0 },
+      { "atMs": 500 },
+      { "atMs": 800, "joints": { "left_ankle": { "dx": -0.03 } } },
+      { "atMs": 2600, "joints": { "left_ankle": { "dx": -0.03 } } }
+    ]
+  },
+  "boundary": {
+    "fps": 30,
+    "durationMs": 2200,
+    "keyframes": [
+      { "atMs": 0 },
+      { "atMs": 500 },
+      { "atMs": 800, "joints": { "left_ankle": { "dx": -0.084 } } },
+      { "atMs": 1200, "joints": { "left_ankle": { "dx": -0.084 } } },
+      { "atMs": 1500, "joints": { "left_ankle": { "dx": -0.084 }, "right_ankle": { "dx": 0.12 } } },
+      { "atMs": 2200, "joints": { "left_ankle": { "dx": -0.084 }, "right_ankle": { "dx": 0.12 } } }
+    ]
+  }
+}

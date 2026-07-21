@@ -47,10 +47,14 @@ Manse provides four interoperable layers:
 4. A public, link-only Showcase. Every listed game remains an independent,
    creator-owned Site and passes deterministic CI plus maintainer review.
 
-The v0.1 engine deliberately ships one honest mechanic, `touch_targets`, with a
-complete simulator-first path. The architecture can add reusable mechanics
-through reviewed engine contributions instead of allowing executable code in
-untrusted packs.
+The engine ships nine honest mechanics — touch, freeze, body zones, squats,
+pose matching, jumps, speed strikes, dance steps, and sequenced combos — each a
+declarative, designer-tunable pack primitive judged body-relatively (ratios of
+the player's own torso and joint angles, never pixels) and verified by
+deterministic camera-free replay fixtures. Touch games remain schemaVersion 1
+packs any released engine runs; motion games declare the 0.2 contract so older
+runtimes reject them cleanly. New mechanics arrive through reviewed engine
+contributions instead of allowing executable code in untrusted packs.
 
 ## How we built it
 

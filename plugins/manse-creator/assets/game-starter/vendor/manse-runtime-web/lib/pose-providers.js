@@ -182,11 +182,12 @@ export class MediaPipePoseProvider extends ScheduledPoseProvider {
                 ? this.options.mediaPipeAssets.fullModelUrl
                 : this.options.mediaPipeAssets.liteModelUrl;
             const delegate = this.options.tier === "C" ? "CPU" : "GPU";
+            const numPoses = Math.max(1, Math.min(4, this.options.maxPoses ?? 1));
             try {
                 this.landmarker = await vision.PoseLandmarker.createFromOptions(fileset, {
                     baseOptions: { modelAssetPath, delegate },
                     runningMode: "VIDEO",
-                    numPoses: 1,
+                    numPoses,
                     minPoseDetectionConfidence: 0.5,
                     minPosePresenceConfidence: 0.5,
                     minTrackingConfidence: 0.5,
@@ -199,7 +200,7 @@ export class MediaPipePoseProvider extends ScheduledPoseProvider {
                 this.landmarker = await vision.PoseLandmarker.createFromOptions(fileset, {
                     baseOptions: { modelAssetPath, delegate: "CPU" },
                     runningMode: "VIDEO",
-                    numPoses: 1,
+                    numPoses,
                     minPoseDetectionConfidence: 0.5,
                     minPosePresenceConfidence: 0.5,
                     minTrackingConfidence: 0.5,

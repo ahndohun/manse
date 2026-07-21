@@ -77,3 +77,72 @@ describe("version 1 public contracts", () => {
     expect(safeParseGameManifest(manifest).success).toBe(false);
   });
 });
+
+describe("version 2 motion contract", () => {
+  it("accepts the canonical v2 fixture covering every motion primitive", async () => {
+    const pack = parseEpisodePack(await fixture("valid", "manse.pack.v2.json"));
+    expect(validateEpisodePackIntegrity(pack)).toEqual([]);
+    expect(pack.schemaVersion).toBe(2);
+    expect(pack.meta.players).toEqual({ min: 1, max: 2, mode: "coop" });
+  });
+
+  it("keeps motion primitives out of schemaVersion 1 packs", async () => {
+    const pack = structuredClone(await fixture("valid", "manse.pack.json")) as {
+      scenes: Array<{ challenge: unknown }>;
+    };
+    pack.scenes[1]!.challenge = {
+      type: "freeze",
+      holdMs: 2000,
+      motionThreshold: 0.02,
+      graceMs: 250,
+      rounds: 1,
+      minVisibleJoints: 8,
+      timeBudgetMs: 30000,
+      successAudioId: "cue-sfx",
+      encourageAudioId: "cue-sfx",
+    };
+    const result = safeParseEpisodePack(pack);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(JSON.stringify(result.error.issues)).toContain("schema_version");
+    }
+  });
+
+  it("keeps multiplayer declarations out of schemaVersion 1 packs", async () => {
+    const pack = structuredClone(await fixture("valid", "manse.pack.json")) as {
+      meta: Record<string, unknown>;
+    };
+    pack.meta.players = { min: 1, max: 2, mode: "coop" };
+    expect(safeParseEpisodePack(pack).success).toBe(false);
+  });
+
+  it("requires v2 packs to demand an engine that executes them", async () => {
+    const pack = structuredClone(await fixture("valid", "manse.pack.v2.json")) as {
+      meta: { engine: { minimumVersion: string } };
+    };
+    pack.meta.engine.minimumVersion = "0.1.0";
+    const result = safeParseEpisodePack(pack);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(JSON.stringify(result.error.issues)).toContain("engine_compatibility");
+    }
+  });
+
+  it("rejects duplicate zone ids inside one body_zone challenge", async () => {
+    const pack = structuredClone(await fixture("valid", "manse.pack.v2.json")) as {
+      scenes: Array<{ id: string; challenge: { type?: string; zones?: Array<{ id: string }> } | null }>;
+    };
+    const dodge = pack.scenes.find((scene) => scene.id === "dodge");
+    dodge!.challenge!.zones![1]!.id = "left-bubble";
+    expect(safeParseEpisodePack(pack).success).toBe(false);
+  });
+
+  it("structurally refuses nested sequences", async () => {
+    const pack = structuredClone(await fixture("valid", "manse.pack.v2.json")) as {
+      scenes: Array<{ id: string; challenge: { steps?: unknown[] } | null }>;
+    };
+    const finale = pack.scenes.find((scene) => scene.id === "finale");
+    finale!.challenge!.steps!.push({ type: "sequence", steps: [], interStepGraceMs: 0 });
+    expect(safeParseEpisodePack(pack).success).toBe(false);
+  });
+});

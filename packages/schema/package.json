@@ -1,6 +1,6 @@
 {
   "name": "@manse/schema",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Versioned public contracts and validators for the Manse platform",
   "license": "MIT",
   "type": "module",
@@ -15,7 +15,12 @@
     "./json-schema/*": "./json-schema/*",
     "./fixtures/*": "./fixtures/*"
   },
-  "files": ["dist", "fixtures", "json-schema", "README.md"],
+  "files": [
+    "dist",
+    "fixtures",
+    "json-schema",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",

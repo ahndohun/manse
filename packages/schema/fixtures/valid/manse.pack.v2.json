@@ -1,0 +1,320 @@
+{
+  "schemaVersion": 2,
+  "meta": {
+    "id": "manse.example.motion",
+    "title": [{ "locale": "en", "text": "Manse Motion Example" }],
+    "summary": [{ "locale": "en", "text": "A minimal valid pack exercising every motion primitive." }],
+    "theme": "Full-body playground",
+    "locales": ["en"],
+    "ageBands": ["6-7", "8+"],
+    "estMinutes": 6,
+    "engine": { "minimumVersion": "0.2.0", "maximumVersion": null },
+    "compiler": null,
+    "players": { "min": 1, "max": 2, "mode": "coop" }
+  },
+  "permissions": { "camera": true, "deviceLocalStorage": true },
+  "cast": [
+    {
+      "id": "guide",
+      "name": [{ "locale": "en", "text": "Mansi" }],
+      "artAssetId": null,
+      "description": "A friendly geometric guide rendered by the engine."
+    }
+  ],
+  "entrySceneId": "intro",
+  "scenes": [
+    {
+      "id": "intro",
+      "kind": "story",
+      "narration": {
+        "items": [{ "locale": "en", "text": "Warm up your whole body!", "audioAssetId": null }],
+        "captionDefaultOn": true
+      },
+      "demo": { "characterId": "guide", "animation": "wave" },
+      "challenge": null,
+      "learning": null,
+      "artAssetId": null,
+      "energy": "calm",
+      "terminal": false,
+      "transitions": [{ "on": "always", "to": "statue", "adapt": null }]
+    },
+    {
+      "id": "statue",
+      "kind": "challenge",
+      "narration": {
+        "items": [{ "locale": "en", "text": "Freeze like a statue!", "audioAssetId": null }],
+        "captionDefaultOn": true
+      },
+      "demo": { "characterId": "guide", "animation": "freeze" },
+      "challenge": {
+        "type": "freeze",
+        "holdMs": 2000,
+        "motionThreshold": 0.02,
+        "graceMs": 250,
+        "rounds": 2,
+        "minVisibleJoints": 8,
+        "timeBudgetMs": 30000,
+        "successAudioId": "cue-sfx",
+        "encourageAudioId": "cue-sfx"
+      },
+      "learning": null,
+      "artAssetId": null,
+      "energy": "calm",
+      "terminal": false,
+      "transitions": [
+        { "on": "success", "to": "dodge", "adapt": null },
+        { "on": "struggle", "to": "dodge", "adapt": { "targetScaleMul": 1, "dwellMsMul": 1, "countDelta": 0, "timeBudgetMul": 1.2, "holdMsMul": 0.8, "motionThresholdMul": 1.3 } }
+      ]
+    },
+    {
+      "id": "dodge",
+      "kind": "challenge",
+      "narration": {
+        "items": [{ "locale": "en", "text": "Move your head into the safe bubble.", "audioAssetId": null }],
+        "captionDefaultOn": true
+      },
+      "demo": { "characterId": "guide", "animation": "lean" },
+      "challenge": {
+        "type": "body_zone",
+        "part": "head",
+        "mode": "enter",
+        "zones": [
+          { "id": "left-bubble", "box": { "x0": 0.05, "y0": 0.1, "x1": 0.4, "y1": 0.5 } },
+          { "id": "right-bubble", "box": { "x0": 0.6, "y0": 0.1, "x1": 0.95, "y1": 0.5 } }
+        ],
+        "holdMs": 400,
+        "timeBudgetMs": 30000,
+        "successAudioId": "cue-sfx",
+        "encourageAudioId": "cue-sfx"
+      },
+      "learning": null,
+      "artAssetId": null,
+      "energy": "medium",
+      "terminal": false,
+      "transitions": [
+        { "on": "success", "to": "frog", "adapt": null },
+        { "on": "struggle", "to": "frog", "adapt": null }
+      ]
+    },
+    {
+      "id": "frog",
+      "kind": "challenge",
+      "narration": {
+        "items": [{ "locale": "en", "text": "Three frog squats!", "audioAssetId": null }],
+        "captionDefaultOn": true
+      },
+      "demo": { "characterId": "guide", "animation": "squat" },
+      "challenge": {
+        "type": "squat",
+        "repetitions": 3,
+        "depthRatio": 0.25,
+        "kneeAngleMaxDeg": 120,
+        "holdMs": 0,
+        "cooldownMs": 500,
+        "timeBudgetMs": 45000,
+        "successAudioId": "cue-sfx",
+        "encourageAudioId": "cue-sfx"
+      },
+      "learning": { "kind": "counting", "payload": ["1", "2", "3"] },
+      "artAssetId": null,
+      "energy": "high",
+      "terminal": false,
+      "transitions": [
+        { "on": "success", "to": "tree", "adapt": null },
+        { "on": "struggle", "to": "tree", "adapt": { "targetScaleMul": 1, "dwellMsMul": 1, "countDelta": 0, "timeBudgetMul": 1.2, "repetitionsDelta": -1, "toleranceMul": 1.2 } }
+      ]
+    },
+    {
+      "id": "tree",
+      "kind": "challenge",
+      "narration": {
+        "items": [{ "locale": "en", "text": "Hold the tree pose.", "audioAssetId": null }],
+        "captionDefaultOn": true
+      },
+      "demo": { "characterId": "guide", "animation": "tree" },
+      "challenge": {
+        "type": "pose_match",
+        "poses": [
+          {
+            "id": "tree-arms-up",
+            "joints": [
+              { "joint": "left_elbow", "angleDeg": 170, "toleranceDeg": 25 },
+              { "joint": "right_elbow", "angleDeg": 170, "toleranceDeg": 25 },
+              { "joint": "left_shoulder", "angleDeg": 160, "toleranceDeg": 30 },
+              { "joint": "right_shoulder", "angleDeg": 160, "toleranceDeg": 30 }
+            ],
+            "holdMs": 1500
+          }
+        ],
+        "matchRatio": 0.75,
+        "mirrorPolicy": "either",
+        "timeBudgetMs": 30000,
+        "successAudioId": "cue-sfx",
+        "encourageAudioId": "cue-sfx"
+      },
+      "learning": null,
+      "artAssetId": null,
+      "energy": "calm",
+      "terminal": false,
+      "transitions": [
+        { "on": "success", "to": "hop", "adapt": null },
+        { "on": "struggle", "to": "hop", "adapt": null }
+      ]
+    },
+    {
+      "id": "hop",
+      "kind": "challenge",
+      "narration": {
+        "items": [{ "locale": "en", "text": "Two big hops!", "audioAssetId": null }],
+        "captionDefaultOn": true
+      },
+      "demo": { "characterId": "guide", "animation": "jump" },
+      "challenge": {
+        "type": "jump",
+        "repetitions": 2,
+        "minRiseRatio": 0.12,
+        "landingStableMs": 250,
+        "cooldownMs": 600,
+        "timeBudgetMs": 30000,
+        "successAudioId": "cue-sfx",
+        "encourageAudioId": "cue-sfx"
+      },
+      "learning": null,
+      "artAssetId": null,
+      "energy": "high",
+      "terminal": false,
+      "transitions": [
+        { "on": "success", "to": "drum", "adapt": null },
+        { "on": "struggle", "to": "drum", "adapt": null }
+      ]
+    },
+    {
+      "id": "drum",
+      "kind": "challenge",
+      "narration": {
+        "items": [{ "locale": "en", "text": "Punch the drums fast!", "audioAssetId": null }],
+        "captionDefaultOn": true
+      },
+      "demo": { "characterId": "guide", "animation": "punch" },
+      "challenge": {
+        "type": "velocity_hit",
+        "count": 2,
+        "zone": "reachable",
+        "targetScale": 1.2,
+        "limb": "hands",
+        "minSpeed": 0.8,
+        "direction": "any",
+        "timeBudgetMs": 30000,
+        "successAudioId": "cue-sfx",
+        "encourageAudioId": "cue-sfx"
+      },
+      "learning": null,
+      "artAssetId": null,
+      "energy": "high",
+      "terminal": false,
+      "transitions": [
+        { "on": "success", "to": "dance", "adapt": null },
+        { "on": "struggle", "to": "dance", "adapt": { "targetScaleMul": 1.2, "dwellMsMul": 1, "countDelta": 0, "timeBudgetMul": 1.2, "speedMul": 0.8 } }
+      ]
+    },
+    {
+      "id": "dance",
+      "kind": "challenge",
+      "narration": {
+        "items": [{ "locale": "en", "text": "Step left, right, left!", "audioAssetId": null }],
+        "captionDefaultOn": true
+      },
+      "demo": { "characterId": "guide", "animation": "step" },
+      "challenge": {
+        "type": "step",
+        "pattern": ["left", "right", "left"],
+        "stepRatio": 0.3,
+        "holdMs": 150,
+        "timeBudgetMs": 30000,
+        "successAudioId": "cue-sfx",
+        "encourageAudioId": "cue-sfx"
+      },
+      "learning": null,
+      "artAssetId": null,
+      "energy": "medium",
+      "terminal": false,
+      "transitions": [
+        { "on": "success", "to": "finale", "adapt": null },
+        { "on": "struggle", "to": "finale", "adapt": null }
+      ]
+    },
+    {
+      "id": "finale",
+      "kind": "challenge",
+      "narration": {
+        "items": [{ "locale": "en", "text": "Squat, hop, then freeze!", "audioAssetId": null }],
+        "captionDefaultOn": true
+      },
+      "demo": { "characterId": "guide", "animation": "combo" },
+      "challenge": {
+        "type": "sequence",
+        "steps": [
+          { "type": "squat", "repetitions": 1, "depthRatio": 0.22, "kneeAngleMaxDeg": 125, "holdMs": 0, "cooldownMs": 400 },
+          { "type": "jump", "repetitions": 1, "minRiseRatio": 0.1, "landingStableMs": 200, "cooldownMs": 400 },
+          { "type": "freeze", "holdMs": 1200, "motionThreshold": 0.025, "graceMs": 200, "rounds": 1, "minVisibleJoints": 8 }
+        ],
+        "interStepGraceMs": 2000,
+        "timeBudgetMs": 60000,
+        "successAudioId": "cue-sfx",
+        "encourageAudioId": "cue-sfx"
+      },
+      "learning": null,
+      "artAssetId": null,
+      "energy": "high",
+      "terminal": false,
+      "transitions": [
+        { "on": "success", "to": "finish", "adapt": null },
+        { "on": "struggle", "to": "finish", "adapt": null }
+      ]
+    },
+    {
+      "id": "finish",
+      "kind": "celebration",
+      "narration": {
+        "items": [{ "locale": "en", "text": "You are a motion master!", "audioAssetId": null }],
+        "captionDefaultOn": true
+      },
+      "demo": { "characterId": "guide", "animation": "celebrate" },
+      "challenge": null,
+      "learning": null,
+      "artAssetId": null,
+      "energy": "calm",
+      "terminal": true,
+      "transitions": []
+    }
+  ],
+  "adaptPolicy": {
+    "targetSuccessBand": [0.65, 0.85],
+    "maxStruggleStreak": 2,
+    "maxHighEnergyMs": 120000
+  },
+  "assets": {
+    "images": [],
+    "audio": [
+      {
+        "id": "cue-sfx",
+        "path": "assets/audio/cue.wav",
+        "mediaType": "audio/wav",
+        "locale": null,
+        "transcript": "",
+        "license": {
+          "spdxId": "CC0-1.0",
+          "name": "CC0 1.0 Universal",
+          "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+          "attribution": null
+        },
+        "provenance": {
+          "kind": "original",
+          "creator": "Example Creator",
+          "createdAt": "2026-07-21T00:00:00.000Z"
+        }
+      }
+    ],
+    "music": []
+  }
+}

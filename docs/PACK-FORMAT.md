@@ -104,8 +104,29 @@ The validator SHOULD report stable diagnostics with both the source file and a J
 
 A pack declares one entry scene and a finite graph of scenes connected by outcome transitions. Transition names, scene kinds, challenge kinds, and adaptive parameters are closed enums defined by the schema.
 
-The v0.1 version 1 contract admits only `touch_targets`. A validator must reject
-future mechanic names such as jump, squat, freeze, running, or balance until a
+Challenge admission is versioned by the pack's `schemaVersion`:
+
+- **schemaVersion 1** admits only `touch_targets` and runs on every released
+  engine (0.1 and later).
+- **schemaVersion 2** (engine 0.2+) additionally admits `freeze`, `body_zone`,
+  `squat`, `pose_match`, `jump`, `velocity_hit`, `step`, and `sequence`. Every
+  detector threshold, hold time, tolerance, and repetition count is pack data.
+  A v2 pack MUST declare `meta.engine.minimumVersion` of at least `0.2.0`; the
+  validator rejects a v2 pack that claims an engine which cannot execute it,
+  and a 0.1 runtime rejects v2 packs by their version literal alone.
+- `sequence` steps are inner motion configurations and MUST NOT nest another
+  sequence; the schema forbids it structurally.
+- Motion judgments are body-relative — ratios of the player's own torso length
+  and joint angles in degrees — never absolute pixels, so the same pack is fair
+  at any camera distance or body size.
+- `meta.players` (schemaVersion 2, optional) declares 2–4 player co-op or
+  versus play. The engine keeps per-player identity with anti-swap hysteresis
+  and degrades to solo play on single-pose devices; real-device multi-person
+  tracking remains under qualification and MUST NOT be advertised as broadly
+  device-tested.
+
+A validator must still reject mechanic names outside the declared version's
+closed enum — for example running, balance, or finger tracking — until a
 released engine and schema version define and execute them together. This keeps
 a locally valid pack runnable instead of treating schema acceptance as a promise
 the player cannot fulfill.

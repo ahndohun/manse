@@ -117,6 +117,22 @@ export const PermissionsSchema = z
   .strict();
 export type Permissions = z.infer<typeof PermissionsSchema>;
 
+/**
+ * Compare two release versions numerically (prerelease/build metadata ignored:
+ * contract gates compare released engine lines only). Returns -1, 0, or 1.
+ */
+export function compareSemver(left: string, right: string): number {
+  const parse = (value: string): number[] =>
+    (value.split(/[+-]/, 1)[0] ?? "").split(".").map((part) => Number.parseInt(part, 10) || 0);
+  const a = parse(left);
+  const b = parse(right);
+  for (let index = 0; index < 3; index += 1) {
+    const delta = (a[index] ?? 0) - (b[index] ?? 0);
+    if (delta !== 0) return delta < 0 ? -1 : 1;
+  }
+  return 0;
+}
+
 export function duplicateValues(values: readonly string[]): Set<string> {
   const seen = new Set<string>();
   const duplicates = new Set<string>();

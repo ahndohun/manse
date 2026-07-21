@@ -75,5 +75,10 @@ export declare const PermissionsSchema: z.ZodObject<{
     deviceLocalStorage: boolean;
 }>;
 export type Permissions = z.infer<typeof PermissionsSchema>;
+/**
+ * Compare two release versions numerically (prerelease/build metadata ignored:
+ * contract gates compare released engine lines only). Returns -1, 0, or 1.
+ */
+export declare function compareSemver(left: string, right: string): number;
 export declare function duplicateValues(values: readonly string[]): Set<string>;
 //# sourceMappingURL=common.d.ts.map

@@ -107,7 +107,7 @@ export declare const ResolvedCatalogEntrySchema: z.ZodObject<{
             min: number;
             max: number;
         }>;
-        movementTags: z.ZodArray<z.ZodEnum<["touch"]>, "many">;
+        movementTags: z.ZodArray<z.ZodEnum<["touch", "freeze", "dodge", "squat", "pose", "jump", "strike", "step", "combo"]>, "many">;
         accessibility: z.ZodObject<{
             captions: z.ZodBoolean;
             seatedMode: z.ZodBoolean;
@@ -222,7 +222,7 @@ export declare const ResolvedCatalogEntrySchema: z.ZodObject<{
             min: number;
             max: number;
         };
-        movementTags: "touch"[];
+        movementTags: ("freeze" | "squat" | "jump" | "step" | "touch" | "dodge" | "pose" | "strike" | "combo")[];
         accessibility: {
             captions: boolean;
             seatedMode: boolean;
@@ -275,7 +275,7 @@ export declare const ResolvedCatalogEntrySchema: z.ZodObject<{
             min: number;
             max: number;
         };
-        movementTags: "touch"[];
+        movementTags: ("freeze" | "squat" | "jump" | "step" | "touch" | "dodge" | "pose" | "strike" | "combo")[];
         accessibility: {
             captions: boolean;
             seatedMode: boolean;
@@ -328,7 +328,7 @@ export declare const ResolvedCatalogEntrySchema: z.ZodObject<{
             min: number;
             max: number;
         };
-        movementTags: "touch"[];
+        movementTags: ("freeze" | "squat" | "jump" | "step" | "touch" | "dodge" | "pose" | "strike" | "combo")[];
         accessibility: {
             captions: boolean;
             seatedMode: boolean;
@@ -381,7 +381,7 @@ export declare const ResolvedCatalogEntrySchema: z.ZodObject<{
             min: number;
             max: number;
         };
-        movementTags: "touch"[];
+        movementTags: ("freeze" | "squat" | "jump" | "step" | "touch" | "dodge" | "pose" | "strike" | "combo")[];
         accessibility: {
             captions: boolean;
             seatedMode: boolean;
@@ -437,7 +437,7 @@ export declare const ResolvedCatalogEntrySchema: z.ZodObject<{
             min: number;
             max: number;
         };
-        movementTags: "touch"[];
+        movementTags: ("freeze" | "squat" | "jump" | "step" | "touch" | "dodge" | "pose" | "strike" | "combo")[];
         accessibility: {
             captions: boolean;
             seatedMode: boolean;
@@ -493,7 +493,7 @@ export declare const ResolvedCatalogEntrySchema: z.ZodObject<{
             min: number;
             max: number;
         };
-        movementTags: "touch"[];
+        movementTags: ("freeze" | "squat" | "jump" | "step" | "touch" | "dodge" | "pose" | "strike" | "combo")[];
         accessibility: {
             captions: boolean;
             seatedMode: boolean;
@@ -571,7 +571,7 @@ export declare const CatalogSnapshotBaseSchema: z.ZodObject<{
                 min: number;
                 max: number;
             }>;
-            movementTags: z.ZodArray<z.ZodEnum<["touch"]>, "many">;
+            movementTags: z.ZodArray<z.ZodEnum<["touch", "freeze", "dodge", "squat", "pose", "jump", "strike", "step", "combo"]>, "many">;
             accessibility: z.ZodObject<{
                 captions: z.ZodBoolean;
                 seatedMode: z.ZodBoolean;
@@ -686,7 +686,7 @@ export declare const CatalogSnapshotBaseSchema: z.ZodObject<{
                 min: number;
                 max: number;
             };
-            movementTags: "touch"[];
+            movementTags: ("freeze" | "squat" | "jump" | "step" | "touch" | "dodge" | "pose" | "strike" | "combo")[];
             accessibility: {
                 captions: boolean;
                 seatedMode: boolean;
@@ -739,7 +739,7 @@ export declare const CatalogSnapshotBaseSchema: z.ZodObject<{
                 min: number;
                 max: number;
             };
-            movementTags: "touch"[];
+            movementTags: ("freeze" | "squat" | "jump" | "step" | "touch" | "dodge" | "pose" | "strike" | "combo")[];
             accessibility: {
                 captions: boolean;
                 seatedMode: boolean;
@@ -792,7 +792,7 @@ export declare const CatalogSnapshotBaseSchema: z.ZodObject<{
                 min: number;
                 max: number;
             };
-            movementTags: "touch"[];
+            movementTags: ("freeze" | "squat" | "jump" | "step" | "touch" | "dodge" | "pose" | "strike" | "combo")[];
             accessibility: {
                 captions: boolean;
                 seatedMode: boolean;
@@ -845,7 +845,7 @@ export declare const CatalogSnapshotBaseSchema: z.ZodObject<{
                 min: number;
                 max: number;
             };
-            movementTags: "touch"[];
+            movementTags: ("freeze" | "squat" | "jump" | "step" | "touch" | "dodge" | "pose" | "strike" | "combo")[];
             accessibility: {
                 captions: boolean;
                 seatedMode: boolean;
@@ -901,7 +901,7 @@ export declare const CatalogSnapshotBaseSchema: z.ZodObject<{
                 min: number;
                 max: number;
             };
-            movementTags: "touch"[];
+            movementTags: ("freeze" | "squat" | "jump" | "step" | "touch" | "dodge" | "pose" | "strike" | "combo")[];
             accessibility: {
                 captions: boolean;
                 seatedMode: boolean;
@@ -957,7 +957,7 @@ export declare const CatalogSnapshotBaseSchema: z.ZodObject<{
                 min: number;
                 max: number;
             };
-            movementTags: "touch"[];
+            movementTags: ("freeze" | "squat" | "jump" | "step" | "touch" | "dodge" | "pose" | "strike" | "combo")[];
             accessibility: {
                 captions: boolean;
                 seatedMode: boolean;
@@ -1016,7 +1016,7 @@ export declare const CatalogSnapshotBaseSchema: z.ZodObject<{
                 min: number;
                 max: number;
             };
-            movementTags: "touch"[];
+            movementTags: ("freeze" | "squat" | "jump" | "step" | "touch" | "dodge" | "pose" | "strike" | "combo")[];
             accessibility: {
                 captions: boolean;
                 seatedMode: boolean;
@@ -1075,7 +1075,7 @@ export declare const CatalogSnapshotBaseSchema: z.ZodObject<{
                 min: number;
                 max: number;
             };
-            movementTags: "touch"[];
+            movementTags: ("freeze" | "squat" | "jump" | "step" | "touch" | "dodge" | "pose" | "strike" | "combo")[];
             accessibility: {
                 captions: boolean;
                 seatedMode: boolean;
@@ -1154,7 +1154,7 @@ export declare const CatalogSnapshotSchema: z.ZodEffects<z.ZodObject<{
                 min: number;
                 max: number;
             }>;
-            movementTags: z.ZodArray<z.ZodEnum<["touch"]>, "many">;
+            movementTags: z.ZodArray<z.ZodEnum<["touch", "freeze", "dodge", "squat", "pose", "jump", "strike", "step", "combo"]>, "many">;
             accessibility: z.ZodObject<{
                 captions: z.ZodBoolean;
                 seatedMode: z.ZodBoolean;
@@ -1269,7 +1269,7 @@ export declare const CatalogSnapshotSchema: z.ZodEffects<z.ZodObject<{
                 min: number;
                 max: number;
             };
-            movementTags: "touch"[];
+            movementTags: ("freeze" | "squat" | "jump" | "step" | "touch" | "dodge" | "pose" | "strike" | "combo")[];
             accessibility: {
                 captions: boolean;
                 seatedMode: boolean;
@@ -1322,7 +1322,7 @@ export declare const CatalogSnapshotSchema: z.ZodEffects<z.ZodObject<{
                 min: number;
                 max: number;
             };
-            movementTags: "touch"[];
+            movementTags: ("freeze" | "squat" | "jump" | "step" | "touch" | "dodge" | "pose" | "strike" | "combo")[];
             accessibility: {
                 captions: boolean;
                 seatedMode: boolean;
@@ -1375,7 +1375,7 @@ export declare const CatalogSnapshotSchema: z.ZodEffects<z.ZodObject<{
                 min: number;
                 max: number;
             };
-            movementTags: "touch"[];
+            movementTags: ("freeze" | "squat" | "jump" | "step" | "touch" | "dodge" | "pose" | "strike" | "combo")[];
             accessibility: {
                 captions: boolean;
                 seatedMode: boolean;
@@ -1428,7 +1428,7 @@ export declare const CatalogSnapshotSchema: z.ZodEffects<z.ZodObject<{
                 min: number;
                 max: number;
             };
-            movementTags: "touch"[];
+            movementTags: ("freeze" | "squat" | "jump" | "step" | "touch" | "dodge" | "pose" | "strike" | "combo")[];
             accessibility: {
                 captions: boolean;
                 seatedMode: boolean;
@@ -1484,7 +1484,7 @@ export declare const CatalogSnapshotSchema: z.ZodEffects<z.ZodObject<{
                 min: number;
                 max: number;
             };
-            movementTags: "touch"[];
+            movementTags: ("freeze" | "squat" | "jump" | "step" | "touch" | "dodge" | "pose" | "strike" | "combo")[];
             accessibility: {
                 captions: boolean;
                 seatedMode: boolean;
@@ -1540,7 +1540,7 @@ export declare const CatalogSnapshotSchema: z.ZodEffects<z.ZodObject<{
                 min: number;
                 max: number;
             };
-            movementTags: "touch"[];
+            movementTags: ("freeze" | "squat" | "jump" | "step" | "touch" | "dodge" | "pose" | "strike" | "combo")[];
             accessibility: {
                 captions: boolean;
                 seatedMode: boolean;
@@ -1599,7 +1599,7 @@ export declare const CatalogSnapshotSchema: z.ZodEffects<z.ZodObject<{
                 min: number;
                 max: number;
             };
-            movementTags: "touch"[];
+            movementTags: ("freeze" | "squat" | "jump" | "step" | "touch" | "dodge" | "pose" | "strike" | "combo")[];
             accessibility: {
                 captions: boolean;
                 seatedMode: boolean;
@@ -1658,7 +1658,7 @@ export declare const CatalogSnapshotSchema: z.ZodEffects<z.ZodObject<{
                 min: number;
                 max: number;
             };
-            movementTags: "touch"[];
+            movementTags: ("freeze" | "squat" | "jump" | "step" | "touch" | "dodge" | "pose" | "strike" | "combo")[];
             accessibility: {
                 captions: boolean;
                 seatedMode: boolean;
@@ -1717,7 +1717,7 @@ export declare const CatalogSnapshotSchema: z.ZodEffects<z.ZodObject<{
                 min: number;
                 max: number;
             };
-            movementTags: "touch"[];
+            movementTags: ("freeze" | "squat" | "jump" | "step" | "touch" | "dodge" | "pose" | "strike" | "combo")[];
             accessibility: {
                 captions: boolean;
                 seatedMode: boolean;
@@ -1776,7 +1776,7 @@ export declare const CatalogSnapshotSchema: z.ZodEffects<z.ZodObject<{
                 min: number;
                 max: number;
             };
-            movementTags: "touch"[];
+            movementTags: ("freeze" | "squat" | "jump" | "step" | "touch" | "dodge" | "pose" | "strike" | "combo")[];
             accessibility: {
                 captions: boolean;
                 seatedMode: boolean;

@@ -1,4 +1,20 @@
 import { z } from "zod";
+/** Runtime release that first executes schemaVersion 2 challenge primitives. */
+export declare const MOTION_CONTRACT_ENGINE_VERSION = "0.2.0";
+export declare const PoseMatchJointSchema: z.ZodObject<{
+    joint: z.ZodEnum<["left_elbow", "right_elbow", "left_knee", "right_knee", "left_shoulder", "right_shoulder", "left_hip", "right_hip"]>;
+    angleDeg: z.ZodNumber;
+    toleranceDeg: z.ZodNumber;
+}, "strict", z.ZodTypeAny, {
+    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+    angleDeg: number;
+    toleranceDeg: number;
+}, {
+    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+    angleDeg: number;
+    toleranceDeg: number;
+}>;
+export type PoseMatchJoint = z.infer<typeof PoseMatchJointSchema>;
 export declare const TouchTargetsSchema: z.ZodObject<{
     timeBudgetMs: z.ZodNumber;
     successAudioId: z.ZodString;
@@ -11,29 +27,353 @@ export declare const TouchTargetsSchema: z.ZodObject<{
     limb: z.ZodEnum<["hands", "feet", "any"]>;
 }, "strict", z.ZodTypeAny, {
     type: "touch_targets";
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
     count: number;
     zone: "upper" | "lower" | "full" | "reachable";
     targetScale: number;
     dwellMs: number;
     limb: "hands" | "feet" | "any";
-    timeBudgetMs: number;
-    successAudioId: string;
-    encourageAudioId: string;
 }, {
     type: "touch_targets";
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
     count: number;
     zone: "upper" | "lower" | "full" | "reachable";
     targetScale: number;
     dwellMs: number;
     limb: "hands" | "feet" | "any";
-    timeBudgetMs: number;
-    successAudioId: string;
-    encourageAudioId: string;
 }>;
-export declare const ChallengeSchema: z.ZodObject<{
+export declare const FreezeSchema: z.ZodObject<{
     timeBudgetMs: z.ZodNumber;
     successAudioId: z.ZodString;
     encourageAudioId: z.ZodString;
+    type: z.ZodLiteral<"freeze">;
+    /** How long the whole body must stay under motionThreshold. */
+    holdMs: z.ZodNumber;
+    /** Mean landmark motion (normalized units/second) treated as "still". */
+    motionThreshold: z.ZodNumber;
+    /** Motion spikes shorter than this do not reset the hold. */
+    graceMs: z.ZodNumber;
+    rounds: z.ZodNumber;
+    /** Frames with fewer confident joints pause, never fail, the hold. */
+    minVisibleJoints: z.ZodNumber;
+}, "strict", z.ZodTypeAny, {
+    type: "freeze";
+    holdMs: number;
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    motionThreshold: number;
+    graceMs: number;
+    rounds: number;
+    minVisibleJoints: number;
+}, {
+    type: "freeze";
+    holdMs: number;
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    motionThreshold: number;
+    graceMs: number;
+    rounds: number;
+    minVisibleJoints: number;
+}>;
+export declare const BodyZoneSchema: z.ZodObject<{
+    timeBudgetMs: z.ZodNumber;
+    successAudioId: z.ZodString;
+    encourageAudioId: z.ZodString;
+    type: z.ZodLiteral<"body_zone">;
+    part: z.ZodEnum<["head", "hands", "feet", "torso", "any"]>;
+    mode: z.ZodEnum<["enter", "avoid"]>;
+    zones: z.ZodArray<z.ZodObject<{
+        id: z.ZodString;
+        box: z.ZodEffects<z.ZodObject<{
+            x0: z.ZodNumber;
+            y0: z.ZodNumber;
+            x1: z.ZodNumber;
+            y1: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            x0: number;
+            y0: number;
+            x1: number;
+            y1: number;
+        }, {
+            x0: number;
+            y0: number;
+            x1: number;
+            y1: number;
+        }>, {
+            x0: number;
+            y0: number;
+            x1: number;
+            y1: number;
+        }, {
+            x0: number;
+            y0: number;
+            x1: number;
+            y1: number;
+        }>;
+    }, "strict", z.ZodTypeAny, {
+        id: string;
+        box: {
+            x0: number;
+            y0: number;
+            x1: number;
+            y1: number;
+        };
+    }, {
+        id: string;
+        box: {
+            x0: number;
+            y0: number;
+            x1: number;
+            y1: number;
+        };
+    }>, "many">;
+    /** Time the part must stay inside (enter) or outside (avoid) the active zone. */
+    holdMs: z.ZodNumber;
+}, "strict", z.ZodTypeAny, {
+    type: "body_zone";
+    holdMs: number;
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    part: "hands" | "feet" | "any" | "head" | "torso";
+    mode: "enter" | "avoid";
+    zones: {
+        id: string;
+        box: {
+            x0: number;
+            y0: number;
+            x1: number;
+            y1: number;
+        };
+    }[];
+}, {
+    type: "body_zone";
+    holdMs: number;
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    part: "hands" | "feet" | "any" | "head" | "torso";
+    mode: "enter" | "avoid";
+    zones: {
+        id: string;
+        box: {
+            x0: number;
+            y0: number;
+            x1: number;
+            y1: number;
+        };
+    }[];
+}>;
+export declare const SquatSchema: z.ZodObject<{
+    timeBudgetMs: z.ZodNumber;
+    successAudioId: z.ZodString;
+    encourageAudioId: z.ZodString;
+    type: z.ZodLiteral<"squat">;
+    repetitions: z.ZodNumber;
+    /** Required hip drop as a fraction of the player's own torso length. */
+    depthRatio: z.ZodNumber;
+    /** Knee angle (degrees, straight = 180) that must be reached at the bottom. */
+    kneeAngleMaxDeg: z.ZodNumber;
+    /** Hold at the bottom before the repetition counts. */
+    holdMs: z.ZodNumber;
+    /** Minimum time between counted repetitions; rejects bounce double counts. */
+    cooldownMs: z.ZodNumber;
+}, "strict", z.ZodTypeAny, {
+    type: "squat";
+    holdMs: number;
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    repetitions: number;
+    depthRatio: number;
+    kneeAngleMaxDeg: number;
+    cooldownMs: number;
+}, {
+    type: "squat";
+    holdMs: number;
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    repetitions: number;
+    depthRatio: number;
+    kneeAngleMaxDeg: number;
+    cooldownMs: number;
+}>;
+export declare const PoseMatchSchema: z.ZodObject<{
+    timeBudgetMs: z.ZodNumber;
+    successAudioId: z.ZodString;
+    encourageAudioId: z.ZodString;
+    type: z.ZodLiteral<"pose_match">;
+    poses: z.ZodArray<z.ZodObject<{
+        id: z.ZodString;
+        joints: z.ZodArray<z.ZodObject<{
+            joint: z.ZodEnum<["left_elbow", "right_elbow", "left_knee", "right_knee", "left_shoulder", "right_shoulder", "left_hip", "right_hip"]>;
+            angleDeg: z.ZodNumber;
+            toleranceDeg: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+            angleDeg: number;
+            toleranceDeg: number;
+        }, {
+            joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+            angleDeg: number;
+            toleranceDeg: number;
+        }>, "many">;
+        holdMs: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        id: string;
+        joints: {
+            joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+            angleDeg: number;
+            toleranceDeg: number;
+        }[];
+        holdMs: number;
+    }, {
+        id: string;
+        joints: {
+            joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+            angleDeg: number;
+            toleranceDeg: number;
+        }[];
+        holdMs: number;
+    }>, "many">;
+    /** Fraction of listed joints that must be inside tolerance at once. */
+    matchRatio: z.ZodNumber;
+    /** "either" also accepts the left/right mirrored pose. */
+    mirrorPolicy: z.ZodEnum<["strict", "either"]>;
+}, "strict", z.ZodTypeAny, {
+    type: "pose_match";
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    poses: {
+        id: string;
+        joints: {
+            joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+            angleDeg: number;
+            toleranceDeg: number;
+        }[];
+        holdMs: number;
+    }[];
+    matchRatio: number;
+    mirrorPolicy: "strict" | "either";
+}, {
+    type: "pose_match";
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    poses: {
+        id: string;
+        joints: {
+            joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+            angleDeg: number;
+            toleranceDeg: number;
+        }[];
+        holdMs: number;
+    }[];
+    matchRatio: number;
+    mirrorPolicy: "strict" | "either";
+}>;
+export declare const JumpSchema: z.ZodObject<{
+    timeBudgetMs: z.ZodNumber;
+    successAudioId: z.ZodString;
+    encourageAudioId: z.ZodString;
+    type: z.ZodLiteral<"jump">;
+    repetitions: z.ZodNumber;
+    /** Required hip rise relative to the player's own torso length. */
+    minRiseRatio: z.ZodNumber;
+    /** Both feet must be back down and stable for this long to count a landing. */
+    landingStableMs: z.ZodNumber;
+    cooldownMs: z.ZodNumber;
+}, "strict", z.ZodTypeAny, {
+    type: "jump";
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    repetitions: number;
+    cooldownMs: number;
+    minRiseRatio: number;
+    landingStableMs: number;
+}, {
+    type: "jump";
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    repetitions: number;
+    cooldownMs: number;
+    minRiseRatio: number;
+    landingStableMs: number;
+}>;
+export declare const VelocityHitSchema: z.ZodObject<{
+    timeBudgetMs: z.ZodNumber;
+    successAudioId: z.ZodString;
+    encourageAudioId: z.ZodString;
+    type: z.ZodLiteral<"velocity_hit">;
+    count: z.ZodNumber;
+    zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
+    targetScale: z.ZodNumber;
+    limb: z.ZodEnum<["hands", "feet", "any"]>;
+    /** On-screen limb speed (normalized units/second) required at contact. */
+    minSpeed: z.ZodNumber;
+    direction: z.ZodEnum<["any", "up", "down", "left", "right"]>;
+}, "strict", z.ZodTypeAny, {
+    type: "velocity_hit";
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    count: number;
+    zone: "upper" | "lower" | "full" | "reachable";
+    targetScale: number;
+    limb: "hands" | "feet" | "any";
+    minSpeed: number;
+    direction: "any" | "up" | "down" | "left" | "right";
+}, {
+    type: "velocity_hit";
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    count: number;
+    zone: "upper" | "lower" | "full" | "reachable";
+    targetScale: number;
+    limb: "hands" | "feet" | "any";
+    minSpeed: number;
+    direction: "any" | "up" | "down" | "left" | "right";
+}>;
+export declare const StepSchema: z.ZodObject<{
+    timeBudgetMs: z.ZodNumber;
+    successAudioId: z.ZodString;
+    encourageAudioId: z.ZodString;
+    type: z.ZodLiteral<"step">;
+    pattern: z.ZodArray<z.ZodEnum<["left", "right"]>, "many">;
+    /** Lateral foot travel required, relative to the player's own torso length. */
+    stepRatio: z.ZodNumber;
+    /** Settle time on the new stance before the step counts. */
+    holdMs: z.ZodNumber;
+}, "strict", z.ZodTypeAny, {
+    type: "step";
+    holdMs: number;
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    pattern: ("left" | "right")[];
+    stepRatio: number;
+}, {
+    type: "step";
+    holdMs: number;
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    pattern: ("left" | "right")[];
+    stepRatio: number;
+}>;
+/** Sequence steps are inner motion configs: base timing/audio belongs to the sequence. */
+export declare const SequenceStepSchema: z.ZodDiscriminatedUnion<"type", [z.ZodObject<{
     type: z.ZodLiteral<"touch_targets">;
     count: z.ZodNumber;
     zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
@@ -47,9 +387,6 @@ export declare const ChallengeSchema: z.ZodObject<{
     targetScale: number;
     dwellMs: number;
     limb: "hands" | "feet" | "any";
-    timeBudgetMs: number;
-    successAudioId: string;
-    encourageAudioId: string;
 }, {
     type: "touch_targets";
     count: number;
@@ -57,11 +394,1492 @@ export declare const ChallengeSchema: z.ZodObject<{
     targetScale: number;
     dwellMs: number;
     limb: "hands" | "feet" | "any";
+}>, z.ZodObject<{
+    type: z.ZodLiteral<"freeze">;
+    /** How long the whole body must stay under motionThreshold. */
+    holdMs: z.ZodNumber;
+    /** Mean landmark motion (normalized units/second) treated as "still". */
+    motionThreshold: z.ZodNumber;
+    /** Motion spikes shorter than this do not reset the hold. */
+    graceMs: z.ZodNumber;
+    rounds: z.ZodNumber;
+    /** Frames with fewer confident joints pause, never fail, the hold. */
+    minVisibleJoints: z.ZodNumber;
+}, "strict", z.ZodTypeAny, {
+    type: "freeze";
+    holdMs: number;
+    motionThreshold: number;
+    graceMs: number;
+    rounds: number;
+    minVisibleJoints: number;
+}, {
+    type: "freeze";
+    holdMs: number;
+    motionThreshold: number;
+    graceMs: number;
+    rounds: number;
+    minVisibleJoints: number;
+}>, z.ZodObject<{
+    type: z.ZodLiteral<"body_zone">;
+    part: z.ZodEnum<["head", "hands", "feet", "torso", "any"]>;
+    mode: z.ZodEnum<["enter", "avoid"]>;
+    zones: z.ZodArray<z.ZodObject<{
+        id: z.ZodString;
+        box: z.ZodEffects<z.ZodObject<{
+            x0: z.ZodNumber;
+            y0: z.ZodNumber;
+            x1: z.ZodNumber;
+            y1: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            x0: number;
+            y0: number;
+            x1: number;
+            y1: number;
+        }, {
+            x0: number;
+            y0: number;
+            x1: number;
+            y1: number;
+        }>, {
+            x0: number;
+            y0: number;
+            x1: number;
+            y1: number;
+        }, {
+            x0: number;
+            y0: number;
+            x1: number;
+            y1: number;
+        }>;
+    }, "strict", z.ZodTypeAny, {
+        id: string;
+        box: {
+            x0: number;
+            y0: number;
+            x1: number;
+            y1: number;
+        };
+    }, {
+        id: string;
+        box: {
+            x0: number;
+            y0: number;
+            x1: number;
+            y1: number;
+        };
+    }>, "many">;
+    /** Time the part must stay inside (enter) or outside (avoid) the active zone. */
+    holdMs: z.ZodNumber;
+}, "strict", z.ZodTypeAny, {
+    type: "body_zone";
+    holdMs: number;
+    part: "hands" | "feet" | "any" | "head" | "torso";
+    mode: "enter" | "avoid";
+    zones: {
+        id: string;
+        box: {
+            x0: number;
+            y0: number;
+            x1: number;
+            y1: number;
+        };
+    }[];
+}, {
+    type: "body_zone";
+    holdMs: number;
+    part: "hands" | "feet" | "any" | "head" | "torso";
+    mode: "enter" | "avoid";
+    zones: {
+        id: string;
+        box: {
+            x0: number;
+            y0: number;
+            x1: number;
+            y1: number;
+        };
+    }[];
+}>, z.ZodObject<{
+    type: z.ZodLiteral<"squat">;
+    repetitions: z.ZodNumber;
+    /** Required hip drop as a fraction of the player's own torso length. */
+    depthRatio: z.ZodNumber;
+    /** Knee angle (degrees, straight = 180) that must be reached at the bottom. */
+    kneeAngleMaxDeg: z.ZodNumber;
+    /** Hold at the bottom before the repetition counts. */
+    holdMs: z.ZodNumber;
+    /** Minimum time between counted repetitions; rejects bounce double counts. */
+    cooldownMs: z.ZodNumber;
+}, "strict", z.ZodTypeAny, {
+    type: "squat";
+    holdMs: number;
+    repetitions: number;
+    depthRatio: number;
+    kneeAngleMaxDeg: number;
+    cooldownMs: number;
+}, {
+    type: "squat";
+    holdMs: number;
+    repetitions: number;
+    depthRatio: number;
+    kneeAngleMaxDeg: number;
+    cooldownMs: number;
+}>, z.ZodObject<{
+    type: z.ZodLiteral<"pose_match">;
+    poses: z.ZodArray<z.ZodObject<{
+        id: z.ZodString;
+        joints: z.ZodArray<z.ZodObject<{
+            joint: z.ZodEnum<["left_elbow", "right_elbow", "left_knee", "right_knee", "left_shoulder", "right_shoulder", "left_hip", "right_hip"]>;
+            angleDeg: z.ZodNumber;
+            toleranceDeg: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+            angleDeg: number;
+            toleranceDeg: number;
+        }, {
+            joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+            angleDeg: number;
+            toleranceDeg: number;
+        }>, "many">;
+        holdMs: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        id: string;
+        joints: {
+            joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+            angleDeg: number;
+            toleranceDeg: number;
+        }[];
+        holdMs: number;
+    }, {
+        id: string;
+        joints: {
+            joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+            angleDeg: number;
+            toleranceDeg: number;
+        }[];
+        holdMs: number;
+    }>, "many">;
+    /** Fraction of listed joints that must be inside tolerance at once. */
+    matchRatio: z.ZodNumber;
+    /** "either" also accepts the left/right mirrored pose. */
+    mirrorPolicy: z.ZodEnum<["strict", "either"]>;
+}, "strict", z.ZodTypeAny, {
+    type: "pose_match";
+    poses: {
+        id: string;
+        joints: {
+            joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+            angleDeg: number;
+            toleranceDeg: number;
+        }[];
+        holdMs: number;
+    }[];
+    matchRatio: number;
+    mirrorPolicy: "strict" | "either";
+}, {
+    type: "pose_match";
+    poses: {
+        id: string;
+        joints: {
+            joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+            angleDeg: number;
+            toleranceDeg: number;
+        }[];
+        holdMs: number;
+    }[];
+    matchRatio: number;
+    mirrorPolicy: "strict" | "either";
+}>, z.ZodObject<{
+    type: z.ZodLiteral<"jump">;
+    repetitions: z.ZodNumber;
+    /** Required hip rise relative to the player's own torso length. */
+    minRiseRatio: z.ZodNumber;
+    /** Both feet must be back down and stable for this long to count a landing. */
+    landingStableMs: z.ZodNumber;
+    cooldownMs: z.ZodNumber;
+}, "strict", z.ZodTypeAny, {
+    type: "jump";
+    repetitions: number;
+    cooldownMs: number;
+    minRiseRatio: number;
+    landingStableMs: number;
+}, {
+    type: "jump";
+    repetitions: number;
+    cooldownMs: number;
+    minRiseRatio: number;
+    landingStableMs: number;
+}>, z.ZodObject<{
+    type: z.ZodLiteral<"velocity_hit">;
+    count: z.ZodNumber;
+    zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
+    targetScale: z.ZodNumber;
+    limb: z.ZodEnum<["hands", "feet", "any"]>;
+    /** On-screen limb speed (normalized units/second) required at contact. */
+    minSpeed: z.ZodNumber;
+    direction: z.ZodEnum<["any", "up", "down", "left", "right"]>;
+}, "strict", z.ZodTypeAny, {
+    type: "velocity_hit";
+    count: number;
+    zone: "upper" | "lower" | "full" | "reachable";
+    targetScale: number;
+    limb: "hands" | "feet" | "any";
+    minSpeed: number;
+    direction: "any" | "up" | "down" | "left" | "right";
+}, {
+    type: "velocity_hit";
+    count: number;
+    zone: "upper" | "lower" | "full" | "reachable";
+    targetScale: number;
+    limb: "hands" | "feet" | "any";
+    minSpeed: number;
+    direction: "any" | "up" | "down" | "left" | "right";
+}>, z.ZodObject<{
+    type: z.ZodLiteral<"step">;
+    pattern: z.ZodArray<z.ZodEnum<["left", "right"]>, "many">;
+    /** Lateral foot travel required, relative to the player's own torso length. */
+    stepRatio: z.ZodNumber;
+    /** Settle time on the new stance before the step counts. */
+    holdMs: z.ZodNumber;
+}, "strict", z.ZodTypeAny, {
+    type: "step";
+    holdMs: number;
+    pattern: ("left" | "right")[];
+    stepRatio: number;
+}, {
+    type: "step";
+    holdMs: number;
+    pattern: ("left" | "right")[];
+    stepRatio: number;
+}>]>;
+export type SequenceStep = z.infer<typeof SequenceStepSchema>;
+export declare const SequenceSchema: z.ZodObject<{
+    timeBudgetMs: z.ZodNumber;
+    successAudioId: z.ZodString;
+    encourageAudioId: z.ZodString;
+    type: z.ZodLiteral<"sequence">;
+    steps: z.ZodArray<z.ZodDiscriminatedUnion<"type", [z.ZodObject<{
+        type: z.ZodLiteral<"touch_targets">;
+        count: z.ZodNumber;
+        zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
+        targetScale: z.ZodNumber;
+        dwellMs: z.ZodNumber;
+        limb: z.ZodEnum<["hands", "feet", "any"]>;
+    }, "strict", z.ZodTypeAny, {
+        type: "touch_targets";
+        count: number;
+        zone: "upper" | "lower" | "full" | "reachable";
+        targetScale: number;
+        dwellMs: number;
+        limb: "hands" | "feet" | "any";
+    }, {
+        type: "touch_targets";
+        count: number;
+        zone: "upper" | "lower" | "full" | "reachable";
+        targetScale: number;
+        dwellMs: number;
+        limb: "hands" | "feet" | "any";
+    }>, z.ZodObject<{
+        type: z.ZodLiteral<"freeze">;
+        /** How long the whole body must stay under motionThreshold. */
+        holdMs: z.ZodNumber;
+        /** Mean landmark motion (normalized units/second) treated as "still". */
+        motionThreshold: z.ZodNumber;
+        /** Motion spikes shorter than this do not reset the hold. */
+        graceMs: z.ZodNumber;
+        rounds: z.ZodNumber;
+        /** Frames with fewer confident joints pause, never fail, the hold. */
+        minVisibleJoints: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "freeze";
+        holdMs: number;
+        motionThreshold: number;
+        graceMs: number;
+        rounds: number;
+        minVisibleJoints: number;
+    }, {
+        type: "freeze";
+        holdMs: number;
+        motionThreshold: number;
+        graceMs: number;
+        rounds: number;
+        minVisibleJoints: number;
+    }>, z.ZodObject<{
+        type: z.ZodLiteral<"body_zone">;
+        part: z.ZodEnum<["head", "hands", "feet", "torso", "any"]>;
+        mode: z.ZodEnum<["enter", "avoid"]>;
+        zones: z.ZodArray<z.ZodObject<{
+            id: z.ZodString;
+            box: z.ZodEffects<z.ZodObject<{
+                x0: z.ZodNumber;
+                y0: z.ZodNumber;
+                x1: z.ZodNumber;
+                y1: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            }, {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            }>, {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            }, {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            }>;
+        }, "strict", z.ZodTypeAny, {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }, {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }>, "many">;
+        /** Time the part must stay inside (enter) or outside (avoid) the active zone. */
+        holdMs: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "body_zone";
+        holdMs: number;
+        part: "hands" | "feet" | "any" | "head" | "torso";
+        mode: "enter" | "avoid";
+        zones: {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }[];
+    }, {
+        type: "body_zone";
+        holdMs: number;
+        part: "hands" | "feet" | "any" | "head" | "torso";
+        mode: "enter" | "avoid";
+        zones: {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }[];
+    }>, z.ZodObject<{
+        type: z.ZodLiteral<"squat">;
+        repetitions: z.ZodNumber;
+        /** Required hip drop as a fraction of the player's own torso length. */
+        depthRatio: z.ZodNumber;
+        /** Knee angle (degrees, straight = 180) that must be reached at the bottom. */
+        kneeAngleMaxDeg: z.ZodNumber;
+        /** Hold at the bottom before the repetition counts. */
+        holdMs: z.ZodNumber;
+        /** Minimum time between counted repetitions; rejects bounce double counts. */
+        cooldownMs: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "squat";
+        holdMs: number;
+        repetitions: number;
+        depthRatio: number;
+        kneeAngleMaxDeg: number;
+        cooldownMs: number;
+    }, {
+        type: "squat";
+        holdMs: number;
+        repetitions: number;
+        depthRatio: number;
+        kneeAngleMaxDeg: number;
+        cooldownMs: number;
+    }>, z.ZodObject<{
+        type: z.ZodLiteral<"pose_match">;
+        poses: z.ZodArray<z.ZodObject<{
+            id: z.ZodString;
+            joints: z.ZodArray<z.ZodObject<{
+                joint: z.ZodEnum<["left_elbow", "right_elbow", "left_knee", "right_knee", "left_shoulder", "right_shoulder", "left_hip", "right_hip"]>;
+                angleDeg: z.ZodNumber;
+                toleranceDeg: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }, {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }>, "many">;
+            holdMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }, {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }>, "many">;
+        /** Fraction of listed joints that must be inside tolerance at once. */
+        matchRatio: z.ZodNumber;
+        /** "either" also accepts the left/right mirrored pose. */
+        mirrorPolicy: z.ZodEnum<["strict", "either"]>;
+    }, "strict", z.ZodTypeAny, {
+        type: "pose_match";
+        poses: {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }[];
+        matchRatio: number;
+        mirrorPolicy: "strict" | "either";
+    }, {
+        type: "pose_match";
+        poses: {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }[];
+        matchRatio: number;
+        mirrorPolicy: "strict" | "either";
+    }>, z.ZodObject<{
+        type: z.ZodLiteral<"jump">;
+        repetitions: z.ZodNumber;
+        /** Required hip rise relative to the player's own torso length. */
+        minRiseRatio: z.ZodNumber;
+        /** Both feet must be back down and stable for this long to count a landing. */
+        landingStableMs: z.ZodNumber;
+        cooldownMs: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "jump";
+        repetitions: number;
+        cooldownMs: number;
+        minRiseRatio: number;
+        landingStableMs: number;
+    }, {
+        type: "jump";
+        repetitions: number;
+        cooldownMs: number;
+        minRiseRatio: number;
+        landingStableMs: number;
+    }>, z.ZodObject<{
+        type: z.ZodLiteral<"velocity_hit">;
+        count: z.ZodNumber;
+        zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
+        targetScale: z.ZodNumber;
+        limb: z.ZodEnum<["hands", "feet", "any"]>;
+        /** On-screen limb speed (normalized units/second) required at contact. */
+        minSpeed: z.ZodNumber;
+        direction: z.ZodEnum<["any", "up", "down", "left", "right"]>;
+    }, "strict", z.ZodTypeAny, {
+        type: "velocity_hit";
+        count: number;
+        zone: "upper" | "lower" | "full" | "reachable";
+        targetScale: number;
+        limb: "hands" | "feet" | "any";
+        minSpeed: number;
+        direction: "any" | "up" | "down" | "left" | "right";
+    }, {
+        type: "velocity_hit";
+        count: number;
+        zone: "upper" | "lower" | "full" | "reachable";
+        targetScale: number;
+        limb: "hands" | "feet" | "any";
+        minSpeed: number;
+        direction: "any" | "up" | "down" | "left" | "right";
+    }>, z.ZodObject<{
+        type: z.ZodLiteral<"step">;
+        pattern: z.ZodArray<z.ZodEnum<["left", "right"]>, "many">;
+        /** Lateral foot travel required, relative to the player's own torso length. */
+        stepRatio: z.ZodNumber;
+        /** Settle time on the new stance before the step counts. */
+        holdMs: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "step";
+        holdMs: number;
+        pattern: ("left" | "right")[];
+        stepRatio: number;
+    }, {
+        type: "step";
+        holdMs: number;
+        pattern: ("left" | "right")[];
+        stepRatio: number;
+    }>]>, "many">;
+    /** Pause allowed between completed steps before the next one arms. */
+    interStepGraceMs: z.ZodNumber;
+}, "strict", z.ZodTypeAny, {
+    type: "sequence";
     timeBudgetMs: number;
     successAudioId: string;
     encourageAudioId: string;
+    steps: ({
+        type: "touch_targets";
+        count: number;
+        zone: "upper" | "lower" | "full" | "reachable";
+        targetScale: number;
+        dwellMs: number;
+        limb: "hands" | "feet" | "any";
+    } | {
+        type: "freeze";
+        holdMs: number;
+        motionThreshold: number;
+        graceMs: number;
+        rounds: number;
+        minVisibleJoints: number;
+    } | {
+        type: "body_zone";
+        holdMs: number;
+        part: "hands" | "feet" | "any" | "head" | "torso";
+        mode: "enter" | "avoid";
+        zones: {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }[];
+    } | {
+        type: "squat";
+        holdMs: number;
+        repetitions: number;
+        depthRatio: number;
+        kneeAngleMaxDeg: number;
+        cooldownMs: number;
+    } | {
+        type: "pose_match";
+        poses: {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }[];
+        matchRatio: number;
+        mirrorPolicy: "strict" | "either";
+    } | {
+        type: "jump";
+        repetitions: number;
+        cooldownMs: number;
+        minRiseRatio: number;
+        landingStableMs: number;
+    } | {
+        type: "velocity_hit";
+        count: number;
+        zone: "upper" | "lower" | "full" | "reachable";
+        targetScale: number;
+        limb: "hands" | "feet" | "any";
+        minSpeed: number;
+        direction: "any" | "up" | "down" | "left" | "right";
+    } | {
+        type: "step";
+        holdMs: number;
+        pattern: ("left" | "right")[];
+        stepRatio: number;
+    })[];
+    interStepGraceMs: number;
+}, {
+    type: "sequence";
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    steps: ({
+        type: "touch_targets";
+        count: number;
+        zone: "upper" | "lower" | "full" | "reachable";
+        targetScale: number;
+        dwellMs: number;
+        limb: "hands" | "feet" | "any";
+    } | {
+        type: "freeze";
+        holdMs: number;
+        motionThreshold: number;
+        graceMs: number;
+        rounds: number;
+        minVisibleJoints: number;
+    } | {
+        type: "body_zone";
+        holdMs: number;
+        part: "hands" | "feet" | "any" | "head" | "torso";
+        mode: "enter" | "avoid";
+        zones: {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }[];
+    } | {
+        type: "squat";
+        holdMs: number;
+        repetitions: number;
+        depthRatio: number;
+        kneeAngleMaxDeg: number;
+        cooldownMs: number;
+    } | {
+        type: "pose_match";
+        poses: {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }[];
+        matchRatio: number;
+        mirrorPolicy: "strict" | "either";
+    } | {
+        type: "jump";
+        repetitions: number;
+        cooldownMs: number;
+        minRiseRatio: number;
+        landingStableMs: number;
+    } | {
+        type: "velocity_hit";
+        count: number;
+        zone: "upper" | "lower" | "full" | "reachable";
+        targetScale: number;
+        limb: "hands" | "feet" | "any";
+        minSpeed: number;
+        direction: "any" | "up" | "down" | "left" | "right";
+    } | {
+        type: "step";
+        holdMs: number;
+        pattern: ("left" | "right")[];
+        stepRatio: number;
+    })[];
+    interStepGraceMs: number;
 }>;
+export declare const ChallengeSchema: z.ZodDiscriminatedUnion<"type", [z.ZodObject<{
+    timeBudgetMs: z.ZodNumber;
+    successAudioId: z.ZodString;
+    encourageAudioId: z.ZodString;
+    type: z.ZodLiteral<"touch_targets">;
+    count: z.ZodNumber;
+    zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
+    targetScale: z.ZodNumber;
+    dwellMs: z.ZodNumber;
+    limb: z.ZodEnum<["hands", "feet", "any"]>;
+}, "strict", z.ZodTypeAny, {
+    type: "touch_targets";
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    count: number;
+    zone: "upper" | "lower" | "full" | "reachable";
+    targetScale: number;
+    dwellMs: number;
+    limb: "hands" | "feet" | "any";
+}, {
+    type: "touch_targets";
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    count: number;
+    zone: "upper" | "lower" | "full" | "reachable";
+    targetScale: number;
+    dwellMs: number;
+    limb: "hands" | "feet" | "any";
+}>, z.ZodObject<{
+    timeBudgetMs: z.ZodNumber;
+    successAudioId: z.ZodString;
+    encourageAudioId: z.ZodString;
+    type: z.ZodLiteral<"freeze">;
+    /** How long the whole body must stay under motionThreshold. */
+    holdMs: z.ZodNumber;
+    /** Mean landmark motion (normalized units/second) treated as "still". */
+    motionThreshold: z.ZodNumber;
+    /** Motion spikes shorter than this do not reset the hold. */
+    graceMs: z.ZodNumber;
+    rounds: z.ZodNumber;
+    /** Frames with fewer confident joints pause, never fail, the hold. */
+    minVisibleJoints: z.ZodNumber;
+}, "strict", z.ZodTypeAny, {
+    type: "freeze";
+    holdMs: number;
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    motionThreshold: number;
+    graceMs: number;
+    rounds: number;
+    minVisibleJoints: number;
+}, {
+    type: "freeze";
+    holdMs: number;
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    motionThreshold: number;
+    graceMs: number;
+    rounds: number;
+    minVisibleJoints: number;
+}>, z.ZodObject<{
+    timeBudgetMs: z.ZodNumber;
+    successAudioId: z.ZodString;
+    encourageAudioId: z.ZodString;
+    type: z.ZodLiteral<"body_zone">;
+    part: z.ZodEnum<["head", "hands", "feet", "torso", "any"]>;
+    mode: z.ZodEnum<["enter", "avoid"]>;
+    zones: z.ZodArray<z.ZodObject<{
+        id: z.ZodString;
+        box: z.ZodEffects<z.ZodObject<{
+            x0: z.ZodNumber;
+            y0: z.ZodNumber;
+            x1: z.ZodNumber;
+            y1: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            x0: number;
+            y0: number;
+            x1: number;
+            y1: number;
+        }, {
+            x0: number;
+            y0: number;
+            x1: number;
+            y1: number;
+        }>, {
+            x0: number;
+            y0: number;
+            x1: number;
+            y1: number;
+        }, {
+            x0: number;
+            y0: number;
+            x1: number;
+            y1: number;
+        }>;
+    }, "strict", z.ZodTypeAny, {
+        id: string;
+        box: {
+            x0: number;
+            y0: number;
+            x1: number;
+            y1: number;
+        };
+    }, {
+        id: string;
+        box: {
+            x0: number;
+            y0: number;
+            x1: number;
+            y1: number;
+        };
+    }>, "many">;
+    /** Time the part must stay inside (enter) or outside (avoid) the active zone. */
+    holdMs: z.ZodNumber;
+}, "strict", z.ZodTypeAny, {
+    type: "body_zone";
+    holdMs: number;
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    part: "hands" | "feet" | "any" | "head" | "torso";
+    mode: "enter" | "avoid";
+    zones: {
+        id: string;
+        box: {
+            x0: number;
+            y0: number;
+            x1: number;
+            y1: number;
+        };
+    }[];
+}, {
+    type: "body_zone";
+    holdMs: number;
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    part: "hands" | "feet" | "any" | "head" | "torso";
+    mode: "enter" | "avoid";
+    zones: {
+        id: string;
+        box: {
+            x0: number;
+            y0: number;
+            x1: number;
+            y1: number;
+        };
+    }[];
+}>, z.ZodObject<{
+    timeBudgetMs: z.ZodNumber;
+    successAudioId: z.ZodString;
+    encourageAudioId: z.ZodString;
+    type: z.ZodLiteral<"squat">;
+    repetitions: z.ZodNumber;
+    /** Required hip drop as a fraction of the player's own torso length. */
+    depthRatio: z.ZodNumber;
+    /** Knee angle (degrees, straight = 180) that must be reached at the bottom. */
+    kneeAngleMaxDeg: z.ZodNumber;
+    /** Hold at the bottom before the repetition counts. */
+    holdMs: z.ZodNumber;
+    /** Minimum time between counted repetitions; rejects bounce double counts. */
+    cooldownMs: z.ZodNumber;
+}, "strict", z.ZodTypeAny, {
+    type: "squat";
+    holdMs: number;
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    repetitions: number;
+    depthRatio: number;
+    kneeAngleMaxDeg: number;
+    cooldownMs: number;
+}, {
+    type: "squat";
+    holdMs: number;
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    repetitions: number;
+    depthRatio: number;
+    kneeAngleMaxDeg: number;
+    cooldownMs: number;
+}>, z.ZodObject<{
+    timeBudgetMs: z.ZodNumber;
+    successAudioId: z.ZodString;
+    encourageAudioId: z.ZodString;
+    type: z.ZodLiteral<"pose_match">;
+    poses: z.ZodArray<z.ZodObject<{
+        id: z.ZodString;
+        joints: z.ZodArray<z.ZodObject<{
+            joint: z.ZodEnum<["left_elbow", "right_elbow", "left_knee", "right_knee", "left_shoulder", "right_shoulder", "left_hip", "right_hip"]>;
+            angleDeg: z.ZodNumber;
+            toleranceDeg: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+            angleDeg: number;
+            toleranceDeg: number;
+        }, {
+            joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+            angleDeg: number;
+            toleranceDeg: number;
+        }>, "many">;
+        holdMs: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        id: string;
+        joints: {
+            joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+            angleDeg: number;
+            toleranceDeg: number;
+        }[];
+        holdMs: number;
+    }, {
+        id: string;
+        joints: {
+            joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+            angleDeg: number;
+            toleranceDeg: number;
+        }[];
+        holdMs: number;
+    }>, "many">;
+    /** Fraction of listed joints that must be inside tolerance at once. */
+    matchRatio: z.ZodNumber;
+    /** "either" also accepts the left/right mirrored pose. */
+    mirrorPolicy: z.ZodEnum<["strict", "either"]>;
+}, "strict", z.ZodTypeAny, {
+    type: "pose_match";
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    poses: {
+        id: string;
+        joints: {
+            joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+            angleDeg: number;
+            toleranceDeg: number;
+        }[];
+        holdMs: number;
+    }[];
+    matchRatio: number;
+    mirrorPolicy: "strict" | "either";
+}, {
+    type: "pose_match";
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    poses: {
+        id: string;
+        joints: {
+            joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+            angleDeg: number;
+            toleranceDeg: number;
+        }[];
+        holdMs: number;
+    }[];
+    matchRatio: number;
+    mirrorPolicy: "strict" | "either";
+}>, z.ZodObject<{
+    timeBudgetMs: z.ZodNumber;
+    successAudioId: z.ZodString;
+    encourageAudioId: z.ZodString;
+    type: z.ZodLiteral<"jump">;
+    repetitions: z.ZodNumber;
+    /** Required hip rise relative to the player's own torso length. */
+    minRiseRatio: z.ZodNumber;
+    /** Both feet must be back down and stable for this long to count a landing. */
+    landingStableMs: z.ZodNumber;
+    cooldownMs: z.ZodNumber;
+}, "strict", z.ZodTypeAny, {
+    type: "jump";
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    repetitions: number;
+    cooldownMs: number;
+    minRiseRatio: number;
+    landingStableMs: number;
+}, {
+    type: "jump";
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    repetitions: number;
+    cooldownMs: number;
+    minRiseRatio: number;
+    landingStableMs: number;
+}>, z.ZodObject<{
+    timeBudgetMs: z.ZodNumber;
+    successAudioId: z.ZodString;
+    encourageAudioId: z.ZodString;
+    type: z.ZodLiteral<"velocity_hit">;
+    count: z.ZodNumber;
+    zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
+    targetScale: z.ZodNumber;
+    limb: z.ZodEnum<["hands", "feet", "any"]>;
+    /** On-screen limb speed (normalized units/second) required at contact. */
+    minSpeed: z.ZodNumber;
+    direction: z.ZodEnum<["any", "up", "down", "left", "right"]>;
+}, "strict", z.ZodTypeAny, {
+    type: "velocity_hit";
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    count: number;
+    zone: "upper" | "lower" | "full" | "reachable";
+    targetScale: number;
+    limb: "hands" | "feet" | "any";
+    minSpeed: number;
+    direction: "any" | "up" | "down" | "left" | "right";
+}, {
+    type: "velocity_hit";
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    count: number;
+    zone: "upper" | "lower" | "full" | "reachable";
+    targetScale: number;
+    limb: "hands" | "feet" | "any";
+    minSpeed: number;
+    direction: "any" | "up" | "down" | "left" | "right";
+}>, z.ZodObject<{
+    timeBudgetMs: z.ZodNumber;
+    successAudioId: z.ZodString;
+    encourageAudioId: z.ZodString;
+    type: z.ZodLiteral<"step">;
+    pattern: z.ZodArray<z.ZodEnum<["left", "right"]>, "many">;
+    /** Lateral foot travel required, relative to the player's own torso length. */
+    stepRatio: z.ZodNumber;
+    /** Settle time on the new stance before the step counts. */
+    holdMs: z.ZodNumber;
+}, "strict", z.ZodTypeAny, {
+    type: "step";
+    holdMs: number;
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    pattern: ("left" | "right")[];
+    stepRatio: number;
+}, {
+    type: "step";
+    holdMs: number;
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    pattern: ("left" | "right")[];
+    stepRatio: number;
+}>, z.ZodObject<{
+    timeBudgetMs: z.ZodNumber;
+    successAudioId: z.ZodString;
+    encourageAudioId: z.ZodString;
+    type: z.ZodLiteral<"sequence">;
+    steps: z.ZodArray<z.ZodDiscriminatedUnion<"type", [z.ZodObject<{
+        type: z.ZodLiteral<"touch_targets">;
+        count: z.ZodNumber;
+        zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
+        targetScale: z.ZodNumber;
+        dwellMs: z.ZodNumber;
+        limb: z.ZodEnum<["hands", "feet", "any"]>;
+    }, "strict", z.ZodTypeAny, {
+        type: "touch_targets";
+        count: number;
+        zone: "upper" | "lower" | "full" | "reachable";
+        targetScale: number;
+        dwellMs: number;
+        limb: "hands" | "feet" | "any";
+    }, {
+        type: "touch_targets";
+        count: number;
+        zone: "upper" | "lower" | "full" | "reachable";
+        targetScale: number;
+        dwellMs: number;
+        limb: "hands" | "feet" | "any";
+    }>, z.ZodObject<{
+        type: z.ZodLiteral<"freeze">;
+        /** How long the whole body must stay under motionThreshold. */
+        holdMs: z.ZodNumber;
+        /** Mean landmark motion (normalized units/second) treated as "still". */
+        motionThreshold: z.ZodNumber;
+        /** Motion spikes shorter than this do not reset the hold. */
+        graceMs: z.ZodNumber;
+        rounds: z.ZodNumber;
+        /** Frames with fewer confident joints pause, never fail, the hold. */
+        minVisibleJoints: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "freeze";
+        holdMs: number;
+        motionThreshold: number;
+        graceMs: number;
+        rounds: number;
+        minVisibleJoints: number;
+    }, {
+        type: "freeze";
+        holdMs: number;
+        motionThreshold: number;
+        graceMs: number;
+        rounds: number;
+        minVisibleJoints: number;
+    }>, z.ZodObject<{
+        type: z.ZodLiteral<"body_zone">;
+        part: z.ZodEnum<["head", "hands", "feet", "torso", "any"]>;
+        mode: z.ZodEnum<["enter", "avoid"]>;
+        zones: z.ZodArray<z.ZodObject<{
+            id: z.ZodString;
+            box: z.ZodEffects<z.ZodObject<{
+                x0: z.ZodNumber;
+                y0: z.ZodNumber;
+                x1: z.ZodNumber;
+                y1: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            }, {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            }>, {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            }, {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            }>;
+        }, "strict", z.ZodTypeAny, {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }, {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }>, "many">;
+        /** Time the part must stay inside (enter) or outside (avoid) the active zone. */
+        holdMs: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "body_zone";
+        holdMs: number;
+        part: "hands" | "feet" | "any" | "head" | "torso";
+        mode: "enter" | "avoid";
+        zones: {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }[];
+    }, {
+        type: "body_zone";
+        holdMs: number;
+        part: "hands" | "feet" | "any" | "head" | "torso";
+        mode: "enter" | "avoid";
+        zones: {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }[];
+    }>, z.ZodObject<{
+        type: z.ZodLiteral<"squat">;
+        repetitions: z.ZodNumber;
+        /** Required hip drop as a fraction of the player's own torso length. */
+        depthRatio: z.ZodNumber;
+        /** Knee angle (degrees, straight = 180) that must be reached at the bottom. */
+        kneeAngleMaxDeg: z.ZodNumber;
+        /** Hold at the bottom before the repetition counts. */
+        holdMs: z.ZodNumber;
+        /** Minimum time between counted repetitions; rejects bounce double counts. */
+        cooldownMs: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "squat";
+        holdMs: number;
+        repetitions: number;
+        depthRatio: number;
+        kneeAngleMaxDeg: number;
+        cooldownMs: number;
+    }, {
+        type: "squat";
+        holdMs: number;
+        repetitions: number;
+        depthRatio: number;
+        kneeAngleMaxDeg: number;
+        cooldownMs: number;
+    }>, z.ZodObject<{
+        type: z.ZodLiteral<"pose_match">;
+        poses: z.ZodArray<z.ZodObject<{
+            id: z.ZodString;
+            joints: z.ZodArray<z.ZodObject<{
+                joint: z.ZodEnum<["left_elbow", "right_elbow", "left_knee", "right_knee", "left_shoulder", "right_shoulder", "left_hip", "right_hip"]>;
+                angleDeg: z.ZodNumber;
+                toleranceDeg: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }, {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }>, "many">;
+            holdMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }, {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }>, "many">;
+        /** Fraction of listed joints that must be inside tolerance at once. */
+        matchRatio: z.ZodNumber;
+        /** "either" also accepts the left/right mirrored pose. */
+        mirrorPolicy: z.ZodEnum<["strict", "either"]>;
+    }, "strict", z.ZodTypeAny, {
+        type: "pose_match";
+        poses: {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }[];
+        matchRatio: number;
+        mirrorPolicy: "strict" | "either";
+    }, {
+        type: "pose_match";
+        poses: {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }[];
+        matchRatio: number;
+        mirrorPolicy: "strict" | "either";
+    }>, z.ZodObject<{
+        type: z.ZodLiteral<"jump">;
+        repetitions: z.ZodNumber;
+        /** Required hip rise relative to the player's own torso length. */
+        minRiseRatio: z.ZodNumber;
+        /** Both feet must be back down and stable for this long to count a landing. */
+        landingStableMs: z.ZodNumber;
+        cooldownMs: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "jump";
+        repetitions: number;
+        cooldownMs: number;
+        minRiseRatio: number;
+        landingStableMs: number;
+    }, {
+        type: "jump";
+        repetitions: number;
+        cooldownMs: number;
+        minRiseRatio: number;
+        landingStableMs: number;
+    }>, z.ZodObject<{
+        type: z.ZodLiteral<"velocity_hit">;
+        count: z.ZodNumber;
+        zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
+        targetScale: z.ZodNumber;
+        limb: z.ZodEnum<["hands", "feet", "any"]>;
+        /** On-screen limb speed (normalized units/second) required at contact. */
+        minSpeed: z.ZodNumber;
+        direction: z.ZodEnum<["any", "up", "down", "left", "right"]>;
+    }, "strict", z.ZodTypeAny, {
+        type: "velocity_hit";
+        count: number;
+        zone: "upper" | "lower" | "full" | "reachable";
+        targetScale: number;
+        limb: "hands" | "feet" | "any";
+        minSpeed: number;
+        direction: "any" | "up" | "down" | "left" | "right";
+    }, {
+        type: "velocity_hit";
+        count: number;
+        zone: "upper" | "lower" | "full" | "reachable";
+        targetScale: number;
+        limb: "hands" | "feet" | "any";
+        minSpeed: number;
+        direction: "any" | "up" | "down" | "left" | "right";
+    }>, z.ZodObject<{
+        type: z.ZodLiteral<"step">;
+        pattern: z.ZodArray<z.ZodEnum<["left", "right"]>, "many">;
+        /** Lateral foot travel required, relative to the player's own torso length. */
+        stepRatio: z.ZodNumber;
+        /** Settle time on the new stance before the step counts. */
+        holdMs: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "step";
+        holdMs: number;
+        pattern: ("left" | "right")[];
+        stepRatio: number;
+    }, {
+        type: "step";
+        holdMs: number;
+        pattern: ("left" | "right")[];
+        stepRatio: number;
+    }>]>, "many">;
+    /** Pause allowed between completed steps before the next one arms. */
+    interStepGraceMs: z.ZodNumber;
+}, "strict", z.ZodTypeAny, {
+    type: "sequence";
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    steps: ({
+        type: "touch_targets";
+        count: number;
+        zone: "upper" | "lower" | "full" | "reachable";
+        targetScale: number;
+        dwellMs: number;
+        limb: "hands" | "feet" | "any";
+    } | {
+        type: "freeze";
+        holdMs: number;
+        motionThreshold: number;
+        graceMs: number;
+        rounds: number;
+        minVisibleJoints: number;
+    } | {
+        type: "body_zone";
+        holdMs: number;
+        part: "hands" | "feet" | "any" | "head" | "torso";
+        mode: "enter" | "avoid";
+        zones: {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }[];
+    } | {
+        type: "squat";
+        holdMs: number;
+        repetitions: number;
+        depthRatio: number;
+        kneeAngleMaxDeg: number;
+        cooldownMs: number;
+    } | {
+        type: "pose_match";
+        poses: {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }[];
+        matchRatio: number;
+        mirrorPolicy: "strict" | "either";
+    } | {
+        type: "jump";
+        repetitions: number;
+        cooldownMs: number;
+        minRiseRatio: number;
+        landingStableMs: number;
+    } | {
+        type: "velocity_hit";
+        count: number;
+        zone: "upper" | "lower" | "full" | "reachable";
+        targetScale: number;
+        limb: "hands" | "feet" | "any";
+        minSpeed: number;
+        direction: "any" | "up" | "down" | "left" | "right";
+    } | {
+        type: "step";
+        holdMs: number;
+        pattern: ("left" | "right")[];
+        stepRatio: number;
+    })[];
+    interStepGraceMs: number;
+}, {
+    type: "sequence";
+    timeBudgetMs: number;
+    successAudioId: string;
+    encourageAudioId: string;
+    steps: ({
+        type: "touch_targets";
+        count: number;
+        zone: "upper" | "lower" | "full" | "reachable";
+        targetScale: number;
+        dwellMs: number;
+        limb: "hands" | "feet" | "any";
+    } | {
+        type: "freeze";
+        holdMs: number;
+        motionThreshold: number;
+        graceMs: number;
+        rounds: number;
+        minVisibleJoints: number;
+    } | {
+        type: "body_zone";
+        holdMs: number;
+        part: "hands" | "feet" | "any" | "head" | "torso";
+        mode: "enter" | "avoid";
+        zones: {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }[];
+    } | {
+        type: "squat";
+        holdMs: number;
+        repetitions: number;
+        depthRatio: number;
+        kneeAngleMaxDeg: number;
+        cooldownMs: number;
+    } | {
+        type: "pose_match";
+        poses: {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }[];
+        matchRatio: number;
+        mirrorPolicy: "strict" | "either";
+    } | {
+        type: "jump";
+        repetitions: number;
+        cooldownMs: number;
+        minRiseRatio: number;
+        landingStableMs: number;
+    } | {
+        type: "velocity_hit";
+        count: number;
+        zone: "upper" | "lower" | "full" | "reachable";
+        targetScale: number;
+        limb: "hands" | "feet" | "any";
+        minSpeed: number;
+        direction: "any" | "up" | "down" | "left" | "right";
+    } | {
+        type: "step";
+        holdMs: number;
+        pattern: ("left" | "right")[];
+        stepRatio: number;
+    })[];
+    interStepGraceMs: number;
+}>]>;
 export type Challenge = z.infer<typeof ChallengeSchema>;
+export type ChallengeType = Challenge["type"];
+export type TouchTargetsChallenge = z.infer<typeof TouchTargetsSchema>;
+export type FreezeChallenge = z.infer<typeof FreezeSchema>;
+export type BodyZoneChallenge = z.infer<typeof BodyZoneSchema>;
+export type SquatChallenge = z.infer<typeof SquatSchema>;
+export type PoseMatchChallenge = z.infer<typeof PoseMatchSchema>;
+export type JumpChallenge = z.infer<typeof JumpSchema>;
+export type VelocityHitChallenge = z.infer<typeof VelocityHitSchema>;
+export type StepChallenge = z.infer<typeof StepSchema>;
+export type SequenceChallenge = z.infer<typeof SequenceSchema>;
 export declare const LearningMomentSchema: z.ZodObject<{
     kind: z.ZodEnum<["counting", "colors", "letters", "body-parts", "directions", "animals", "none"]>;
     payload: z.ZodArray<z.ZodString, "many">;
@@ -125,16 +1943,35 @@ export declare const ParamDeltaSchema: z.ZodObject<{
     dwellMsMul: z.ZodNumber;
     countDelta: z.ZodNumber;
     timeBudgetMul: z.ZodNumber;
+    /**
+     * schemaVersion 2 adaptation for motion primitives. Optional keys keep every
+     * existing v1 pack valid byte-for-byte.
+     */
+    toleranceMul: z.ZodOptional<z.ZodNumber>;
+    holdMsMul: z.ZodOptional<z.ZodNumber>;
+    repetitionsDelta: z.ZodOptional<z.ZodNumber>;
+    speedMul: z.ZodOptional<z.ZodNumber>;
+    motionThresholdMul: z.ZodOptional<z.ZodNumber>;
 }, "strict", z.ZodTypeAny, {
     targetScaleMul: number;
     dwellMsMul: number;
     countDelta: number;
     timeBudgetMul: number;
+    toleranceMul?: number | undefined;
+    holdMsMul?: number | undefined;
+    repetitionsDelta?: number | undefined;
+    speedMul?: number | undefined;
+    motionThresholdMul?: number | undefined;
 }, {
     targetScaleMul: number;
     dwellMsMul: number;
     countDelta: number;
     timeBudgetMul: number;
+    toleranceMul?: number | undefined;
+    holdMsMul?: number | undefined;
+    repetitionsDelta?: number | undefined;
+    speedMul?: number | undefined;
+    motionThresholdMul?: number | undefined;
 }>;
 export type ParamDelta = z.infer<typeof ParamDeltaSchema>;
 export declare const TransitionEventSchema: z.ZodUnion<[z.ZodEnum<["success", "partial", "struggle"]>, z.ZodLiteral<"always">]>;
@@ -147,16 +1984,35 @@ export declare const TransitionSchema: z.ZodObject<{
         dwellMsMul: z.ZodNumber;
         countDelta: z.ZodNumber;
         timeBudgetMul: z.ZodNumber;
+        /**
+         * schemaVersion 2 adaptation for motion primitives. Optional keys keep every
+         * existing v1 pack valid byte-for-byte.
+         */
+        toleranceMul: z.ZodOptional<z.ZodNumber>;
+        holdMsMul: z.ZodOptional<z.ZodNumber>;
+        repetitionsDelta: z.ZodOptional<z.ZodNumber>;
+        speedMul: z.ZodOptional<z.ZodNumber>;
+        motionThresholdMul: z.ZodOptional<z.ZodNumber>;
     }, "strict", z.ZodTypeAny, {
         targetScaleMul: number;
         dwellMsMul: number;
         countDelta: number;
         timeBudgetMul: number;
+        toleranceMul?: number | undefined;
+        holdMsMul?: number | undefined;
+        repetitionsDelta?: number | undefined;
+        speedMul?: number | undefined;
+        motionThresholdMul?: number | undefined;
     }, {
         targetScaleMul: number;
         dwellMsMul: number;
         countDelta: number;
         timeBudgetMul: number;
+        toleranceMul?: number | undefined;
+        holdMsMul?: number | undefined;
+        repetitionsDelta?: number | undefined;
+        speedMul?: number | undefined;
+        motionThresholdMul?: number | undefined;
     }>>;
 }, "strict", z.ZodTypeAny, {
     on: "success" | "partial" | "struggle" | "always";
@@ -166,6 +2022,11 @@ export declare const TransitionSchema: z.ZodObject<{
         dwellMsMul: number;
         countDelta: number;
         timeBudgetMul: number;
+        toleranceMul?: number | undefined;
+        holdMsMul?: number | undefined;
+        repetitionsDelta?: number | undefined;
+        speedMul?: number | undefined;
+        motionThresholdMul?: number | undefined;
     } | null;
 }, {
     on: "success" | "partial" | "struggle" | "always";
@@ -175,6 +2036,11 @@ export declare const TransitionSchema: z.ZodObject<{
         dwellMsMul: number;
         countDelta: number;
         timeBudgetMul: number;
+        toleranceMul?: number | undefined;
+        holdMsMul?: number | undefined;
+        repetitionsDelta?: number | undefined;
+        speedMul?: number | undefined;
+        motionThresholdMul?: number | undefined;
     } | null;
 }>;
 export type Transition = z.infer<typeof TransitionSchema>;
@@ -188,16 +2054,35 @@ export declare const NonTerminalSceneSchema: z.ZodObject<{
             dwellMsMul: z.ZodNumber;
             countDelta: z.ZodNumber;
             timeBudgetMul: z.ZodNumber;
+            /**
+             * schemaVersion 2 adaptation for motion primitives. Optional keys keep every
+             * existing v1 pack valid byte-for-byte.
+             */
+            toleranceMul: z.ZodOptional<z.ZodNumber>;
+            holdMsMul: z.ZodOptional<z.ZodNumber>;
+            repetitionsDelta: z.ZodOptional<z.ZodNumber>;
+            speedMul: z.ZodOptional<z.ZodNumber>;
+            motionThresholdMul: z.ZodOptional<z.ZodNumber>;
         }, "strict", z.ZodTypeAny, {
             targetScaleMul: number;
             dwellMsMul: number;
             countDelta: number;
             timeBudgetMul: number;
+            toleranceMul?: number | undefined;
+            holdMsMul?: number | undefined;
+            repetitionsDelta?: number | undefined;
+            speedMul?: number | undefined;
+            motionThresholdMul?: number | undefined;
         }, {
             targetScaleMul: number;
             dwellMsMul: number;
             countDelta: number;
             timeBudgetMul: number;
+            toleranceMul?: number | undefined;
+            holdMsMul?: number | undefined;
+            repetitionsDelta?: number | undefined;
+            speedMul?: number | undefined;
+            motionThresholdMul?: number | undefined;
         }>>;
     }, "strict", z.ZodTypeAny, {
         on: "success" | "partial" | "struggle" | "always";
@@ -207,6 +2092,11 @@ export declare const NonTerminalSceneSchema: z.ZodObject<{
             dwellMsMul: number;
             countDelta: number;
             timeBudgetMul: number;
+            toleranceMul?: number | undefined;
+            holdMsMul?: number | undefined;
+            repetitionsDelta?: number | undefined;
+            speedMul?: number | undefined;
+            motionThresholdMul?: number | undefined;
         } | null;
     }, {
         on: "success" | "partial" | "struggle" | "always";
@@ -216,6 +2106,11 @@ export declare const NonTerminalSceneSchema: z.ZodObject<{
             dwellMsMul: number;
             countDelta: number;
             timeBudgetMul: number;
+            toleranceMul?: number | undefined;
+            holdMsMul?: number | undefined;
+            repetitionsDelta?: number | undefined;
+            speedMul?: number | undefined;
+            motionThresholdMul?: number | undefined;
         } | null;
     }>, "many">;
     id: z.ZodString;
@@ -260,7 +2155,7 @@ export declare const NonTerminalSceneSchema: z.ZodObject<{
         characterId: string;
         animation: string;
     }>>;
-    challenge: z.ZodNullable<z.ZodObject<{
+    challenge: z.ZodNullable<z.ZodDiscriminatedUnion<"type", [z.ZodObject<{
         timeBudgetMs: z.ZodNumber;
         successAudioId: z.ZodString;
         encourageAudioId: z.ZodString;
@@ -272,25 +2167,777 @@ export declare const NonTerminalSceneSchema: z.ZodObject<{
         limb: z.ZodEnum<["hands", "feet", "any"]>;
     }, "strict", z.ZodTypeAny, {
         type: "touch_targets";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
         count: number;
         zone: "upper" | "lower" | "full" | "reachable";
         targetScale: number;
         dwellMs: number;
         limb: "hands" | "feet" | "any";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
     }, {
         type: "touch_targets";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
         count: number;
         zone: "upper" | "lower" | "full" | "reachable";
         targetScale: number;
         dwellMs: number;
         limb: "hands" | "feet" | "any";
+    }>, z.ZodObject<{
+        timeBudgetMs: z.ZodNumber;
+        successAudioId: z.ZodString;
+        encourageAudioId: z.ZodString;
+        type: z.ZodLiteral<"freeze">;
+        /** How long the whole body must stay under motionThreshold. */
+        holdMs: z.ZodNumber;
+        /** Mean landmark motion (normalized units/second) treated as "still". */
+        motionThreshold: z.ZodNumber;
+        /** Motion spikes shorter than this do not reset the hold. */
+        graceMs: z.ZodNumber;
+        rounds: z.ZodNumber;
+        /** Frames with fewer confident joints pause, never fail, the hold. */
+        minVisibleJoints: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "freeze";
+        holdMs: number;
         timeBudgetMs: number;
         successAudioId: string;
         encourageAudioId: string;
-    }>>;
+        motionThreshold: number;
+        graceMs: number;
+        rounds: number;
+        minVisibleJoints: number;
+    }, {
+        type: "freeze";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        motionThreshold: number;
+        graceMs: number;
+        rounds: number;
+        minVisibleJoints: number;
+    }>, z.ZodObject<{
+        timeBudgetMs: z.ZodNumber;
+        successAudioId: z.ZodString;
+        encourageAudioId: z.ZodString;
+        type: z.ZodLiteral<"body_zone">;
+        part: z.ZodEnum<["head", "hands", "feet", "torso", "any"]>;
+        mode: z.ZodEnum<["enter", "avoid"]>;
+        zones: z.ZodArray<z.ZodObject<{
+            id: z.ZodString;
+            box: z.ZodEffects<z.ZodObject<{
+                x0: z.ZodNumber;
+                y0: z.ZodNumber;
+                x1: z.ZodNumber;
+                y1: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            }, {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            }>, {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            }, {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            }>;
+        }, "strict", z.ZodTypeAny, {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }, {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }>, "many">;
+        /** Time the part must stay inside (enter) or outside (avoid) the active zone. */
+        holdMs: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "body_zone";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        part: "hands" | "feet" | "any" | "head" | "torso";
+        mode: "enter" | "avoid";
+        zones: {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }[];
+    }, {
+        type: "body_zone";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        part: "hands" | "feet" | "any" | "head" | "torso";
+        mode: "enter" | "avoid";
+        zones: {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }[];
+    }>, z.ZodObject<{
+        timeBudgetMs: z.ZodNumber;
+        successAudioId: z.ZodString;
+        encourageAudioId: z.ZodString;
+        type: z.ZodLiteral<"squat">;
+        repetitions: z.ZodNumber;
+        /** Required hip drop as a fraction of the player's own torso length. */
+        depthRatio: z.ZodNumber;
+        /** Knee angle (degrees, straight = 180) that must be reached at the bottom. */
+        kneeAngleMaxDeg: z.ZodNumber;
+        /** Hold at the bottom before the repetition counts. */
+        holdMs: z.ZodNumber;
+        /** Minimum time between counted repetitions; rejects bounce double counts. */
+        cooldownMs: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "squat";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        repetitions: number;
+        depthRatio: number;
+        kneeAngleMaxDeg: number;
+        cooldownMs: number;
+    }, {
+        type: "squat";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        repetitions: number;
+        depthRatio: number;
+        kneeAngleMaxDeg: number;
+        cooldownMs: number;
+    }>, z.ZodObject<{
+        timeBudgetMs: z.ZodNumber;
+        successAudioId: z.ZodString;
+        encourageAudioId: z.ZodString;
+        type: z.ZodLiteral<"pose_match">;
+        poses: z.ZodArray<z.ZodObject<{
+            id: z.ZodString;
+            joints: z.ZodArray<z.ZodObject<{
+                joint: z.ZodEnum<["left_elbow", "right_elbow", "left_knee", "right_knee", "left_shoulder", "right_shoulder", "left_hip", "right_hip"]>;
+                angleDeg: z.ZodNumber;
+                toleranceDeg: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }, {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }>, "many">;
+            holdMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }, {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }>, "many">;
+        /** Fraction of listed joints that must be inside tolerance at once. */
+        matchRatio: z.ZodNumber;
+        /** "either" also accepts the left/right mirrored pose. */
+        mirrorPolicy: z.ZodEnum<["strict", "either"]>;
+    }, "strict", z.ZodTypeAny, {
+        type: "pose_match";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        poses: {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }[];
+        matchRatio: number;
+        mirrorPolicy: "strict" | "either";
+    }, {
+        type: "pose_match";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        poses: {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }[];
+        matchRatio: number;
+        mirrorPolicy: "strict" | "either";
+    }>, z.ZodObject<{
+        timeBudgetMs: z.ZodNumber;
+        successAudioId: z.ZodString;
+        encourageAudioId: z.ZodString;
+        type: z.ZodLiteral<"jump">;
+        repetitions: z.ZodNumber;
+        /** Required hip rise relative to the player's own torso length. */
+        minRiseRatio: z.ZodNumber;
+        /** Both feet must be back down and stable for this long to count a landing. */
+        landingStableMs: z.ZodNumber;
+        cooldownMs: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "jump";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        repetitions: number;
+        cooldownMs: number;
+        minRiseRatio: number;
+        landingStableMs: number;
+    }, {
+        type: "jump";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        repetitions: number;
+        cooldownMs: number;
+        minRiseRatio: number;
+        landingStableMs: number;
+    }>, z.ZodObject<{
+        timeBudgetMs: z.ZodNumber;
+        successAudioId: z.ZodString;
+        encourageAudioId: z.ZodString;
+        type: z.ZodLiteral<"velocity_hit">;
+        count: z.ZodNumber;
+        zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
+        targetScale: z.ZodNumber;
+        limb: z.ZodEnum<["hands", "feet", "any"]>;
+        /** On-screen limb speed (normalized units/second) required at contact. */
+        minSpeed: z.ZodNumber;
+        direction: z.ZodEnum<["any", "up", "down", "left", "right"]>;
+    }, "strict", z.ZodTypeAny, {
+        type: "velocity_hit";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        count: number;
+        zone: "upper" | "lower" | "full" | "reachable";
+        targetScale: number;
+        limb: "hands" | "feet" | "any";
+        minSpeed: number;
+        direction: "any" | "up" | "down" | "left" | "right";
+    }, {
+        type: "velocity_hit";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        count: number;
+        zone: "upper" | "lower" | "full" | "reachable";
+        targetScale: number;
+        limb: "hands" | "feet" | "any";
+        minSpeed: number;
+        direction: "any" | "up" | "down" | "left" | "right";
+    }>, z.ZodObject<{
+        timeBudgetMs: z.ZodNumber;
+        successAudioId: z.ZodString;
+        encourageAudioId: z.ZodString;
+        type: z.ZodLiteral<"step">;
+        pattern: z.ZodArray<z.ZodEnum<["left", "right"]>, "many">;
+        /** Lateral foot travel required, relative to the player's own torso length. */
+        stepRatio: z.ZodNumber;
+        /** Settle time on the new stance before the step counts. */
+        holdMs: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "step";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        pattern: ("left" | "right")[];
+        stepRatio: number;
+    }, {
+        type: "step";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        pattern: ("left" | "right")[];
+        stepRatio: number;
+    }>, z.ZodObject<{
+        timeBudgetMs: z.ZodNumber;
+        successAudioId: z.ZodString;
+        encourageAudioId: z.ZodString;
+        type: z.ZodLiteral<"sequence">;
+        steps: z.ZodArray<z.ZodDiscriminatedUnion<"type", [z.ZodObject<{
+            type: z.ZodLiteral<"touch_targets">;
+            count: z.ZodNumber;
+            zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
+            targetScale: z.ZodNumber;
+            dwellMs: z.ZodNumber;
+            limb: z.ZodEnum<["hands", "feet", "any"]>;
+        }, "strict", z.ZodTypeAny, {
+            type: "touch_targets";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            dwellMs: number;
+            limb: "hands" | "feet" | "any";
+        }, {
+            type: "touch_targets";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            dwellMs: number;
+            limb: "hands" | "feet" | "any";
+        }>, z.ZodObject<{
+            type: z.ZodLiteral<"freeze">;
+            /** How long the whole body must stay under motionThreshold. */
+            holdMs: z.ZodNumber;
+            /** Mean landmark motion (normalized units/second) treated as "still". */
+            motionThreshold: z.ZodNumber;
+            /** Motion spikes shorter than this do not reset the hold. */
+            graceMs: z.ZodNumber;
+            rounds: z.ZodNumber;
+            /** Frames with fewer confident joints pause, never fail, the hold. */
+            minVisibleJoints: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "freeze";
+            holdMs: number;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        }, {
+            type: "freeze";
+            holdMs: number;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        }>, z.ZodObject<{
+            type: z.ZodLiteral<"body_zone">;
+            part: z.ZodEnum<["head", "hands", "feet", "torso", "any"]>;
+            mode: z.ZodEnum<["enter", "avoid"]>;
+            zones: z.ZodArray<z.ZodObject<{
+                id: z.ZodString;
+                box: z.ZodEffects<z.ZodObject<{
+                    x0: z.ZodNumber;
+                    y0: z.ZodNumber;
+                    x1: z.ZodNumber;
+                    y1: z.ZodNumber;
+                }, "strict", z.ZodTypeAny, {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                }, {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                }>, {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                }, {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                }>;
+            }, "strict", z.ZodTypeAny, {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }, {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }>, "many">;
+            /** Time the part must stay inside (enter) or outside (avoid) the active zone. */
+            holdMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "body_zone";
+            holdMs: number;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        }, {
+            type: "body_zone";
+            holdMs: number;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        }>, z.ZodObject<{
+            type: z.ZodLiteral<"squat">;
+            repetitions: z.ZodNumber;
+            /** Required hip drop as a fraction of the player's own torso length. */
+            depthRatio: z.ZodNumber;
+            /** Knee angle (degrees, straight = 180) that must be reached at the bottom. */
+            kneeAngleMaxDeg: z.ZodNumber;
+            /** Hold at the bottom before the repetition counts. */
+            holdMs: z.ZodNumber;
+            /** Minimum time between counted repetitions; rejects bounce double counts. */
+            cooldownMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "squat";
+            holdMs: number;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        }, {
+            type: "squat";
+            holdMs: number;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        }>, z.ZodObject<{
+            type: z.ZodLiteral<"pose_match">;
+            poses: z.ZodArray<z.ZodObject<{
+                id: z.ZodString;
+                joints: z.ZodArray<z.ZodObject<{
+                    joint: z.ZodEnum<["left_elbow", "right_elbow", "left_knee", "right_knee", "left_shoulder", "right_shoulder", "left_hip", "right_hip"]>;
+                    angleDeg: z.ZodNumber;
+                    toleranceDeg: z.ZodNumber;
+                }, "strict", z.ZodTypeAny, {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }, {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }>, "many">;
+                holdMs: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }, {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }>, "many">;
+            /** Fraction of listed joints that must be inside tolerance at once. */
+            matchRatio: z.ZodNumber;
+            /** "either" also accepts the left/right mirrored pose. */
+            mirrorPolicy: z.ZodEnum<["strict", "either"]>;
+        }, "strict", z.ZodTypeAny, {
+            type: "pose_match";
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        }, {
+            type: "pose_match";
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        }>, z.ZodObject<{
+            type: z.ZodLiteral<"jump">;
+            repetitions: z.ZodNumber;
+            /** Required hip rise relative to the player's own torso length. */
+            minRiseRatio: z.ZodNumber;
+            /** Both feet must be back down and stable for this long to count a landing. */
+            landingStableMs: z.ZodNumber;
+            cooldownMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "jump";
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        }, {
+            type: "jump";
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        }>, z.ZodObject<{
+            type: z.ZodLiteral<"velocity_hit">;
+            count: z.ZodNumber;
+            zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
+            targetScale: z.ZodNumber;
+            limb: z.ZodEnum<["hands", "feet", "any"]>;
+            /** On-screen limb speed (normalized units/second) required at contact. */
+            minSpeed: z.ZodNumber;
+            direction: z.ZodEnum<["any", "up", "down", "left", "right"]>;
+        }, "strict", z.ZodTypeAny, {
+            type: "velocity_hit";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        }, {
+            type: "velocity_hit";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        }>, z.ZodObject<{
+            type: z.ZodLiteral<"step">;
+            pattern: z.ZodArray<z.ZodEnum<["left", "right"]>, "many">;
+            /** Lateral foot travel required, relative to the player's own torso length. */
+            stepRatio: z.ZodNumber;
+            /** Settle time on the new stance before the step counts. */
+            holdMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "step";
+            holdMs: number;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        }, {
+            type: "step";
+            holdMs: number;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        }>]>, "many">;
+        /** Pause allowed between completed steps before the next one arms. */
+        interStepGraceMs: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "sequence";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        steps: ({
+            type: "touch_targets";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            dwellMs: number;
+            limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        })[];
+        interStepGraceMs: number;
+    }, {
+        type: "sequence";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        steps: ({
+            type: "touch_targets";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            dwellMs: number;
+            limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        })[];
+        interStepGraceMs: number;
+    }>]>>;
     learning: z.ZodNullable<z.ZodObject<{
         kind: z.ZodEnum<["counting", "colors", "letters", "body-parts", "directions", "animals", "none"]>;
         payload: z.ZodArray<z.ZodString, "many">;
@@ -309,14 +2956,169 @@ export declare const NonTerminalSceneSchema: z.ZodObject<{
     energy: "calm" | "medium" | "high";
     challenge: {
         type: "touch_targets";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
         count: number;
         zone: "upper" | "lower" | "full" | "reachable";
         targetScale: number;
         dwellMs: number;
         limb: "hands" | "feet" | "any";
+    } | {
+        type: "freeze";
+        holdMs: number;
         timeBudgetMs: number;
         successAudioId: string;
         encourageAudioId: string;
+        motionThreshold: number;
+        graceMs: number;
+        rounds: number;
+        minVisibleJoints: number;
+    } | {
+        type: "body_zone";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        part: "hands" | "feet" | "any" | "head" | "torso";
+        mode: "enter" | "avoid";
+        zones: {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }[];
+    } | {
+        type: "squat";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        repetitions: number;
+        depthRatio: number;
+        kneeAngleMaxDeg: number;
+        cooldownMs: number;
+    } | {
+        type: "pose_match";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        poses: {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }[];
+        matchRatio: number;
+        mirrorPolicy: "strict" | "either";
+    } | {
+        type: "jump";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        repetitions: number;
+        cooldownMs: number;
+        minRiseRatio: number;
+        landingStableMs: number;
+    } | {
+        type: "velocity_hit";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        count: number;
+        zone: "upper" | "lower" | "full" | "reachable";
+        targetScale: number;
+        limb: "hands" | "feet" | "any";
+        minSpeed: number;
+        direction: "any" | "up" | "down" | "left" | "right";
+    } | {
+        type: "step";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        pattern: ("left" | "right")[];
+        stepRatio: number;
+    } | {
+        type: "sequence";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        steps: ({
+            type: "touch_targets";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            dwellMs: number;
+            limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        })[];
+        interStepGraceMs: number;
     } | null;
     terminal: false;
     transitions: {
@@ -327,6 +3129,11 @@ export declare const NonTerminalSceneSchema: z.ZodObject<{
             dwellMsMul: number;
             countDelta: number;
             timeBudgetMul: number;
+            toleranceMul?: number | undefined;
+            holdMsMul?: number | undefined;
+            repetitionsDelta?: number | undefined;
+            speedMul?: number | undefined;
+            motionThresholdMul?: number | undefined;
         } | null;
     }[];
     narration: {
@@ -352,14 +3159,169 @@ export declare const NonTerminalSceneSchema: z.ZodObject<{
     energy: "calm" | "medium" | "high";
     challenge: {
         type: "touch_targets";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
         count: number;
         zone: "upper" | "lower" | "full" | "reachable";
         targetScale: number;
         dwellMs: number;
         limb: "hands" | "feet" | "any";
+    } | {
+        type: "freeze";
+        holdMs: number;
         timeBudgetMs: number;
         successAudioId: string;
         encourageAudioId: string;
+        motionThreshold: number;
+        graceMs: number;
+        rounds: number;
+        minVisibleJoints: number;
+    } | {
+        type: "body_zone";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        part: "hands" | "feet" | "any" | "head" | "torso";
+        mode: "enter" | "avoid";
+        zones: {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }[];
+    } | {
+        type: "squat";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        repetitions: number;
+        depthRatio: number;
+        kneeAngleMaxDeg: number;
+        cooldownMs: number;
+    } | {
+        type: "pose_match";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        poses: {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }[];
+        matchRatio: number;
+        mirrorPolicy: "strict" | "either";
+    } | {
+        type: "jump";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        repetitions: number;
+        cooldownMs: number;
+        minRiseRatio: number;
+        landingStableMs: number;
+    } | {
+        type: "velocity_hit";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        count: number;
+        zone: "upper" | "lower" | "full" | "reachable";
+        targetScale: number;
+        limb: "hands" | "feet" | "any";
+        minSpeed: number;
+        direction: "any" | "up" | "down" | "left" | "right";
+    } | {
+        type: "step";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        pattern: ("left" | "right")[];
+        stepRatio: number;
+    } | {
+        type: "sequence";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        steps: ({
+            type: "touch_targets";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            dwellMs: number;
+            limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        })[];
+        interStepGraceMs: number;
     } | null;
     terminal: false;
     transitions: {
@@ -370,6 +3332,11 @@ export declare const NonTerminalSceneSchema: z.ZodObject<{
             dwellMsMul: number;
             countDelta: number;
             timeBudgetMul: number;
+            toleranceMul?: number | undefined;
+            holdMsMul?: number | undefined;
+            repetitionsDelta?: number | undefined;
+            speedMul?: number | undefined;
+            motionThresholdMul?: number | undefined;
         } | null;
     }[];
     narration: {
@@ -401,16 +3368,35 @@ export declare const TerminalSceneSchema: z.ZodObject<{
             dwellMsMul: z.ZodNumber;
             countDelta: z.ZodNumber;
             timeBudgetMul: z.ZodNumber;
+            /**
+             * schemaVersion 2 adaptation for motion primitives. Optional keys keep every
+             * existing v1 pack valid byte-for-byte.
+             */
+            toleranceMul: z.ZodOptional<z.ZodNumber>;
+            holdMsMul: z.ZodOptional<z.ZodNumber>;
+            repetitionsDelta: z.ZodOptional<z.ZodNumber>;
+            speedMul: z.ZodOptional<z.ZodNumber>;
+            motionThresholdMul: z.ZodOptional<z.ZodNumber>;
         }, "strict", z.ZodTypeAny, {
             targetScaleMul: number;
             dwellMsMul: number;
             countDelta: number;
             timeBudgetMul: number;
+            toleranceMul?: number | undefined;
+            holdMsMul?: number | undefined;
+            repetitionsDelta?: number | undefined;
+            speedMul?: number | undefined;
+            motionThresholdMul?: number | undefined;
         }, {
             targetScaleMul: number;
             dwellMsMul: number;
             countDelta: number;
             timeBudgetMul: number;
+            toleranceMul?: number | undefined;
+            holdMsMul?: number | undefined;
+            repetitionsDelta?: number | undefined;
+            speedMul?: number | undefined;
+            motionThresholdMul?: number | undefined;
         }>>;
     }, "strict", z.ZodTypeAny, {
         on: "success" | "partial" | "struggle" | "always";
@@ -420,6 +3406,11 @@ export declare const TerminalSceneSchema: z.ZodObject<{
             dwellMsMul: number;
             countDelta: number;
             timeBudgetMul: number;
+            toleranceMul?: number | undefined;
+            holdMsMul?: number | undefined;
+            repetitionsDelta?: number | undefined;
+            speedMul?: number | undefined;
+            motionThresholdMul?: number | undefined;
         } | null;
     }, {
         on: "success" | "partial" | "struggle" | "always";
@@ -429,6 +3420,11 @@ export declare const TerminalSceneSchema: z.ZodObject<{
             dwellMsMul: number;
             countDelta: number;
             timeBudgetMul: number;
+            toleranceMul?: number | undefined;
+            holdMsMul?: number | undefined;
+            repetitionsDelta?: number | undefined;
+            speedMul?: number | undefined;
+            motionThresholdMul?: number | undefined;
         } | null;
     }>, "many">;
     id: z.ZodString;
@@ -473,7 +3469,7 @@ export declare const TerminalSceneSchema: z.ZodObject<{
         characterId: string;
         animation: string;
     }>>;
-    challenge: z.ZodNullable<z.ZodObject<{
+    challenge: z.ZodNullable<z.ZodDiscriminatedUnion<"type", [z.ZodObject<{
         timeBudgetMs: z.ZodNumber;
         successAudioId: z.ZodString;
         encourageAudioId: z.ZodString;
@@ -485,25 +3481,777 @@ export declare const TerminalSceneSchema: z.ZodObject<{
         limb: z.ZodEnum<["hands", "feet", "any"]>;
     }, "strict", z.ZodTypeAny, {
         type: "touch_targets";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
         count: number;
         zone: "upper" | "lower" | "full" | "reachable";
         targetScale: number;
         dwellMs: number;
         limb: "hands" | "feet" | "any";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
     }, {
         type: "touch_targets";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
         count: number;
         zone: "upper" | "lower" | "full" | "reachable";
         targetScale: number;
         dwellMs: number;
         limb: "hands" | "feet" | "any";
+    }>, z.ZodObject<{
+        timeBudgetMs: z.ZodNumber;
+        successAudioId: z.ZodString;
+        encourageAudioId: z.ZodString;
+        type: z.ZodLiteral<"freeze">;
+        /** How long the whole body must stay under motionThreshold. */
+        holdMs: z.ZodNumber;
+        /** Mean landmark motion (normalized units/second) treated as "still". */
+        motionThreshold: z.ZodNumber;
+        /** Motion spikes shorter than this do not reset the hold. */
+        graceMs: z.ZodNumber;
+        rounds: z.ZodNumber;
+        /** Frames with fewer confident joints pause, never fail, the hold. */
+        minVisibleJoints: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "freeze";
+        holdMs: number;
         timeBudgetMs: number;
         successAudioId: string;
         encourageAudioId: string;
-    }>>;
+        motionThreshold: number;
+        graceMs: number;
+        rounds: number;
+        minVisibleJoints: number;
+    }, {
+        type: "freeze";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        motionThreshold: number;
+        graceMs: number;
+        rounds: number;
+        minVisibleJoints: number;
+    }>, z.ZodObject<{
+        timeBudgetMs: z.ZodNumber;
+        successAudioId: z.ZodString;
+        encourageAudioId: z.ZodString;
+        type: z.ZodLiteral<"body_zone">;
+        part: z.ZodEnum<["head", "hands", "feet", "torso", "any"]>;
+        mode: z.ZodEnum<["enter", "avoid"]>;
+        zones: z.ZodArray<z.ZodObject<{
+            id: z.ZodString;
+            box: z.ZodEffects<z.ZodObject<{
+                x0: z.ZodNumber;
+                y0: z.ZodNumber;
+                x1: z.ZodNumber;
+                y1: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            }, {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            }>, {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            }, {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            }>;
+        }, "strict", z.ZodTypeAny, {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }, {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }>, "many">;
+        /** Time the part must stay inside (enter) or outside (avoid) the active zone. */
+        holdMs: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "body_zone";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        part: "hands" | "feet" | "any" | "head" | "torso";
+        mode: "enter" | "avoid";
+        zones: {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }[];
+    }, {
+        type: "body_zone";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        part: "hands" | "feet" | "any" | "head" | "torso";
+        mode: "enter" | "avoid";
+        zones: {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }[];
+    }>, z.ZodObject<{
+        timeBudgetMs: z.ZodNumber;
+        successAudioId: z.ZodString;
+        encourageAudioId: z.ZodString;
+        type: z.ZodLiteral<"squat">;
+        repetitions: z.ZodNumber;
+        /** Required hip drop as a fraction of the player's own torso length. */
+        depthRatio: z.ZodNumber;
+        /** Knee angle (degrees, straight = 180) that must be reached at the bottom. */
+        kneeAngleMaxDeg: z.ZodNumber;
+        /** Hold at the bottom before the repetition counts. */
+        holdMs: z.ZodNumber;
+        /** Minimum time between counted repetitions; rejects bounce double counts. */
+        cooldownMs: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "squat";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        repetitions: number;
+        depthRatio: number;
+        kneeAngleMaxDeg: number;
+        cooldownMs: number;
+    }, {
+        type: "squat";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        repetitions: number;
+        depthRatio: number;
+        kneeAngleMaxDeg: number;
+        cooldownMs: number;
+    }>, z.ZodObject<{
+        timeBudgetMs: z.ZodNumber;
+        successAudioId: z.ZodString;
+        encourageAudioId: z.ZodString;
+        type: z.ZodLiteral<"pose_match">;
+        poses: z.ZodArray<z.ZodObject<{
+            id: z.ZodString;
+            joints: z.ZodArray<z.ZodObject<{
+                joint: z.ZodEnum<["left_elbow", "right_elbow", "left_knee", "right_knee", "left_shoulder", "right_shoulder", "left_hip", "right_hip"]>;
+                angleDeg: z.ZodNumber;
+                toleranceDeg: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }, {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }>, "many">;
+            holdMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }, {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }>, "many">;
+        /** Fraction of listed joints that must be inside tolerance at once. */
+        matchRatio: z.ZodNumber;
+        /** "either" also accepts the left/right mirrored pose. */
+        mirrorPolicy: z.ZodEnum<["strict", "either"]>;
+    }, "strict", z.ZodTypeAny, {
+        type: "pose_match";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        poses: {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }[];
+        matchRatio: number;
+        mirrorPolicy: "strict" | "either";
+    }, {
+        type: "pose_match";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        poses: {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }[];
+        matchRatio: number;
+        mirrorPolicy: "strict" | "either";
+    }>, z.ZodObject<{
+        timeBudgetMs: z.ZodNumber;
+        successAudioId: z.ZodString;
+        encourageAudioId: z.ZodString;
+        type: z.ZodLiteral<"jump">;
+        repetitions: z.ZodNumber;
+        /** Required hip rise relative to the player's own torso length. */
+        minRiseRatio: z.ZodNumber;
+        /** Both feet must be back down and stable for this long to count a landing. */
+        landingStableMs: z.ZodNumber;
+        cooldownMs: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "jump";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        repetitions: number;
+        cooldownMs: number;
+        minRiseRatio: number;
+        landingStableMs: number;
+    }, {
+        type: "jump";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        repetitions: number;
+        cooldownMs: number;
+        minRiseRatio: number;
+        landingStableMs: number;
+    }>, z.ZodObject<{
+        timeBudgetMs: z.ZodNumber;
+        successAudioId: z.ZodString;
+        encourageAudioId: z.ZodString;
+        type: z.ZodLiteral<"velocity_hit">;
+        count: z.ZodNumber;
+        zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
+        targetScale: z.ZodNumber;
+        limb: z.ZodEnum<["hands", "feet", "any"]>;
+        /** On-screen limb speed (normalized units/second) required at contact. */
+        minSpeed: z.ZodNumber;
+        direction: z.ZodEnum<["any", "up", "down", "left", "right"]>;
+    }, "strict", z.ZodTypeAny, {
+        type: "velocity_hit";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        count: number;
+        zone: "upper" | "lower" | "full" | "reachable";
+        targetScale: number;
+        limb: "hands" | "feet" | "any";
+        minSpeed: number;
+        direction: "any" | "up" | "down" | "left" | "right";
+    }, {
+        type: "velocity_hit";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        count: number;
+        zone: "upper" | "lower" | "full" | "reachable";
+        targetScale: number;
+        limb: "hands" | "feet" | "any";
+        minSpeed: number;
+        direction: "any" | "up" | "down" | "left" | "right";
+    }>, z.ZodObject<{
+        timeBudgetMs: z.ZodNumber;
+        successAudioId: z.ZodString;
+        encourageAudioId: z.ZodString;
+        type: z.ZodLiteral<"step">;
+        pattern: z.ZodArray<z.ZodEnum<["left", "right"]>, "many">;
+        /** Lateral foot travel required, relative to the player's own torso length. */
+        stepRatio: z.ZodNumber;
+        /** Settle time on the new stance before the step counts. */
+        holdMs: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "step";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        pattern: ("left" | "right")[];
+        stepRatio: number;
+    }, {
+        type: "step";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        pattern: ("left" | "right")[];
+        stepRatio: number;
+    }>, z.ZodObject<{
+        timeBudgetMs: z.ZodNumber;
+        successAudioId: z.ZodString;
+        encourageAudioId: z.ZodString;
+        type: z.ZodLiteral<"sequence">;
+        steps: z.ZodArray<z.ZodDiscriminatedUnion<"type", [z.ZodObject<{
+            type: z.ZodLiteral<"touch_targets">;
+            count: z.ZodNumber;
+            zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
+            targetScale: z.ZodNumber;
+            dwellMs: z.ZodNumber;
+            limb: z.ZodEnum<["hands", "feet", "any"]>;
+        }, "strict", z.ZodTypeAny, {
+            type: "touch_targets";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            dwellMs: number;
+            limb: "hands" | "feet" | "any";
+        }, {
+            type: "touch_targets";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            dwellMs: number;
+            limb: "hands" | "feet" | "any";
+        }>, z.ZodObject<{
+            type: z.ZodLiteral<"freeze">;
+            /** How long the whole body must stay under motionThreshold. */
+            holdMs: z.ZodNumber;
+            /** Mean landmark motion (normalized units/second) treated as "still". */
+            motionThreshold: z.ZodNumber;
+            /** Motion spikes shorter than this do not reset the hold. */
+            graceMs: z.ZodNumber;
+            rounds: z.ZodNumber;
+            /** Frames with fewer confident joints pause, never fail, the hold. */
+            minVisibleJoints: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "freeze";
+            holdMs: number;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        }, {
+            type: "freeze";
+            holdMs: number;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        }>, z.ZodObject<{
+            type: z.ZodLiteral<"body_zone">;
+            part: z.ZodEnum<["head", "hands", "feet", "torso", "any"]>;
+            mode: z.ZodEnum<["enter", "avoid"]>;
+            zones: z.ZodArray<z.ZodObject<{
+                id: z.ZodString;
+                box: z.ZodEffects<z.ZodObject<{
+                    x0: z.ZodNumber;
+                    y0: z.ZodNumber;
+                    x1: z.ZodNumber;
+                    y1: z.ZodNumber;
+                }, "strict", z.ZodTypeAny, {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                }, {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                }>, {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                }, {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                }>;
+            }, "strict", z.ZodTypeAny, {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }, {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }>, "many">;
+            /** Time the part must stay inside (enter) or outside (avoid) the active zone. */
+            holdMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "body_zone";
+            holdMs: number;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        }, {
+            type: "body_zone";
+            holdMs: number;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        }>, z.ZodObject<{
+            type: z.ZodLiteral<"squat">;
+            repetitions: z.ZodNumber;
+            /** Required hip drop as a fraction of the player's own torso length. */
+            depthRatio: z.ZodNumber;
+            /** Knee angle (degrees, straight = 180) that must be reached at the bottom. */
+            kneeAngleMaxDeg: z.ZodNumber;
+            /** Hold at the bottom before the repetition counts. */
+            holdMs: z.ZodNumber;
+            /** Minimum time between counted repetitions; rejects bounce double counts. */
+            cooldownMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "squat";
+            holdMs: number;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        }, {
+            type: "squat";
+            holdMs: number;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        }>, z.ZodObject<{
+            type: z.ZodLiteral<"pose_match">;
+            poses: z.ZodArray<z.ZodObject<{
+                id: z.ZodString;
+                joints: z.ZodArray<z.ZodObject<{
+                    joint: z.ZodEnum<["left_elbow", "right_elbow", "left_knee", "right_knee", "left_shoulder", "right_shoulder", "left_hip", "right_hip"]>;
+                    angleDeg: z.ZodNumber;
+                    toleranceDeg: z.ZodNumber;
+                }, "strict", z.ZodTypeAny, {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }, {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }>, "many">;
+                holdMs: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }, {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }>, "many">;
+            /** Fraction of listed joints that must be inside tolerance at once. */
+            matchRatio: z.ZodNumber;
+            /** "either" also accepts the left/right mirrored pose. */
+            mirrorPolicy: z.ZodEnum<["strict", "either"]>;
+        }, "strict", z.ZodTypeAny, {
+            type: "pose_match";
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        }, {
+            type: "pose_match";
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        }>, z.ZodObject<{
+            type: z.ZodLiteral<"jump">;
+            repetitions: z.ZodNumber;
+            /** Required hip rise relative to the player's own torso length. */
+            minRiseRatio: z.ZodNumber;
+            /** Both feet must be back down and stable for this long to count a landing. */
+            landingStableMs: z.ZodNumber;
+            cooldownMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "jump";
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        }, {
+            type: "jump";
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        }>, z.ZodObject<{
+            type: z.ZodLiteral<"velocity_hit">;
+            count: z.ZodNumber;
+            zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
+            targetScale: z.ZodNumber;
+            limb: z.ZodEnum<["hands", "feet", "any"]>;
+            /** On-screen limb speed (normalized units/second) required at contact. */
+            minSpeed: z.ZodNumber;
+            direction: z.ZodEnum<["any", "up", "down", "left", "right"]>;
+        }, "strict", z.ZodTypeAny, {
+            type: "velocity_hit";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        }, {
+            type: "velocity_hit";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        }>, z.ZodObject<{
+            type: z.ZodLiteral<"step">;
+            pattern: z.ZodArray<z.ZodEnum<["left", "right"]>, "many">;
+            /** Lateral foot travel required, relative to the player's own torso length. */
+            stepRatio: z.ZodNumber;
+            /** Settle time on the new stance before the step counts. */
+            holdMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "step";
+            holdMs: number;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        }, {
+            type: "step";
+            holdMs: number;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        }>]>, "many">;
+        /** Pause allowed between completed steps before the next one arms. */
+        interStepGraceMs: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "sequence";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        steps: ({
+            type: "touch_targets";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            dwellMs: number;
+            limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        })[];
+        interStepGraceMs: number;
+    }, {
+        type: "sequence";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        steps: ({
+            type: "touch_targets";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            dwellMs: number;
+            limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        })[];
+        interStepGraceMs: number;
+    }>]>>;
     learning: z.ZodNullable<z.ZodObject<{
         kind: z.ZodEnum<["counting", "colors", "letters", "body-parts", "directions", "animals", "none"]>;
         payload: z.ZodArray<z.ZodString, "many">;
@@ -522,14 +4270,169 @@ export declare const TerminalSceneSchema: z.ZodObject<{
     energy: "calm" | "medium" | "high";
     challenge: {
         type: "touch_targets";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
         count: number;
         zone: "upper" | "lower" | "full" | "reachable";
         targetScale: number;
         dwellMs: number;
         limb: "hands" | "feet" | "any";
+    } | {
+        type: "freeze";
+        holdMs: number;
         timeBudgetMs: number;
         successAudioId: string;
         encourageAudioId: string;
+        motionThreshold: number;
+        graceMs: number;
+        rounds: number;
+        minVisibleJoints: number;
+    } | {
+        type: "body_zone";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        part: "hands" | "feet" | "any" | "head" | "torso";
+        mode: "enter" | "avoid";
+        zones: {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }[];
+    } | {
+        type: "squat";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        repetitions: number;
+        depthRatio: number;
+        kneeAngleMaxDeg: number;
+        cooldownMs: number;
+    } | {
+        type: "pose_match";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        poses: {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }[];
+        matchRatio: number;
+        mirrorPolicy: "strict" | "either";
+    } | {
+        type: "jump";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        repetitions: number;
+        cooldownMs: number;
+        minRiseRatio: number;
+        landingStableMs: number;
+    } | {
+        type: "velocity_hit";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        count: number;
+        zone: "upper" | "lower" | "full" | "reachable";
+        targetScale: number;
+        limb: "hands" | "feet" | "any";
+        minSpeed: number;
+        direction: "any" | "up" | "down" | "left" | "right";
+    } | {
+        type: "step";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        pattern: ("left" | "right")[];
+        stepRatio: number;
+    } | {
+        type: "sequence";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        steps: ({
+            type: "touch_targets";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            dwellMs: number;
+            limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        })[];
+        interStepGraceMs: number;
     } | null;
     terminal: true;
     transitions: {
@@ -540,6 +4443,11 @@ export declare const TerminalSceneSchema: z.ZodObject<{
             dwellMsMul: number;
             countDelta: number;
             timeBudgetMul: number;
+            toleranceMul?: number | undefined;
+            holdMsMul?: number | undefined;
+            repetitionsDelta?: number | undefined;
+            speedMul?: number | undefined;
+            motionThresholdMul?: number | undefined;
         } | null;
     }[];
     narration: {
@@ -565,14 +4473,169 @@ export declare const TerminalSceneSchema: z.ZodObject<{
     energy: "calm" | "medium" | "high";
     challenge: {
         type: "touch_targets";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
         count: number;
         zone: "upper" | "lower" | "full" | "reachable";
         targetScale: number;
         dwellMs: number;
         limb: "hands" | "feet" | "any";
+    } | {
+        type: "freeze";
+        holdMs: number;
         timeBudgetMs: number;
         successAudioId: string;
         encourageAudioId: string;
+        motionThreshold: number;
+        graceMs: number;
+        rounds: number;
+        minVisibleJoints: number;
+    } | {
+        type: "body_zone";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        part: "hands" | "feet" | "any" | "head" | "torso";
+        mode: "enter" | "avoid";
+        zones: {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }[];
+    } | {
+        type: "squat";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        repetitions: number;
+        depthRatio: number;
+        kneeAngleMaxDeg: number;
+        cooldownMs: number;
+    } | {
+        type: "pose_match";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        poses: {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }[];
+        matchRatio: number;
+        mirrorPolicy: "strict" | "either";
+    } | {
+        type: "jump";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        repetitions: number;
+        cooldownMs: number;
+        minRiseRatio: number;
+        landingStableMs: number;
+    } | {
+        type: "velocity_hit";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        count: number;
+        zone: "upper" | "lower" | "full" | "reachable";
+        targetScale: number;
+        limb: "hands" | "feet" | "any";
+        minSpeed: number;
+        direction: "any" | "up" | "down" | "left" | "right";
+    } | {
+        type: "step";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        pattern: ("left" | "right")[];
+        stepRatio: number;
+    } | {
+        type: "sequence";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        steps: ({
+            type: "touch_targets";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            dwellMs: number;
+            limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        })[];
+        interStepGraceMs: number;
     } | null;
     terminal: true;
     transitions: {
@@ -583,6 +4646,11 @@ export declare const TerminalSceneSchema: z.ZodObject<{
             dwellMsMul: number;
             countDelta: number;
             timeBudgetMul: number;
+            toleranceMul?: number | undefined;
+            holdMsMul?: number | undefined;
+            repetitionsDelta?: number | undefined;
+            speedMul?: number | undefined;
+            motionThresholdMul?: number | undefined;
         } | null;
     }[];
     narration: {
@@ -614,16 +4682,35 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
             dwellMsMul: z.ZodNumber;
             countDelta: z.ZodNumber;
             timeBudgetMul: z.ZodNumber;
+            /**
+             * schemaVersion 2 adaptation for motion primitives. Optional keys keep every
+             * existing v1 pack valid byte-for-byte.
+             */
+            toleranceMul: z.ZodOptional<z.ZodNumber>;
+            holdMsMul: z.ZodOptional<z.ZodNumber>;
+            repetitionsDelta: z.ZodOptional<z.ZodNumber>;
+            speedMul: z.ZodOptional<z.ZodNumber>;
+            motionThresholdMul: z.ZodOptional<z.ZodNumber>;
         }, "strict", z.ZodTypeAny, {
             targetScaleMul: number;
             dwellMsMul: number;
             countDelta: number;
             timeBudgetMul: number;
+            toleranceMul?: number | undefined;
+            holdMsMul?: number | undefined;
+            repetitionsDelta?: number | undefined;
+            speedMul?: number | undefined;
+            motionThresholdMul?: number | undefined;
         }, {
             targetScaleMul: number;
             dwellMsMul: number;
             countDelta: number;
             timeBudgetMul: number;
+            toleranceMul?: number | undefined;
+            holdMsMul?: number | undefined;
+            repetitionsDelta?: number | undefined;
+            speedMul?: number | undefined;
+            motionThresholdMul?: number | undefined;
         }>>;
     }, "strict", z.ZodTypeAny, {
         on: "success" | "partial" | "struggle" | "always";
@@ -633,6 +4720,11 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
             dwellMsMul: number;
             countDelta: number;
             timeBudgetMul: number;
+            toleranceMul?: number | undefined;
+            holdMsMul?: number | undefined;
+            repetitionsDelta?: number | undefined;
+            speedMul?: number | undefined;
+            motionThresholdMul?: number | undefined;
         } | null;
     }, {
         on: "success" | "partial" | "struggle" | "always";
@@ -642,6 +4734,11 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
             dwellMsMul: number;
             countDelta: number;
             timeBudgetMul: number;
+            toleranceMul?: number | undefined;
+            holdMsMul?: number | undefined;
+            repetitionsDelta?: number | undefined;
+            speedMul?: number | undefined;
+            motionThresholdMul?: number | undefined;
         } | null;
     }>, "many">;
     id: z.ZodString;
@@ -686,7 +4783,7 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
         characterId: string;
         animation: string;
     }>>;
-    challenge: z.ZodNullable<z.ZodObject<{
+    challenge: z.ZodNullable<z.ZodDiscriminatedUnion<"type", [z.ZodObject<{
         timeBudgetMs: z.ZodNumber;
         successAudioId: z.ZodString;
         encourageAudioId: z.ZodString;
@@ -698,25 +4795,777 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
         limb: z.ZodEnum<["hands", "feet", "any"]>;
     }, "strict", z.ZodTypeAny, {
         type: "touch_targets";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
         count: number;
         zone: "upper" | "lower" | "full" | "reachable";
         targetScale: number;
         dwellMs: number;
         limb: "hands" | "feet" | "any";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
     }, {
         type: "touch_targets";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
         count: number;
         zone: "upper" | "lower" | "full" | "reachable";
         targetScale: number;
         dwellMs: number;
         limb: "hands" | "feet" | "any";
+    }>, z.ZodObject<{
+        timeBudgetMs: z.ZodNumber;
+        successAudioId: z.ZodString;
+        encourageAudioId: z.ZodString;
+        type: z.ZodLiteral<"freeze">;
+        /** How long the whole body must stay under motionThreshold. */
+        holdMs: z.ZodNumber;
+        /** Mean landmark motion (normalized units/second) treated as "still". */
+        motionThreshold: z.ZodNumber;
+        /** Motion spikes shorter than this do not reset the hold. */
+        graceMs: z.ZodNumber;
+        rounds: z.ZodNumber;
+        /** Frames with fewer confident joints pause, never fail, the hold. */
+        minVisibleJoints: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "freeze";
+        holdMs: number;
         timeBudgetMs: number;
         successAudioId: string;
         encourageAudioId: string;
-    }>>;
+        motionThreshold: number;
+        graceMs: number;
+        rounds: number;
+        minVisibleJoints: number;
+    }, {
+        type: "freeze";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        motionThreshold: number;
+        graceMs: number;
+        rounds: number;
+        minVisibleJoints: number;
+    }>, z.ZodObject<{
+        timeBudgetMs: z.ZodNumber;
+        successAudioId: z.ZodString;
+        encourageAudioId: z.ZodString;
+        type: z.ZodLiteral<"body_zone">;
+        part: z.ZodEnum<["head", "hands", "feet", "torso", "any"]>;
+        mode: z.ZodEnum<["enter", "avoid"]>;
+        zones: z.ZodArray<z.ZodObject<{
+            id: z.ZodString;
+            box: z.ZodEffects<z.ZodObject<{
+                x0: z.ZodNumber;
+                y0: z.ZodNumber;
+                x1: z.ZodNumber;
+                y1: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            }, {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            }>, {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            }, {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            }>;
+        }, "strict", z.ZodTypeAny, {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }, {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }>, "many">;
+        /** Time the part must stay inside (enter) or outside (avoid) the active zone. */
+        holdMs: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "body_zone";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        part: "hands" | "feet" | "any" | "head" | "torso";
+        mode: "enter" | "avoid";
+        zones: {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }[];
+    }, {
+        type: "body_zone";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        part: "hands" | "feet" | "any" | "head" | "torso";
+        mode: "enter" | "avoid";
+        zones: {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }[];
+    }>, z.ZodObject<{
+        timeBudgetMs: z.ZodNumber;
+        successAudioId: z.ZodString;
+        encourageAudioId: z.ZodString;
+        type: z.ZodLiteral<"squat">;
+        repetitions: z.ZodNumber;
+        /** Required hip drop as a fraction of the player's own torso length. */
+        depthRatio: z.ZodNumber;
+        /** Knee angle (degrees, straight = 180) that must be reached at the bottom. */
+        kneeAngleMaxDeg: z.ZodNumber;
+        /** Hold at the bottom before the repetition counts. */
+        holdMs: z.ZodNumber;
+        /** Minimum time between counted repetitions; rejects bounce double counts. */
+        cooldownMs: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "squat";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        repetitions: number;
+        depthRatio: number;
+        kneeAngleMaxDeg: number;
+        cooldownMs: number;
+    }, {
+        type: "squat";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        repetitions: number;
+        depthRatio: number;
+        kneeAngleMaxDeg: number;
+        cooldownMs: number;
+    }>, z.ZodObject<{
+        timeBudgetMs: z.ZodNumber;
+        successAudioId: z.ZodString;
+        encourageAudioId: z.ZodString;
+        type: z.ZodLiteral<"pose_match">;
+        poses: z.ZodArray<z.ZodObject<{
+            id: z.ZodString;
+            joints: z.ZodArray<z.ZodObject<{
+                joint: z.ZodEnum<["left_elbow", "right_elbow", "left_knee", "right_knee", "left_shoulder", "right_shoulder", "left_hip", "right_hip"]>;
+                angleDeg: z.ZodNumber;
+                toleranceDeg: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }, {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }>, "many">;
+            holdMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }, {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }>, "many">;
+        /** Fraction of listed joints that must be inside tolerance at once. */
+        matchRatio: z.ZodNumber;
+        /** "either" also accepts the left/right mirrored pose. */
+        mirrorPolicy: z.ZodEnum<["strict", "either"]>;
+    }, "strict", z.ZodTypeAny, {
+        type: "pose_match";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        poses: {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }[];
+        matchRatio: number;
+        mirrorPolicy: "strict" | "either";
+    }, {
+        type: "pose_match";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        poses: {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }[];
+        matchRatio: number;
+        mirrorPolicy: "strict" | "either";
+    }>, z.ZodObject<{
+        timeBudgetMs: z.ZodNumber;
+        successAudioId: z.ZodString;
+        encourageAudioId: z.ZodString;
+        type: z.ZodLiteral<"jump">;
+        repetitions: z.ZodNumber;
+        /** Required hip rise relative to the player's own torso length. */
+        minRiseRatio: z.ZodNumber;
+        /** Both feet must be back down and stable for this long to count a landing. */
+        landingStableMs: z.ZodNumber;
+        cooldownMs: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "jump";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        repetitions: number;
+        cooldownMs: number;
+        minRiseRatio: number;
+        landingStableMs: number;
+    }, {
+        type: "jump";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        repetitions: number;
+        cooldownMs: number;
+        minRiseRatio: number;
+        landingStableMs: number;
+    }>, z.ZodObject<{
+        timeBudgetMs: z.ZodNumber;
+        successAudioId: z.ZodString;
+        encourageAudioId: z.ZodString;
+        type: z.ZodLiteral<"velocity_hit">;
+        count: z.ZodNumber;
+        zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
+        targetScale: z.ZodNumber;
+        limb: z.ZodEnum<["hands", "feet", "any"]>;
+        /** On-screen limb speed (normalized units/second) required at contact. */
+        minSpeed: z.ZodNumber;
+        direction: z.ZodEnum<["any", "up", "down", "left", "right"]>;
+    }, "strict", z.ZodTypeAny, {
+        type: "velocity_hit";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        count: number;
+        zone: "upper" | "lower" | "full" | "reachable";
+        targetScale: number;
+        limb: "hands" | "feet" | "any";
+        minSpeed: number;
+        direction: "any" | "up" | "down" | "left" | "right";
+    }, {
+        type: "velocity_hit";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        count: number;
+        zone: "upper" | "lower" | "full" | "reachable";
+        targetScale: number;
+        limb: "hands" | "feet" | "any";
+        minSpeed: number;
+        direction: "any" | "up" | "down" | "left" | "right";
+    }>, z.ZodObject<{
+        timeBudgetMs: z.ZodNumber;
+        successAudioId: z.ZodString;
+        encourageAudioId: z.ZodString;
+        type: z.ZodLiteral<"step">;
+        pattern: z.ZodArray<z.ZodEnum<["left", "right"]>, "many">;
+        /** Lateral foot travel required, relative to the player's own torso length. */
+        stepRatio: z.ZodNumber;
+        /** Settle time on the new stance before the step counts. */
+        holdMs: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "step";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        pattern: ("left" | "right")[];
+        stepRatio: number;
+    }, {
+        type: "step";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        pattern: ("left" | "right")[];
+        stepRatio: number;
+    }>, z.ZodObject<{
+        timeBudgetMs: z.ZodNumber;
+        successAudioId: z.ZodString;
+        encourageAudioId: z.ZodString;
+        type: z.ZodLiteral<"sequence">;
+        steps: z.ZodArray<z.ZodDiscriminatedUnion<"type", [z.ZodObject<{
+            type: z.ZodLiteral<"touch_targets">;
+            count: z.ZodNumber;
+            zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
+            targetScale: z.ZodNumber;
+            dwellMs: z.ZodNumber;
+            limb: z.ZodEnum<["hands", "feet", "any"]>;
+        }, "strict", z.ZodTypeAny, {
+            type: "touch_targets";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            dwellMs: number;
+            limb: "hands" | "feet" | "any";
+        }, {
+            type: "touch_targets";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            dwellMs: number;
+            limb: "hands" | "feet" | "any";
+        }>, z.ZodObject<{
+            type: z.ZodLiteral<"freeze">;
+            /** How long the whole body must stay under motionThreshold. */
+            holdMs: z.ZodNumber;
+            /** Mean landmark motion (normalized units/second) treated as "still". */
+            motionThreshold: z.ZodNumber;
+            /** Motion spikes shorter than this do not reset the hold. */
+            graceMs: z.ZodNumber;
+            rounds: z.ZodNumber;
+            /** Frames with fewer confident joints pause, never fail, the hold. */
+            minVisibleJoints: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "freeze";
+            holdMs: number;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        }, {
+            type: "freeze";
+            holdMs: number;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        }>, z.ZodObject<{
+            type: z.ZodLiteral<"body_zone">;
+            part: z.ZodEnum<["head", "hands", "feet", "torso", "any"]>;
+            mode: z.ZodEnum<["enter", "avoid"]>;
+            zones: z.ZodArray<z.ZodObject<{
+                id: z.ZodString;
+                box: z.ZodEffects<z.ZodObject<{
+                    x0: z.ZodNumber;
+                    y0: z.ZodNumber;
+                    x1: z.ZodNumber;
+                    y1: z.ZodNumber;
+                }, "strict", z.ZodTypeAny, {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                }, {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                }>, {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                }, {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                }>;
+            }, "strict", z.ZodTypeAny, {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }, {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }>, "many">;
+            /** Time the part must stay inside (enter) or outside (avoid) the active zone. */
+            holdMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "body_zone";
+            holdMs: number;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        }, {
+            type: "body_zone";
+            holdMs: number;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        }>, z.ZodObject<{
+            type: z.ZodLiteral<"squat">;
+            repetitions: z.ZodNumber;
+            /** Required hip drop as a fraction of the player's own torso length. */
+            depthRatio: z.ZodNumber;
+            /** Knee angle (degrees, straight = 180) that must be reached at the bottom. */
+            kneeAngleMaxDeg: z.ZodNumber;
+            /** Hold at the bottom before the repetition counts. */
+            holdMs: z.ZodNumber;
+            /** Minimum time between counted repetitions; rejects bounce double counts. */
+            cooldownMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "squat";
+            holdMs: number;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        }, {
+            type: "squat";
+            holdMs: number;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        }>, z.ZodObject<{
+            type: z.ZodLiteral<"pose_match">;
+            poses: z.ZodArray<z.ZodObject<{
+                id: z.ZodString;
+                joints: z.ZodArray<z.ZodObject<{
+                    joint: z.ZodEnum<["left_elbow", "right_elbow", "left_knee", "right_knee", "left_shoulder", "right_shoulder", "left_hip", "right_hip"]>;
+                    angleDeg: z.ZodNumber;
+                    toleranceDeg: z.ZodNumber;
+                }, "strict", z.ZodTypeAny, {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }, {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }>, "many">;
+                holdMs: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }, {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }>, "many">;
+            /** Fraction of listed joints that must be inside tolerance at once. */
+            matchRatio: z.ZodNumber;
+            /** "either" also accepts the left/right mirrored pose. */
+            mirrorPolicy: z.ZodEnum<["strict", "either"]>;
+        }, "strict", z.ZodTypeAny, {
+            type: "pose_match";
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        }, {
+            type: "pose_match";
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        }>, z.ZodObject<{
+            type: z.ZodLiteral<"jump">;
+            repetitions: z.ZodNumber;
+            /** Required hip rise relative to the player's own torso length. */
+            minRiseRatio: z.ZodNumber;
+            /** Both feet must be back down and stable for this long to count a landing. */
+            landingStableMs: z.ZodNumber;
+            cooldownMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "jump";
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        }, {
+            type: "jump";
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        }>, z.ZodObject<{
+            type: z.ZodLiteral<"velocity_hit">;
+            count: z.ZodNumber;
+            zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
+            targetScale: z.ZodNumber;
+            limb: z.ZodEnum<["hands", "feet", "any"]>;
+            /** On-screen limb speed (normalized units/second) required at contact. */
+            minSpeed: z.ZodNumber;
+            direction: z.ZodEnum<["any", "up", "down", "left", "right"]>;
+        }, "strict", z.ZodTypeAny, {
+            type: "velocity_hit";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        }, {
+            type: "velocity_hit";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        }>, z.ZodObject<{
+            type: z.ZodLiteral<"step">;
+            pattern: z.ZodArray<z.ZodEnum<["left", "right"]>, "many">;
+            /** Lateral foot travel required, relative to the player's own torso length. */
+            stepRatio: z.ZodNumber;
+            /** Settle time on the new stance before the step counts. */
+            holdMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "step";
+            holdMs: number;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        }, {
+            type: "step";
+            holdMs: number;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        }>]>, "many">;
+        /** Pause allowed between completed steps before the next one arms. */
+        interStepGraceMs: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "sequence";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        steps: ({
+            type: "touch_targets";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            dwellMs: number;
+            limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        })[];
+        interStepGraceMs: number;
+    }, {
+        type: "sequence";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        steps: ({
+            type: "touch_targets";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            dwellMs: number;
+            limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        })[];
+        interStepGraceMs: number;
+    }>]>>;
     learning: z.ZodNullable<z.ZodObject<{
         kind: z.ZodEnum<["counting", "colors", "letters", "body-parts", "directions", "animals", "none"]>;
         payload: z.ZodArray<z.ZodString, "many">;
@@ -735,14 +5584,169 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
     energy: "calm" | "medium" | "high";
     challenge: {
         type: "touch_targets";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
         count: number;
         zone: "upper" | "lower" | "full" | "reachable";
         targetScale: number;
         dwellMs: number;
         limb: "hands" | "feet" | "any";
+    } | {
+        type: "freeze";
+        holdMs: number;
         timeBudgetMs: number;
         successAudioId: string;
         encourageAudioId: string;
+        motionThreshold: number;
+        graceMs: number;
+        rounds: number;
+        minVisibleJoints: number;
+    } | {
+        type: "body_zone";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        part: "hands" | "feet" | "any" | "head" | "torso";
+        mode: "enter" | "avoid";
+        zones: {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }[];
+    } | {
+        type: "squat";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        repetitions: number;
+        depthRatio: number;
+        kneeAngleMaxDeg: number;
+        cooldownMs: number;
+    } | {
+        type: "pose_match";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        poses: {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }[];
+        matchRatio: number;
+        mirrorPolicy: "strict" | "either";
+    } | {
+        type: "jump";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        repetitions: number;
+        cooldownMs: number;
+        minRiseRatio: number;
+        landingStableMs: number;
+    } | {
+        type: "velocity_hit";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        count: number;
+        zone: "upper" | "lower" | "full" | "reachable";
+        targetScale: number;
+        limb: "hands" | "feet" | "any";
+        minSpeed: number;
+        direction: "any" | "up" | "down" | "left" | "right";
+    } | {
+        type: "step";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        pattern: ("left" | "right")[];
+        stepRatio: number;
+    } | {
+        type: "sequence";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        steps: ({
+            type: "touch_targets";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            dwellMs: number;
+            limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        })[];
+        interStepGraceMs: number;
     } | null;
     terminal: false;
     transitions: {
@@ -753,6 +5757,11 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
             dwellMsMul: number;
             countDelta: number;
             timeBudgetMul: number;
+            toleranceMul?: number | undefined;
+            holdMsMul?: number | undefined;
+            repetitionsDelta?: number | undefined;
+            speedMul?: number | undefined;
+            motionThresholdMul?: number | undefined;
         } | null;
     }[];
     narration: {
@@ -778,14 +5787,169 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
     energy: "calm" | "medium" | "high";
     challenge: {
         type: "touch_targets";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
         count: number;
         zone: "upper" | "lower" | "full" | "reachable";
         targetScale: number;
         dwellMs: number;
         limb: "hands" | "feet" | "any";
+    } | {
+        type: "freeze";
+        holdMs: number;
         timeBudgetMs: number;
         successAudioId: string;
         encourageAudioId: string;
+        motionThreshold: number;
+        graceMs: number;
+        rounds: number;
+        minVisibleJoints: number;
+    } | {
+        type: "body_zone";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        part: "hands" | "feet" | "any" | "head" | "torso";
+        mode: "enter" | "avoid";
+        zones: {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }[];
+    } | {
+        type: "squat";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        repetitions: number;
+        depthRatio: number;
+        kneeAngleMaxDeg: number;
+        cooldownMs: number;
+    } | {
+        type: "pose_match";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        poses: {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }[];
+        matchRatio: number;
+        mirrorPolicy: "strict" | "either";
+    } | {
+        type: "jump";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        repetitions: number;
+        cooldownMs: number;
+        minRiseRatio: number;
+        landingStableMs: number;
+    } | {
+        type: "velocity_hit";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        count: number;
+        zone: "upper" | "lower" | "full" | "reachable";
+        targetScale: number;
+        limb: "hands" | "feet" | "any";
+        minSpeed: number;
+        direction: "any" | "up" | "down" | "left" | "right";
+    } | {
+        type: "step";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        pattern: ("left" | "right")[];
+        stepRatio: number;
+    } | {
+        type: "sequence";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        steps: ({
+            type: "touch_targets";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            dwellMs: number;
+            limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        })[];
+        interStepGraceMs: number;
     } | null;
     terminal: false;
     transitions: {
@@ -796,6 +5960,11 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
             dwellMsMul: number;
             countDelta: number;
             timeBudgetMul: number;
+            toleranceMul?: number | undefined;
+            holdMsMul?: number | undefined;
+            repetitionsDelta?: number | undefined;
+            speedMul?: number | undefined;
+            motionThresholdMul?: number | undefined;
         } | null;
     }[];
     narration: {
@@ -825,16 +5994,35 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
             dwellMsMul: z.ZodNumber;
             countDelta: z.ZodNumber;
             timeBudgetMul: z.ZodNumber;
+            /**
+             * schemaVersion 2 adaptation for motion primitives. Optional keys keep every
+             * existing v1 pack valid byte-for-byte.
+             */
+            toleranceMul: z.ZodOptional<z.ZodNumber>;
+            holdMsMul: z.ZodOptional<z.ZodNumber>;
+            repetitionsDelta: z.ZodOptional<z.ZodNumber>;
+            speedMul: z.ZodOptional<z.ZodNumber>;
+            motionThresholdMul: z.ZodOptional<z.ZodNumber>;
         }, "strict", z.ZodTypeAny, {
             targetScaleMul: number;
             dwellMsMul: number;
             countDelta: number;
             timeBudgetMul: number;
+            toleranceMul?: number | undefined;
+            holdMsMul?: number | undefined;
+            repetitionsDelta?: number | undefined;
+            speedMul?: number | undefined;
+            motionThresholdMul?: number | undefined;
         }, {
             targetScaleMul: number;
             dwellMsMul: number;
             countDelta: number;
             timeBudgetMul: number;
+            toleranceMul?: number | undefined;
+            holdMsMul?: number | undefined;
+            repetitionsDelta?: number | undefined;
+            speedMul?: number | undefined;
+            motionThresholdMul?: number | undefined;
         }>>;
     }, "strict", z.ZodTypeAny, {
         on: "success" | "partial" | "struggle" | "always";
@@ -844,6 +6032,11 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
             dwellMsMul: number;
             countDelta: number;
             timeBudgetMul: number;
+            toleranceMul?: number | undefined;
+            holdMsMul?: number | undefined;
+            repetitionsDelta?: number | undefined;
+            speedMul?: number | undefined;
+            motionThresholdMul?: number | undefined;
         } | null;
     }, {
         on: "success" | "partial" | "struggle" | "always";
@@ -853,6 +6046,11 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
             dwellMsMul: number;
             countDelta: number;
             timeBudgetMul: number;
+            toleranceMul?: number | undefined;
+            holdMsMul?: number | undefined;
+            repetitionsDelta?: number | undefined;
+            speedMul?: number | undefined;
+            motionThresholdMul?: number | undefined;
         } | null;
     }>, "many">;
     id: z.ZodString;
@@ -897,7 +6095,7 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
         characterId: string;
         animation: string;
     }>>;
-    challenge: z.ZodNullable<z.ZodObject<{
+    challenge: z.ZodNullable<z.ZodDiscriminatedUnion<"type", [z.ZodObject<{
         timeBudgetMs: z.ZodNumber;
         successAudioId: z.ZodString;
         encourageAudioId: z.ZodString;
@@ -909,25 +6107,777 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
         limb: z.ZodEnum<["hands", "feet", "any"]>;
     }, "strict", z.ZodTypeAny, {
         type: "touch_targets";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
         count: number;
         zone: "upper" | "lower" | "full" | "reachable";
         targetScale: number;
         dwellMs: number;
         limb: "hands" | "feet" | "any";
-        timeBudgetMs: number;
-        successAudioId: string;
-        encourageAudioId: string;
     }, {
         type: "touch_targets";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
         count: number;
         zone: "upper" | "lower" | "full" | "reachable";
         targetScale: number;
         dwellMs: number;
         limb: "hands" | "feet" | "any";
+    }>, z.ZodObject<{
+        timeBudgetMs: z.ZodNumber;
+        successAudioId: z.ZodString;
+        encourageAudioId: z.ZodString;
+        type: z.ZodLiteral<"freeze">;
+        /** How long the whole body must stay under motionThreshold. */
+        holdMs: z.ZodNumber;
+        /** Mean landmark motion (normalized units/second) treated as "still". */
+        motionThreshold: z.ZodNumber;
+        /** Motion spikes shorter than this do not reset the hold. */
+        graceMs: z.ZodNumber;
+        rounds: z.ZodNumber;
+        /** Frames with fewer confident joints pause, never fail, the hold. */
+        minVisibleJoints: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "freeze";
+        holdMs: number;
         timeBudgetMs: number;
         successAudioId: string;
         encourageAudioId: string;
-    }>>;
+        motionThreshold: number;
+        graceMs: number;
+        rounds: number;
+        minVisibleJoints: number;
+    }, {
+        type: "freeze";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        motionThreshold: number;
+        graceMs: number;
+        rounds: number;
+        minVisibleJoints: number;
+    }>, z.ZodObject<{
+        timeBudgetMs: z.ZodNumber;
+        successAudioId: z.ZodString;
+        encourageAudioId: z.ZodString;
+        type: z.ZodLiteral<"body_zone">;
+        part: z.ZodEnum<["head", "hands", "feet", "torso", "any"]>;
+        mode: z.ZodEnum<["enter", "avoid"]>;
+        zones: z.ZodArray<z.ZodObject<{
+            id: z.ZodString;
+            box: z.ZodEffects<z.ZodObject<{
+                x0: z.ZodNumber;
+                y0: z.ZodNumber;
+                x1: z.ZodNumber;
+                y1: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            }, {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            }>, {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            }, {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            }>;
+        }, "strict", z.ZodTypeAny, {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }, {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }>, "many">;
+        /** Time the part must stay inside (enter) or outside (avoid) the active zone. */
+        holdMs: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "body_zone";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        part: "hands" | "feet" | "any" | "head" | "torso";
+        mode: "enter" | "avoid";
+        zones: {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }[];
+    }, {
+        type: "body_zone";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        part: "hands" | "feet" | "any" | "head" | "torso";
+        mode: "enter" | "avoid";
+        zones: {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }[];
+    }>, z.ZodObject<{
+        timeBudgetMs: z.ZodNumber;
+        successAudioId: z.ZodString;
+        encourageAudioId: z.ZodString;
+        type: z.ZodLiteral<"squat">;
+        repetitions: z.ZodNumber;
+        /** Required hip drop as a fraction of the player's own torso length. */
+        depthRatio: z.ZodNumber;
+        /** Knee angle (degrees, straight = 180) that must be reached at the bottom. */
+        kneeAngleMaxDeg: z.ZodNumber;
+        /** Hold at the bottom before the repetition counts. */
+        holdMs: z.ZodNumber;
+        /** Minimum time between counted repetitions; rejects bounce double counts. */
+        cooldownMs: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "squat";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        repetitions: number;
+        depthRatio: number;
+        kneeAngleMaxDeg: number;
+        cooldownMs: number;
+    }, {
+        type: "squat";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        repetitions: number;
+        depthRatio: number;
+        kneeAngleMaxDeg: number;
+        cooldownMs: number;
+    }>, z.ZodObject<{
+        timeBudgetMs: z.ZodNumber;
+        successAudioId: z.ZodString;
+        encourageAudioId: z.ZodString;
+        type: z.ZodLiteral<"pose_match">;
+        poses: z.ZodArray<z.ZodObject<{
+            id: z.ZodString;
+            joints: z.ZodArray<z.ZodObject<{
+                joint: z.ZodEnum<["left_elbow", "right_elbow", "left_knee", "right_knee", "left_shoulder", "right_shoulder", "left_hip", "right_hip"]>;
+                angleDeg: z.ZodNumber;
+                toleranceDeg: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }, {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }>, "many">;
+            holdMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }, {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }>, "many">;
+        /** Fraction of listed joints that must be inside tolerance at once. */
+        matchRatio: z.ZodNumber;
+        /** "either" also accepts the left/right mirrored pose. */
+        mirrorPolicy: z.ZodEnum<["strict", "either"]>;
+    }, "strict", z.ZodTypeAny, {
+        type: "pose_match";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        poses: {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }[];
+        matchRatio: number;
+        mirrorPolicy: "strict" | "either";
+    }, {
+        type: "pose_match";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        poses: {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }[];
+        matchRatio: number;
+        mirrorPolicy: "strict" | "either";
+    }>, z.ZodObject<{
+        timeBudgetMs: z.ZodNumber;
+        successAudioId: z.ZodString;
+        encourageAudioId: z.ZodString;
+        type: z.ZodLiteral<"jump">;
+        repetitions: z.ZodNumber;
+        /** Required hip rise relative to the player's own torso length. */
+        minRiseRatio: z.ZodNumber;
+        /** Both feet must be back down and stable for this long to count a landing. */
+        landingStableMs: z.ZodNumber;
+        cooldownMs: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "jump";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        repetitions: number;
+        cooldownMs: number;
+        minRiseRatio: number;
+        landingStableMs: number;
+    }, {
+        type: "jump";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        repetitions: number;
+        cooldownMs: number;
+        minRiseRatio: number;
+        landingStableMs: number;
+    }>, z.ZodObject<{
+        timeBudgetMs: z.ZodNumber;
+        successAudioId: z.ZodString;
+        encourageAudioId: z.ZodString;
+        type: z.ZodLiteral<"velocity_hit">;
+        count: z.ZodNumber;
+        zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
+        targetScale: z.ZodNumber;
+        limb: z.ZodEnum<["hands", "feet", "any"]>;
+        /** On-screen limb speed (normalized units/second) required at contact. */
+        minSpeed: z.ZodNumber;
+        direction: z.ZodEnum<["any", "up", "down", "left", "right"]>;
+    }, "strict", z.ZodTypeAny, {
+        type: "velocity_hit";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        count: number;
+        zone: "upper" | "lower" | "full" | "reachable";
+        targetScale: number;
+        limb: "hands" | "feet" | "any";
+        minSpeed: number;
+        direction: "any" | "up" | "down" | "left" | "right";
+    }, {
+        type: "velocity_hit";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        count: number;
+        zone: "upper" | "lower" | "full" | "reachable";
+        targetScale: number;
+        limb: "hands" | "feet" | "any";
+        minSpeed: number;
+        direction: "any" | "up" | "down" | "left" | "right";
+    }>, z.ZodObject<{
+        timeBudgetMs: z.ZodNumber;
+        successAudioId: z.ZodString;
+        encourageAudioId: z.ZodString;
+        type: z.ZodLiteral<"step">;
+        pattern: z.ZodArray<z.ZodEnum<["left", "right"]>, "many">;
+        /** Lateral foot travel required, relative to the player's own torso length. */
+        stepRatio: z.ZodNumber;
+        /** Settle time on the new stance before the step counts. */
+        holdMs: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "step";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        pattern: ("left" | "right")[];
+        stepRatio: number;
+    }, {
+        type: "step";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        pattern: ("left" | "right")[];
+        stepRatio: number;
+    }>, z.ZodObject<{
+        timeBudgetMs: z.ZodNumber;
+        successAudioId: z.ZodString;
+        encourageAudioId: z.ZodString;
+        type: z.ZodLiteral<"sequence">;
+        steps: z.ZodArray<z.ZodDiscriminatedUnion<"type", [z.ZodObject<{
+            type: z.ZodLiteral<"touch_targets">;
+            count: z.ZodNumber;
+            zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
+            targetScale: z.ZodNumber;
+            dwellMs: z.ZodNumber;
+            limb: z.ZodEnum<["hands", "feet", "any"]>;
+        }, "strict", z.ZodTypeAny, {
+            type: "touch_targets";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            dwellMs: number;
+            limb: "hands" | "feet" | "any";
+        }, {
+            type: "touch_targets";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            dwellMs: number;
+            limb: "hands" | "feet" | "any";
+        }>, z.ZodObject<{
+            type: z.ZodLiteral<"freeze">;
+            /** How long the whole body must stay under motionThreshold. */
+            holdMs: z.ZodNumber;
+            /** Mean landmark motion (normalized units/second) treated as "still". */
+            motionThreshold: z.ZodNumber;
+            /** Motion spikes shorter than this do not reset the hold. */
+            graceMs: z.ZodNumber;
+            rounds: z.ZodNumber;
+            /** Frames with fewer confident joints pause, never fail, the hold. */
+            minVisibleJoints: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "freeze";
+            holdMs: number;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        }, {
+            type: "freeze";
+            holdMs: number;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        }>, z.ZodObject<{
+            type: z.ZodLiteral<"body_zone">;
+            part: z.ZodEnum<["head", "hands", "feet", "torso", "any"]>;
+            mode: z.ZodEnum<["enter", "avoid"]>;
+            zones: z.ZodArray<z.ZodObject<{
+                id: z.ZodString;
+                box: z.ZodEffects<z.ZodObject<{
+                    x0: z.ZodNumber;
+                    y0: z.ZodNumber;
+                    x1: z.ZodNumber;
+                    y1: z.ZodNumber;
+                }, "strict", z.ZodTypeAny, {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                }, {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                }>, {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                }, {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                }>;
+            }, "strict", z.ZodTypeAny, {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }, {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }>, "many">;
+            /** Time the part must stay inside (enter) or outside (avoid) the active zone. */
+            holdMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "body_zone";
+            holdMs: number;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        }, {
+            type: "body_zone";
+            holdMs: number;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        }>, z.ZodObject<{
+            type: z.ZodLiteral<"squat">;
+            repetitions: z.ZodNumber;
+            /** Required hip drop as a fraction of the player's own torso length. */
+            depthRatio: z.ZodNumber;
+            /** Knee angle (degrees, straight = 180) that must be reached at the bottom. */
+            kneeAngleMaxDeg: z.ZodNumber;
+            /** Hold at the bottom before the repetition counts. */
+            holdMs: z.ZodNumber;
+            /** Minimum time between counted repetitions; rejects bounce double counts. */
+            cooldownMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "squat";
+            holdMs: number;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        }, {
+            type: "squat";
+            holdMs: number;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        }>, z.ZodObject<{
+            type: z.ZodLiteral<"pose_match">;
+            poses: z.ZodArray<z.ZodObject<{
+                id: z.ZodString;
+                joints: z.ZodArray<z.ZodObject<{
+                    joint: z.ZodEnum<["left_elbow", "right_elbow", "left_knee", "right_knee", "left_shoulder", "right_shoulder", "left_hip", "right_hip"]>;
+                    angleDeg: z.ZodNumber;
+                    toleranceDeg: z.ZodNumber;
+                }, "strict", z.ZodTypeAny, {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }, {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }>, "many">;
+                holdMs: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }, {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }>, "many">;
+            /** Fraction of listed joints that must be inside tolerance at once. */
+            matchRatio: z.ZodNumber;
+            /** "either" also accepts the left/right mirrored pose. */
+            mirrorPolicy: z.ZodEnum<["strict", "either"]>;
+        }, "strict", z.ZodTypeAny, {
+            type: "pose_match";
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        }, {
+            type: "pose_match";
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        }>, z.ZodObject<{
+            type: z.ZodLiteral<"jump">;
+            repetitions: z.ZodNumber;
+            /** Required hip rise relative to the player's own torso length. */
+            minRiseRatio: z.ZodNumber;
+            /** Both feet must be back down and stable for this long to count a landing. */
+            landingStableMs: z.ZodNumber;
+            cooldownMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "jump";
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        }, {
+            type: "jump";
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        }>, z.ZodObject<{
+            type: z.ZodLiteral<"velocity_hit">;
+            count: z.ZodNumber;
+            zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
+            targetScale: z.ZodNumber;
+            limb: z.ZodEnum<["hands", "feet", "any"]>;
+            /** On-screen limb speed (normalized units/second) required at contact. */
+            minSpeed: z.ZodNumber;
+            direction: z.ZodEnum<["any", "up", "down", "left", "right"]>;
+        }, "strict", z.ZodTypeAny, {
+            type: "velocity_hit";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        }, {
+            type: "velocity_hit";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        }>, z.ZodObject<{
+            type: z.ZodLiteral<"step">;
+            pattern: z.ZodArray<z.ZodEnum<["left", "right"]>, "many">;
+            /** Lateral foot travel required, relative to the player's own torso length. */
+            stepRatio: z.ZodNumber;
+            /** Settle time on the new stance before the step counts. */
+            holdMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "step";
+            holdMs: number;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        }, {
+            type: "step";
+            holdMs: number;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        }>]>, "many">;
+        /** Pause allowed between completed steps before the next one arms. */
+        interStepGraceMs: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        type: "sequence";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        steps: ({
+            type: "touch_targets";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            dwellMs: number;
+            limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        })[];
+        interStepGraceMs: number;
+    }, {
+        type: "sequence";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        steps: ({
+            type: "touch_targets";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            dwellMs: number;
+            limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        })[];
+        interStepGraceMs: number;
+    }>]>>;
     learning: z.ZodNullable<z.ZodObject<{
         kind: z.ZodEnum<["counting", "colors", "letters", "body-parts", "directions", "animals", "none"]>;
         payload: z.ZodArray<z.ZodString, "many">;
@@ -946,14 +6896,169 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
     energy: "calm" | "medium" | "high";
     challenge: {
         type: "touch_targets";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
         count: number;
         zone: "upper" | "lower" | "full" | "reachable";
         targetScale: number;
         dwellMs: number;
         limb: "hands" | "feet" | "any";
+    } | {
+        type: "freeze";
+        holdMs: number;
         timeBudgetMs: number;
         successAudioId: string;
         encourageAudioId: string;
+        motionThreshold: number;
+        graceMs: number;
+        rounds: number;
+        minVisibleJoints: number;
+    } | {
+        type: "body_zone";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        part: "hands" | "feet" | "any" | "head" | "torso";
+        mode: "enter" | "avoid";
+        zones: {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }[];
+    } | {
+        type: "squat";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        repetitions: number;
+        depthRatio: number;
+        kneeAngleMaxDeg: number;
+        cooldownMs: number;
+    } | {
+        type: "pose_match";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        poses: {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }[];
+        matchRatio: number;
+        mirrorPolicy: "strict" | "either";
+    } | {
+        type: "jump";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        repetitions: number;
+        cooldownMs: number;
+        minRiseRatio: number;
+        landingStableMs: number;
+    } | {
+        type: "velocity_hit";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        count: number;
+        zone: "upper" | "lower" | "full" | "reachable";
+        targetScale: number;
+        limb: "hands" | "feet" | "any";
+        minSpeed: number;
+        direction: "any" | "up" | "down" | "left" | "right";
+    } | {
+        type: "step";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        pattern: ("left" | "right")[];
+        stepRatio: number;
+    } | {
+        type: "sequence";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        steps: ({
+            type: "touch_targets";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            dwellMs: number;
+            limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        })[];
+        interStepGraceMs: number;
     } | null;
     terminal: true;
     transitions: {
@@ -964,6 +7069,11 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
             dwellMsMul: number;
             countDelta: number;
             timeBudgetMul: number;
+            toleranceMul?: number | undefined;
+            holdMsMul?: number | undefined;
+            repetitionsDelta?: number | undefined;
+            speedMul?: number | undefined;
+            motionThresholdMul?: number | undefined;
         } | null;
     }[];
     narration: {
@@ -989,14 +7099,169 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
     energy: "calm" | "medium" | "high";
     challenge: {
         type: "touch_targets";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
         count: number;
         zone: "upper" | "lower" | "full" | "reachable";
         targetScale: number;
         dwellMs: number;
         limb: "hands" | "feet" | "any";
+    } | {
+        type: "freeze";
+        holdMs: number;
         timeBudgetMs: number;
         successAudioId: string;
         encourageAudioId: string;
+        motionThreshold: number;
+        graceMs: number;
+        rounds: number;
+        minVisibleJoints: number;
+    } | {
+        type: "body_zone";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        part: "hands" | "feet" | "any" | "head" | "torso";
+        mode: "enter" | "avoid";
+        zones: {
+            id: string;
+            box: {
+                x0: number;
+                y0: number;
+                x1: number;
+                y1: number;
+            };
+        }[];
+    } | {
+        type: "squat";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        repetitions: number;
+        depthRatio: number;
+        kneeAngleMaxDeg: number;
+        cooldownMs: number;
+    } | {
+        type: "pose_match";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        poses: {
+            id: string;
+            joints: {
+                joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                angleDeg: number;
+                toleranceDeg: number;
+            }[];
+            holdMs: number;
+        }[];
+        matchRatio: number;
+        mirrorPolicy: "strict" | "either";
+    } | {
+        type: "jump";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        repetitions: number;
+        cooldownMs: number;
+        minRiseRatio: number;
+        landingStableMs: number;
+    } | {
+        type: "velocity_hit";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        count: number;
+        zone: "upper" | "lower" | "full" | "reachable";
+        targetScale: number;
+        limb: "hands" | "feet" | "any";
+        minSpeed: number;
+        direction: "any" | "up" | "down" | "left" | "right";
+    } | {
+        type: "step";
+        holdMs: number;
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        pattern: ("left" | "right")[];
+        stepRatio: number;
+    } | {
+        type: "sequence";
+        timeBudgetMs: number;
+        successAudioId: string;
+        encourageAudioId: string;
+        steps: ({
+            type: "touch_targets";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            dwellMs: number;
+            limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        })[];
+        interStepGraceMs: number;
     } | null;
     terminal: true;
     transitions: {
@@ -1007,6 +7272,11 @@ export declare const SceneSchema: z.ZodDiscriminatedUnion<"terminal", [z.ZodObje
             dwellMsMul: number;
             countDelta: number;
             timeBudgetMul: number;
+            toleranceMul?: number | undefined;
+            holdMsMul?: number | undefined;
+            repetitionsDelta?: number | undefined;
+            speedMul?: number | undefined;
+            motionThresholdMul?: number | undefined;
         } | null;
     }[];
     narration: {
@@ -1067,8 +7337,30 @@ export declare const CompilerMetadataSchema: z.ZodObject<{
     reasoningEffort: string;
 }>;
 export type CompilerMetadata = z.infer<typeof CompilerMetadataSchema>;
+export declare const PlayersSchema: z.ZodEffects<z.ZodObject<{
+    min: z.ZodNumber;
+    max: z.ZodNumber;
+    mode: z.ZodEnum<["solo", "coop", "versus"]>;
+}, "strict", z.ZodTypeAny, {
+    min: number;
+    max: number;
+    mode: "solo" | "coop" | "versus";
+}, {
+    min: number;
+    max: number;
+    mode: "solo" | "coop" | "versus";
+}>, {
+    min: number;
+    max: number;
+    mode: "solo" | "coop" | "versus";
+}, {
+    min: number;
+    max: number;
+    mode: "solo" | "coop" | "versus";
+}>;
+export type Players = z.infer<typeof PlayersSchema>;
 export declare const EpisodePackBaseSchema: z.ZodObject<{
-    schemaVersion: z.ZodLiteral<1>;
+    schemaVersion: z.ZodUnion<[z.ZodLiteral<1>, z.ZodLiteral<2>]>;
     meta: z.ZodObject<{
         id: z.ZodString;
         title: z.ZodArray<z.ZodObject<{
@@ -1118,6 +7410,28 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
             generatedAt: string;
             reasoningEffort: string;
         }>>;
+        /** schemaVersion 2 only. Absent means one player. */
+        players: z.ZodOptional<z.ZodEffects<z.ZodObject<{
+            min: z.ZodNumber;
+            max: z.ZodNumber;
+            mode: z.ZodEnum<["solo", "coop", "versus"]>;
+        }, "strict", z.ZodTypeAny, {
+            min: number;
+            max: number;
+            mode: "solo" | "coop" | "versus";
+        }, {
+            min: number;
+            max: number;
+            mode: "solo" | "coop" | "versus";
+        }>, {
+            min: number;
+            max: number;
+            mode: "solo" | "coop" | "versus";
+        }, {
+            min: number;
+            max: number;
+            mode: "solo" | "coop" | "versus";
+        }>>;
     }, "strict", z.ZodTypeAny, {
         id: string;
         title: {
@@ -1141,6 +7455,11 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
             generatedAt: string;
             reasoningEffort: string;
         } | null;
+        players?: {
+            min: number;
+            max: number;
+            mode: "solo" | "coop" | "versus";
+        } | undefined;
     }, {
         id: string;
         title: {
@@ -1164,6 +7483,11 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
             generatedAt: string;
             reasoningEffort: string;
         } | null;
+        players?: {
+            min: number;
+            max: number;
+            mode: "solo" | "coop" | "versus";
+        } | undefined;
     }>;
     permissions: z.ZodObject<{
         camera: z.ZodBoolean;
@@ -1217,16 +7541,35 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
                 dwellMsMul: z.ZodNumber;
                 countDelta: z.ZodNumber;
                 timeBudgetMul: z.ZodNumber;
+                /**
+                 * schemaVersion 2 adaptation for motion primitives. Optional keys keep every
+                 * existing v1 pack valid byte-for-byte.
+                 */
+                toleranceMul: z.ZodOptional<z.ZodNumber>;
+                holdMsMul: z.ZodOptional<z.ZodNumber>;
+                repetitionsDelta: z.ZodOptional<z.ZodNumber>;
+                speedMul: z.ZodOptional<z.ZodNumber>;
+                motionThresholdMul: z.ZodOptional<z.ZodNumber>;
             }, "strict", z.ZodTypeAny, {
                 targetScaleMul: number;
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             }, {
                 targetScaleMul: number;
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             }>>;
         }, "strict", z.ZodTypeAny, {
             on: "success" | "partial" | "struggle" | "always";
@@ -1236,6 +7579,11 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             } | null;
         }, {
             on: "success" | "partial" | "struggle" | "always";
@@ -1245,6 +7593,11 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             } | null;
         }>, "many">;
         id: z.ZodString;
@@ -1289,7 +7642,7 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
             characterId: string;
             animation: string;
         }>>;
-        challenge: z.ZodNullable<z.ZodObject<{
+        challenge: z.ZodNullable<z.ZodDiscriminatedUnion<"type", [z.ZodObject<{
             timeBudgetMs: z.ZodNumber;
             successAudioId: z.ZodString;
             encourageAudioId: z.ZodString;
@@ -1301,25 +7654,777 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
             limb: z.ZodEnum<["hands", "feet", "any"]>;
         }, "strict", z.ZodTypeAny, {
             type: "touch_targets";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
             count: number;
             zone: "upper" | "lower" | "full" | "reachable";
             targetScale: number;
             dwellMs: number;
             limb: "hands" | "feet" | "any";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
         }, {
             type: "touch_targets";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
             count: number;
             zone: "upper" | "lower" | "full" | "reachable";
             targetScale: number;
             dwellMs: number;
             limb: "hands" | "feet" | "any";
+        }>, z.ZodObject<{
+            timeBudgetMs: z.ZodNumber;
+            successAudioId: z.ZodString;
+            encourageAudioId: z.ZodString;
+            type: z.ZodLiteral<"freeze">;
+            /** How long the whole body must stay under motionThreshold. */
+            holdMs: z.ZodNumber;
+            /** Mean landmark motion (normalized units/second) treated as "still". */
+            motionThreshold: z.ZodNumber;
+            /** Motion spikes shorter than this do not reset the hold. */
+            graceMs: z.ZodNumber;
+            rounds: z.ZodNumber;
+            /** Frames with fewer confident joints pause, never fail, the hold. */
+            minVisibleJoints: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "freeze";
+            holdMs: number;
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
-        }>>;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        }, {
+            type: "freeze";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        }>, z.ZodObject<{
+            timeBudgetMs: z.ZodNumber;
+            successAudioId: z.ZodString;
+            encourageAudioId: z.ZodString;
+            type: z.ZodLiteral<"body_zone">;
+            part: z.ZodEnum<["head", "hands", "feet", "torso", "any"]>;
+            mode: z.ZodEnum<["enter", "avoid"]>;
+            zones: z.ZodArray<z.ZodObject<{
+                id: z.ZodString;
+                box: z.ZodEffects<z.ZodObject<{
+                    x0: z.ZodNumber;
+                    y0: z.ZodNumber;
+                    x1: z.ZodNumber;
+                    y1: z.ZodNumber;
+                }, "strict", z.ZodTypeAny, {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                }, {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                }>, {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                }, {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                }>;
+            }, "strict", z.ZodTypeAny, {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }, {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }>, "many">;
+            /** Time the part must stay inside (enter) or outside (avoid) the active zone. */
+            holdMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "body_zone";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        }, {
+            type: "body_zone";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        }>, z.ZodObject<{
+            timeBudgetMs: z.ZodNumber;
+            successAudioId: z.ZodString;
+            encourageAudioId: z.ZodString;
+            type: z.ZodLiteral<"squat">;
+            repetitions: z.ZodNumber;
+            /** Required hip drop as a fraction of the player's own torso length. */
+            depthRatio: z.ZodNumber;
+            /** Knee angle (degrees, straight = 180) that must be reached at the bottom. */
+            kneeAngleMaxDeg: z.ZodNumber;
+            /** Hold at the bottom before the repetition counts. */
+            holdMs: z.ZodNumber;
+            /** Minimum time between counted repetitions; rejects bounce double counts. */
+            cooldownMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "squat";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        }, {
+            type: "squat";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        }>, z.ZodObject<{
+            timeBudgetMs: z.ZodNumber;
+            successAudioId: z.ZodString;
+            encourageAudioId: z.ZodString;
+            type: z.ZodLiteral<"pose_match">;
+            poses: z.ZodArray<z.ZodObject<{
+                id: z.ZodString;
+                joints: z.ZodArray<z.ZodObject<{
+                    joint: z.ZodEnum<["left_elbow", "right_elbow", "left_knee", "right_knee", "left_shoulder", "right_shoulder", "left_hip", "right_hip"]>;
+                    angleDeg: z.ZodNumber;
+                    toleranceDeg: z.ZodNumber;
+                }, "strict", z.ZodTypeAny, {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }, {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }>, "many">;
+                holdMs: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }, {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }>, "many">;
+            /** Fraction of listed joints that must be inside tolerance at once. */
+            matchRatio: z.ZodNumber;
+            /** "either" also accepts the left/right mirrored pose. */
+            mirrorPolicy: z.ZodEnum<["strict", "either"]>;
+        }, "strict", z.ZodTypeAny, {
+            type: "pose_match";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        }, {
+            type: "pose_match";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        }>, z.ZodObject<{
+            timeBudgetMs: z.ZodNumber;
+            successAudioId: z.ZodString;
+            encourageAudioId: z.ZodString;
+            type: z.ZodLiteral<"jump">;
+            repetitions: z.ZodNumber;
+            /** Required hip rise relative to the player's own torso length. */
+            minRiseRatio: z.ZodNumber;
+            /** Both feet must be back down and stable for this long to count a landing. */
+            landingStableMs: z.ZodNumber;
+            cooldownMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "jump";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        }, {
+            type: "jump";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        }>, z.ZodObject<{
+            timeBudgetMs: z.ZodNumber;
+            successAudioId: z.ZodString;
+            encourageAudioId: z.ZodString;
+            type: z.ZodLiteral<"velocity_hit">;
+            count: z.ZodNumber;
+            zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
+            targetScale: z.ZodNumber;
+            limb: z.ZodEnum<["hands", "feet", "any"]>;
+            /** On-screen limb speed (normalized units/second) required at contact. */
+            minSpeed: z.ZodNumber;
+            direction: z.ZodEnum<["any", "up", "down", "left", "right"]>;
+        }, "strict", z.ZodTypeAny, {
+            type: "velocity_hit";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        }, {
+            type: "velocity_hit";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        }>, z.ZodObject<{
+            timeBudgetMs: z.ZodNumber;
+            successAudioId: z.ZodString;
+            encourageAudioId: z.ZodString;
+            type: z.ZodLiteral<"step">;
+            pattern: z.ZodArray<z.ZodEnum<["left", "right"]>, "many">;
+            /** Lateral foot travel required, relative to the player's own torso length. */
+            stepRatio: z.ZodNumber;
+            /** Settle time on the new stance before the step counts. */
+            holdMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "step";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        }, {
+            type: "step";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        }>, z.ZodObject<{
+            timeBudgetMs: z.ZodNumber;
+            successAudioId: z.ZodString;
+            encourageAudioId: z.ZodString;
+            type: z.ZodLiteral<"sequence">;
+            steps: z.ZodArray<z.ZodDiscriminatedUnion<"type", [z.ZodObject<{
+                type: z.ZodLiteral<"touch_targets">;
+                count: z.ZodNumber;
+                zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
+                targetScale: z.ZodNumber;
+                dwellMs: z.ZodNumber;
+                limb: z.ZodEnum<["hands", "feet", "any"]>;
+            }, "strict", z.ZodTypeAny, {
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            }, {
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            }>, z.ZodObject<{
+                type: z.ZodLiteral<"freeze">;
+                /** How long the whole body must stay under motionThreshold. */
+                holdMs: z.ZodNumber;
+                /** Mean landmark motion (normalized units/second) treated as "still". */
+                motionThreshold: z.ZodNumber;
+                /** Motion spikes shorter than this do not reset the hold. */
+                graceMs: z.ZodNumber;
+                rounds: z.ZodNumber;
+                /** Frames with fewer confident joints pause, never fail, the hold. */
+                minVisibleJoints: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            }, {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            }>, z.ZodObject<{
+                type: z.ZodLiteral<"body_zone">;
+                part: z.ZodEnum<["head", "hands", "feet", "torso", "any"]>;
+                mode: z.ZodEnum<["enter", "avoid"]>;
+                zones: z.ZodArray<z.ZodObject<{
+                    id: z.ZodString;
+                    box: z.ZodEffects<z.ZodObject<{
+                        x0: z.ZodNumber;
+                        y0: z.ZodNumber;
+                        x1: z.ZodNumber;
+                        y1: z.ZodNumber;
+                    }, "strict", z.ZodTypeAny, {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    }, {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    }>, {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    }, {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    }>;
+                }, "strict", z.ZodTypeAny, {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }, {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }>, "many">;
+                /** Time the part must stay inside (enter) or outside (avoid) the active zone. */
+                holdMs: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            }, {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            }>, z.ZodObject<{
+                type: z.ZodLiteral<"squat">;
+                repetitions: z.ZodNumber;
+                /** Required hip drop as a fraction of the player's own torso length. */
+                depthRatio: z.ZodNumber;
+                /** Knee angle (degrees, straight = 180) that must be reached at the bottom. */
+                kneeAngleMaxDeg: z.ZodNumber;
+                /** Hold at the bottom before the repetition counts. */
+                holdMs: z.ZodNumber;
+                /** Minimum time between counted repetitions; rejects bounce double counts. */
+                cooldownMs: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            }, {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            }>, z.ZodObject<{
+                type: z.ZodLiteral<"pose_match">;
+                poses: z.ZodArray<z.ZodObject<{
+                    id: z.ZodString;
+                    joints: z.ZodArray<z.ZodObject<{
+                        joint: z.ZodEnum<["left_elbow", "right_elbow", "left_knee", "right_knee", "left_shoulder", "right_shoulder", "left_hip", "right_hip"]>;
+                        angleDeg: z.ZodNumber;
+                        toleranceDeg: z.ZodNumber;
+                    }, "strict", z.ZodTypeAny, {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }, {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }>, "many">;
+                    holdMs: z.ZodNumber;
+                }, "strict", z.ZodTypeAny, {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }, {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }>, "many">;
+                /** Fraction of listed joints that must be inside tolerance at once. */
+                matchRatio: z.ZodNumber;
+                /** "either" also accepts the left/right mirrored pose. */
+                mirrorPolicy: z.ZodEnum<["strict", "either"]>;
+            }, "strict", z.ZodTypeAny, {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            }, {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            }>, z.ZodObject<{
+                type: z.ZodLiteral<"jump">;
+                repetitions: z.ZodNumber;
+                /** Required hip rise relative to the player's own torso length. */
+                minRiseRatio: z.ZodNumber;
+                /** Both feet must be back down and stable for this long to count a landing. */
+                landingStableMs: z.ZodNumber;
+                cooldownMs: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            }, {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            }>, z.ZodObject<{
+                type: z.ZodLiteral<"velocity_hit">;
+                count: z.ZodNumber;
+                zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
+                targetScale: z.ZodNumber;
+                limb: z.ZodEnum<["hands", "feet", "any"]>;
+                /** On-screen limb speed (normalized units/second) required at contact. */
+                minSpeed: z.ZodNumber;
+                direction: z.ZodEnum<["any", "up", "down", "left", "right"]>;
+            }, "strict", z.ZodTypeAny, {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            }, {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            }>, z.ZodObject<{
+                type: z.ZodLiteral<"step">;
+                pattern: z.ZodArray<z.ZodEnum<["left", "right"]>, "many">;
+                /** Lateral foot travel required, relative to the player's own torso length. */
+                stepRatio: z.ZodNumber;
+                /** Settle time on the new stance before the step counts. */
+                holdMs: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            }, {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            }>]>, "many">;
+            /** Pause allowed between completed steps before the next one arms. */
+            interStepGraceMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "sequence";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            steps: ({
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            } | {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            } | {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            } | {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            } | {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            } | {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            } | {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            } | {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            })[];
+            interStepGraceMs: number;
+        }, {
+            type: "sequence";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            steps: ({
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            } | {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            } | {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            } | {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            } | {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            } | {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            } | {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            } | {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            })[];
+            interStepGraceMs: number;
+        }>]>>;
         learning: z.ZodNullable<z.ZodObject<{
             kind: z.ZodEnum<["counting", "colors", "letters", "body-parts", "directions", "animals", "none"]>;
             payload: z.ZodArray<z.ZodString, "many">;
@@ -1338,14 +8443,169 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
         energy: "calm" | "medium" | "high";
         challenge: {
             type: "touch_targets";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
             count: number;
             zone: "upper" | "lower" | "full" | "reachable";
             targetScale: number;
             dwellMs: number;
             limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        } | {
+            type: "sequence";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            steps: ({
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            } | {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            } | {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            } | {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            } | {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            } | {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            } | {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            } | {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            })[];
+            interStepGraceMs: number;
         } | null;
         terminal: false;
         transitions: {
@@ -1356,6 +8616,11 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             } | null;
         }[];
         narration: {
@@ -1381,14 +8646,169 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
         energy: "calm" | "medium" | "high";
         challenge: {
             type: "touch_targets";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
             count: number;
             zone: "upper" | "lower" | "full" | "reachable";
             targetScale: number;
             dwellMs: number;
             limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        } | {
+            type: "sequence";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            steps: ({
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            } | {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            } | {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            } | {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            } | {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            } | {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            } | {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            } | {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            })[];
+            interStepGraceMs: number;
         } | null;
         terminal: false;
         transitions: {
@@ -1399,6 +8819,11 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             } | null;
         }[];
         narration: {
@@ -1428,16 +8853,35 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
                 dwellMsMul: z.ZodNumber;
                 countDelta: z.ZodNumber;
                 timeBudgetMul: z.ZodNumber;
+                /**
+                 * schemaVersion 2 adaptation for motion primitives. Optional keys keep every
+                 * existing v1 pack valid byte-for-byte.
+                 */
+                toleranceMul: z.ZodOptional<z.ZodNumber>;
+                holdMsMul: z.ZodOptional<z.ZodNumber>;
+                repetitionsDelta: z.ZodOptional<z.ZodNumber>;
+                speedMul: z.ZodOptional<z.ZodNumber>;
+                motionThresholdMul: z.ZodOptional<z.ZodNumber>;
             }, "strict", z.ZodTypeAny, {
                 targetScaleMul: number;
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             }, {
                 targetScaleMul: number;
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             }>>;
         }, "strict", z.ZodTypeAny, {
             on: "success" | "partial" | "struggle" | "always";
@@ -1447,6 +8891,11 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             } | null;
         }, {
             on: "success" | "partial" | "struggle" | "always";
@@ -1456,6 +8905,11 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             } | null;
         }>, "many">;
         id: z.ZodString;
@@ -1500,7 +8954,7 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
             characterId: string;
             animation: string;
         }>>;
-        challenge: z.ZodNullable<z.ZodObject<{
+        challenge: z.ZodNullable<z.ZodDiscriminatedUnion<"type", [z.ZodObject<{
             timeBudgetMs: z.ZodNumber;
             successAudioId: z.ZodString;
             encourageAudioId: z.ZodString;
@@ -1512,25 +8966,777 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
             limb: z.ZodEnum<["hands", "feet", "any"]>;
         }, "strict", z.ZodTypeAny, {
             type: "touch_targets";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
             count: number;
             zone: "upper" | "lower" | "full" | "reachable";
             targetScale: number;
             dwellMs: number;
             limb: "hands" | "feet" | "any";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
         }, {
             type: "touch_targets";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
             count: number;
             zone: "upper" | "lower" | "full" | "reachable";
             targetScale: number;
             dwellMs: number;
             limb: "hands" | "feet" | "any";
+        }>, z.ZodObject<{
+            timeBudgetMs: z.ZodNumber;
+            successAudioId: z.ZodString;
+            encourageAudioId: z.ZodString;
+            type: z.ZodLiteral<"freeze">;
+            /** How long the whole body must stay under motionThreshold. */
+            holdMs: z.ZodNumber;
+            /** Mean landmark motion (normalized units/second) treated as "still". */
+            motionThreshold: z.ZodNumber;
+            /** Motion spikes shorter than this do not reset the hold. */
+            graceMs: z.ZodNumber;
+            rounds: z.ZodNumber;
+            /** Frames with fewer confident joints pause, never fail, the hold. */
+            minVisibleJoints: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "freeze";
+            holdMs: number;
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
-        }>>;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        }, {
+            type: "freeze";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        }>, z.ZodObject<{
+            timeBudgetMs: z.ZodNumber;
+            successAudioId: z.ZodString;
+            encourageAudioId: z.ZodString;
+            type: z.ZodLiteral<"body_zone">;
+            part: z.ZodEnum<["head", "hands", "feet", "torso", "any"]>;
+            mode: z.ZodEnum<["enter", "avoid"]>;
+            zones: z.ZodArray<z.ZodObject<{
+                id: z.ZodString;
+                box: z.ZodEffects<z.ZodObject<{
+                    x0: z.ZodNumber;
+                    y0: z.ZodNumber;
+                    x1: z.ZodNumber;
+                    y1: z.ZodNumber;
+                }, "strict", z.ZodTypeAny, {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                }, {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                }>, {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                }, {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                }>;
+            }, "strict", z.ZodTypeAny, {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }, {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }>, "many">;
+            /** Time the part must stay inside (enter) or outside (avoid) the active zone. */
+            holdMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "body_zone";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        }, {
+            type: "body_zone";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        }>, z.ZodObject<{
+            timeBudgetMs: z.ZodNumber;
+            successAudioId: z.ZodString;
+            encourageAudioId: z.ZodString;
+            type: z.ZodLiteral<"squat">;
+            repetitions: z.ZodNumber;
+            /** Required hip drop as a fraction of the player's own torso length. */
+            depthRatio: z.ZodNumber;
+            /** Knee angle (degrees, straight = 180) that must be reached at the bottom. */
+            kneeAngleMaxDeg: z.ZodNumber;
+            /** Hold at the bottom before the repetition counts. */
+            holdMs: z.ZodNumber;
+            /** Minimum time between counted repetitions; rejects bounce double counts. */
+            cooldownMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "squat";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        }, {
+            type: "squat";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        }>, z.ZodObject<{
+            timeBudgetMs: z.ZodNumber;
+            successAudioId: z.ZodString;
+            encourageAudioId: z.ZodString;
+            type: z.ZodLiteral<"pose_match">;
+            poses: z.ZodArray<z.ZodObject<{
+                id: z.ZodString;
+                joints: z.ZodArray<z.ZodObject<{
+                    joint: z.ZodEnum<["left_elbow", "right_elbow", "left_knee", "right_knee", "left_shoulder", "right_shoulder", "left_hip", "right_hip"]>;
+                    angleDeg: z.ZodNumber;
+                    toleranceDeg: z.ZodNumber;
+                }, "strict", z.ZodTypeAny, {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }, {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }>, "many">;
+                holdMs: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }, {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }>, "many">;
+            /** Fraction of listed joints that must be inside tolerance at once. */
+            matchRatio: z.ZodNumber;
+            /** "either" also accepts the left/right mirrored pose. */
+            mirrorPolicy: z.ZodEnum<["strict", "either"]>;
+        }, "strict", z.ZodTypeAny, {
+            type: "pose_match";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        }, {
+            type: "pose_match";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        }>, z.ZodObject<{
+            timeBudgetMs: z.ZodNumber;
+            successAudioId: z.ZodString;
+            encourageAudioId: z.ZodString;
+            type: z.ZodLiteral<"jump">;
+            repetitions: z.ZodNumber;
+            /** Required hip rise relative to the player's own torso length. */
+            minRiseRatio: z.ZodNumber;
+            /** Both feet must be back down and stable for this long to count a landing. */
+            landingStableMs: z.ZodNumber;
+            cooldownMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "jump";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        }, {
+            type: "jump";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        }>, z.ZodObject<{
+            timeBudgetMs: z.ZodNumber;
+            successAudioId: z.ZodString;
+            encourageAudioId: z.ZodString;
+            type: z.ZodLiteral<"velocity_hit">;
+            count: z.ZodNumber;
+            zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
+            targetScale: z.ZodNumber;
+            limb: z.ZodEnum<["hands", "feet", "any"]>;
+            /** On-screen limb speed (normalized units/second) required at contact. */
+            minSpeed: z.ZodNumber;
+            direction: z.ZodEnum<["any", "up", "down", "left", "right"]>;
+        }, "strict", z.ZodTypeAny, {
+            type: "velocity_hit";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        }, {
+            type: "velocity_hit";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        }>, z.ZodObject<{
+            timeBudgetMs: z.ZodNumber;
+            successAudioId: z.ZodString;
+            encourageAudioId: z.ZodString;
+            type: z.ZodLiteral<"step">;
+            pattern: z.ZodArray<z.ZodEnum<["left", "right"]>, "many">;
+            /** Lateral foot travel required, relative to the player's own torso length. */
+            stepRatio: z.ZodNumber;
+            /** Settle time on the new stance before the step counts. */
+            holdMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "step";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        }, {
+            type: "step";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        }>, z.ZodObject<{
+            timeBudgetMs: z.ZodNumber;
+            successAudioId: z.ZodString;
+            encourageAudioId: z.ZodString;
+            type: z.ZodLiteral<"sequence">;
+            steps: z.ZodArray<z.ZodDiscriminatedUnion<"type", [z.ZodObject<{
+                type: z.ZodLiteral<"touch_targets">;
+                count: z.ZodNumber;
+                zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
+                targetScale: z.ZodNumber;
+                dwellMs: z.ZodNumber;
+                limb: z.ZodEnum<["hands", "feet", "any"]>;
+            }, "strict", z.ZodTypeAny, {
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            }, {
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            }>, z.ZodObject<{
+                type: z.ZodLiteral<"freeze">;
+                /** How long the whole body must stay under motionThreshold. */
+                holdMs: z.ZodNumber;
+                /** Mean landmark motion (normalized units/second) treated as "still". */
+                motionThreshold: z.ZodNumber;
+                /** Motion spikes shorter than this do not reset the hold. */
+                graceMs: z.ZodNumber;
+                rounds: z.ZodNumber;
+                /** Frames with fewer confident joints pause, never fail, the hold. */
+                minVisibleJoints: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            }, {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            }>, z.ZodObject<{
+                type: z.ZodLiteral<"body_zone">;
+                part: z.ZodEnum<["head", "hands", "feet", "torso", "any"]>;
+                mode: z.ZodEnum<["enter", "avoid"]>;
+                zones: z.ZodArray<z.ZodObject<{
+                    id: z.ZodString;
+                    box: z.ZodEffects<z.ZodObject<{
+                        x0: z.ZodNumber;
+                        y0: z.ZodNumber;
+                        x1: z.ZodNumber;
+                        y1: z.ZodNumber;
+                    }, "strict", z.ZodTypeAny, {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    }, {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    }>, {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    }, {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    }>;
+                }, "strict", z.ZodTypeAny, {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }, {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }>, "many">;
+                /** Time the part must stay inside (enter) or outside (avoid) the active zone. */
+                holdMs: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            }, {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            }>, z.ZodObject<{
+                type: z.ZodLiteral<"squat">;
+                repetitions: z.ZodNumber;
+                /** Required hip drop as a fraction of the player's own torso length. */
+                depthRatio: z.ZodNumber;
+                /** Knee angle (degrees, straight = 180) that must be reached at the bottom. */
+                kneeAngleMaxDeg: z.ZodNumber;
+                /** Hold at the bottom before the repetition counts. */
+                holdMs: z.ZodNumber;
+                /** Minimum time between counted repetitions; rejects bounce double counts. */
+                cooldownMs: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            }, {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            }>, z.ZodObject<{
+                type: z.ZodLiteral<"pose_match">;
+                poses: z.ZodArray<z.ZodObject<{
+                    id: z.ZodString;
+                    joints: z.ZodArray<z.ZodObject<{
+                        joint: z.ZodEnum<["left_elbow", "right_elbow", "left_knee", "right_knee", "left_shoulder", "right_shoulder", "left_hip", "right_hip"]>;
+                        angleDeg: z.ZodNumber;
+                        toleranceDeg: z.ZodNumber;
+                    }, "strict", z.ZodTypeAny, {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }, {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }>, "many">;
+                    holdMs: z.ZodNumber;
+                }, "strict", z.ZodTypeAny, {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }, {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }>, "many">;
+                /** Fraction of listed joints that must be inside tolerance at once. */
+                matchRatio: z.ZodNumber;
+                /** "either" also accepts the left/right mirrored pose. */
+                mirrorPolicy: z.ZodEnum<["strict", "either"]>;
+            }, "strict", z.ZodTypeAny, {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            }, {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            }>, z.ZodObject<{
+                type: z.ZodLiteral<"jump">;
+                repetitions: z.ZodNumber;
+                /** Required hip rise relative to the player's own torso length. */
+                minRiseRatio: z.ZodNumber;
+                /** Both feet must be back down and stable for this long to count a landing. */
+                landingStableMs: z.ZodNumber;
+                cooldownMs: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            }, {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            }>, z.ZodObject<{
+                type: z.ZodLiteral<"velocity_hit">;
+                count: z.ZodNumber;
+                zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
+                targetScale: z.ZodNumber;
+                limb: z.ZodEnum<["hands", "feet", "any"]>;
+                /** On-screen limb speed (normalized units/second) required at contact. */
+                minSpeed: z.ZodNumber;
+                direction: z.ZodEnum<["any", "up", "down", "left", "right"]>;
+            }, "strict", z.ZodTypeAny, {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            }, {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            }>, z.ZodObject<{
+                type: z.ZodLiteral<"step">;
+                pattern: z.ZodArray<z.ZodEnum<["left", "right"]>, "many">;
+                /** Lateral foot travel required, relative to the player's own torso length. */
+                stepRatio: z.ZodNumber;
+                /** Settle time on the new stance before the step counts. */
+                holdMs: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            }, {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            }>]>, "many">;
+            /** Pause allowed between completed steps before the next one arms. */
+            interStepGraceMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "sequence";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            steps: ({
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            } | {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            } | {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            } | {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            } | {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            } | {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            } | {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            } | {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            })[];
+            interStepGraceMs: number;
+        }, {
+            type: "sequence";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            steps: ({
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            } | {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            } | {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            } | {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            } | {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            } | {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            } | {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            } | {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            })[];
+            interStepGraceMs: number;
+        }>]>>;
         learning: z.ZodNullable<z.ZodObject<{
             kind: z.ZodEnum<["counting", "colors", "letters", "body-parts", "directions", "animals", "none"]>;
             payload: z.ZodArray<z.ZodString, "many">;
@@ -1549,14 +9755,169 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
         energy: "calm" | "medium" | "high";
         challenge: {
             type: "touch_targets";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
             count: number;
             zone: "upper" | "lower" | "full" | "reachable";
             targetScale: number;
             dwellMs: number;
             limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        } | {
+            type: "sequence";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            steps: ({
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            } | {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            } | {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            } | {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            } | {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            } | {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            } | {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            } | {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            })[];
+            interStepGraceMs: number;
         } | null;
         terminal: true;
         transitions: {
@@ -1567,6 +9928,11 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             } | null;
         }[];
         narration: {
@@ -1592,14 +9958,169 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
         energy: "calm" | "medium" | "high";
         challenge: {
             type: "touch_targets";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
             count: number;
             zone: "upper" | "lower" | "full" | "reachable";
             targetScale: number;
             dwellMs: number;
             limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        } | {
+            type: "sequence";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            steps: ({
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            } | {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            } | {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            } | {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            } | {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            } | {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            } | {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            } | {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            })[];
+            interStepGraceMs: number;
         } | null;
         terminal: true;
         transitions: {
@@ -1610,6 +10131,11 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             } | null;
         }[];
         narration: {
@@ -2208,7 +10734,7 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
         }[];
     }>;
 }, "strict", z.ZodTypeAny, {
-    schemaVersion: 1;
+    schemaVersion: 1 | 2;
     permissions: {
         camera: boolean;
         deviceLocalStorage: boolean;
@@ -2236,6 +10762,11 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
             generatedAt: string;
             reasoningEffort: string;
         } | null;
+        players?: {
+            min: number;
+            max: number;
+            mode: "solo" | "coop" | "versus";
+        } | undefined;
     };
     cast: {
         name: {
@@ -2253,14 +10784,169 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
         energy: "calm" | "medium" | "high";
         challenge: {
             type: "touch_targets";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
             count: number;
             zone: "upper" | "lower" | "full" | "reachable";
             targetScale: number;
             dwellMs: number;
             limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        } | {
+            type: "sequence";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            steps: ({
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            } | {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            } | {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            } | {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            } | {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            } | {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            } | {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            } | {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            })[];
+            interStepGraceMs: number;
         } | null;
         terminal: false;
         transitions: {
@@ -2271,6 +10957,11 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             } | null;
         }[];
         narration: {
@@ -2296,14 +10987,169 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
         energy: "calm" | "medium" | "high";
         challenge: {
             type: "touch_targets";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
             count: number;
             zone: "upper" | "lower" | "full" | "reachable";
             targetScale: number;
             dwellMs: number;
             limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        } | {
+            type: "sequence";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            steps: ({
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            } | {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            } | {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            } | {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            } | {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            } | {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            } | {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            } | {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            })[];
+            interStepGraceMs: number;
         } | null;
         terminal: true;
         transitions: {
@@ -2314,6 +11160,11 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             } | null;
         }[];
         narration: {
@@ -2430,7 +11281,7 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
         }[];
     };
 }, {
-    schemaVersion: 1;
+    schemaVersion: 1 | 2;
     permissions: {
         camera: boolean;
         deviceLocalStorage: boolean;
@@ -2458,6 +11309,11 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
             generatedAt: string;
             reasoningEffort: string;
         } | null;
+        players?: {
+            min: number;
+            max: number;
+            mode: "solo" | "coop" | "versus";
+        } | undefined;
     };
     cast: {
         name: {
@@ -2475,14 +11331,169 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
         energy: "calm" | "medium" | "high";
         challenge: {
             type: "touch_targets";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
             count: number;
             zone: "upper" | "lower" | "full" | "reachable";
             targetScale: number;
             dwellMs: number;
             limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        } | {
+            type: "sequence";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            steps: ({
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            } | {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            } | {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            } | {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            } | {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            } | {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            } | {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            } | {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            })[];
+            interStepGraceMs: number;
         } | null;
         terminal: false;
         transitions: {
@@ -2493,6 +11504,11 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             } | null;
         }[];
         narration: {
@@ -2518,14 +11534,169 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
         energy: "calm" | "medium" | "high";
         challenge: {
             type: "touch_targets";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
             count: number;
             zone: "upper" | "lower" | "full" | "reachable";
             targetScale: number;
             dwellMs: number;
             limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        } | {
+            type: "sequence";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            steps: ({
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            } | {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            } | {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            } | {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            } | {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            } | {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            } | {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            } | {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            })[];
+            interStepGraceMs: number;
         } | null;
         terminal: true;
         transitions: {
@@ -2536,6 +11707,11 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             } | null;
         }[];
         narration: {
@@ -2653,16 +11829,16 @@ export declare const EpisodePackBaseSchema: z.ZodObject<{
     };
 }>;
 export type EpisodePack = z.infer<typeof EpisodePackBaseSchema>;
-export type IntegrityIssueCode = "duplicate_id" | "missing_reference" | "wrong_asset_type" | "duplicate_outcome" | "invalid_transition" | "unreachable_scene" | "terminal_unreachable" | "locale_mismatch" | "invalid_scene" | "missing_outcome" | "provenance_mismatch";
+export type IntegrityIssueCode = "duplicate_id" | "missing_reference" | "wrong_asset_type" | "duplicate_outcome" | "invalid_transition" | "unreachable_scene" | "terminal_unreachable" | "locale_mismatch" | "invalid_scene" | "missing_outcome" | "provenance_mismatch" | "schema_version" | "engine_compatibility";
 export interface IntegrityIssue {
     code: IntegrityIssueCode;
     path: Array<string | number>;
     message: string;
 }
-/** Pure semantic validation for a structurally parsed v1 pack. */
+/** Pure semantic validation for a structurally parsed pack. */
 export declare function validateEpisodePackIntegrity(pack: EpisodePack): IntegrityIssue[];
 export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
-    schemaVersion: z.ZodLiteral<1>;
+    schemaVersion: z.ZodUnion<[z.ZodLiteral<1>, z.ZodLiteral<2>]>;
     meta: z.ZodObject<{
         id: z.ZodString;
         title: z.ZodArray<z.ZodObject<{
@@ -2712,6 +11888,28 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
             generatedAt: string;
             reasoningEffort: string;
         }>>;
+        /** schemaVersion 2 only. Absent means one player. */
+        players: z.ZodOptional<z.ZodEffects<z.ZodObject<{
+            min: z.ZodNumber;
+            max: z.ZodNumber;
+            mode: z.ZodEnum<["solo", "coop", "versus"]>;
+        }, "strict", z.ZodTypeAny, {
+            min: number;
+            max: number;
+            mode: "solo" | "coop" | "versus";
+        }, {
+            min: number;
+            max: number;
+            mode: "solo" | "coop" | "versus";
+        }>, {
+            min: number;
+            max: number;
+            mode: "solo" | "coop" | "versus";
+        }, {
+            min: number;
+            max: number;
+            mode: "solo" | "coop" | "versus";
+        }>>;
     }, "strict", z.ZodTypeAny, {
         id: string;
         title: {
@@ -2735,6 +11933,11 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
             generatedAt: string;
             reasoningEffort: string;
         } | null;
+        players?: {
+            min: number;
+            max: number;
+            mode: "solo" | "coop" | "versus";
+        } | undefined;
     }, {
         id: string;
         title: {
@@ -2758,6 +11961,11 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
             generatedAt: string;
             reasoningEffort: string;
         } | null;
+        players?: {
+            min: number;
+            max: number;
+            mode: "solo" | "coop" | "versus";
+        } | undefined;
     }>;
     permissions: z.ZodObject<{
         camera: z.ZodBoolean;
@@ -2811,16 +12019,35 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
                 dwellMsMul: z.ZodNumber;
                 countDelta: z.ZodNumber;
                 timeBudgetMul: z.ZodNumber;
+                /**
+                 * schemaVersion 2 adaptation for motion primitives. Optional keys keep every
+                 * existing v1 pack valid byte-for-byte.
+                 */
+                toleranceMul: z.ZodOptional<z.ZodNumber>;
+                holdMsMul: z.ZodOptional<z.ZodNumber>;
+                repetitionsDelta: z.ZodOptional<z.ZodNumber>;
+                speedMul: z.ZodOptional<z.ZodNumber>;
+                motionThresholdMul: z.ZodOptional<z.ZodNumber>;
             }, "strict", z.ZodTypeAny, {
                 targetScaleMul: number;
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             }, {
                 targetScaleMul: number;
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             }>>;
         }, "strict", z.ZodTypeAny, {
             on: "success" | "partial" | "struggle" | "always";
@@ -2830,6 +12057,11 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             } | null;
         }, {
             on: "success" | "partial" | "struggle" | "always";
@@ -2839,6 +12071,11 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             } | null;
         }>, "many">;
         id: z.ZodString;
@@ -2883,7 +12120,7 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
             characterId: string;
             animation: string;
         }>>;
-        challenge: z.ZodNullable<z.ZodObject<{
+        challenge: z.ZodNullable<z.ZodDiscriminatedUnion<"type", [z.ZodObject<{
             timeBudgetMs: z.ZodNumber;
             successAudioId: z.ZodString;
             encourageAudioId: z.ZodString;
@@ -2895,25 +12132,777 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
             limb: z.ZodEnum<["hands", "feet", "any"]>;
         }, "strict", z.ZodTypeAny, {
             type: "touch_targets";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
             count: number;
             zone: "upper" | "lower" | "full" | "reachable";
             targetScale: number;
             dwellMs: number;
             limb: "hands" | "feet" | "any";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
         }, {
             type: "touch_targets";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
             count: number;
             zone: "upper" | "lower" | "full" | "reachable";
             targetScale: number;
             dwellMs: number;
             limb: "hands" | "feet" | "any";
+        }>, z.ZodObject<{
+            timeBudgetMs: z.ZodNumber;
+            successAudioId: z.ZodString;
+            encourageAudioId: z.ZodString;
+            type: z.ZodLiteral<"freeze">;
+            /** How long the whole body must stay under motionThreshold. */
+            holdMs: z.ZodNumber;
+            /** Mean landmark motion (normalized units/second) treated as "still". */
+            motionThreshold: z.ZodNumber;
+            /** Motion spikes shorter than this do not reset the hold. */
+            graceMs: z.ZodNumber;
+            rounds: z.ZodNumber;
+            /** Frames with fewer confident joints pause, never fail, the hold. */
+            minVisibleJoints: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "freeze";
+            holdMs: number;
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
-        }>>;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        }, {
+            type: "freeze";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        }>, z.ZodObject<{
+            timeBudgetMs: z.ZodNumber;
+            successAudioId: z.ZodString;
+            encourageAudioId: z.ZodString;
+            type: z.ZodLiteral<"body_zone">;
+            part: z.ZodEnum<["head", "hands", "feet", "torso", "any"]>;
+            mode: z.ZodEnum<["enter", "avoid"]>;
+            zones: z.ZodArray<z.ZodObject<{
+                id: z.ZodString;
+                box: z.ZodEffects<z.ZodObject<{
+                    x0: z.ZodNumber;
+                    y0: z.ZodNumber;
+                    x1: z.ZodNumber;
+                    y1: z.ZodNumber;
+                }, "strict", z.ZodTypeAny, {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                }, {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                }>, {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                }, {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                }>;
+            }, "strict", z.ZodTypeAny, {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }, {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }>, "many">;
+            /** Time the part must stay inside (enter) or outside (avoid) the active zone. */
+            holdMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "body_zone";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        }, {
+            type: "body_zone";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        }>, z.ZodObject<{
+            timeBudgetMs: z.ZodNumber;
+            successAudioId: z.ZodString;
+            encourageAudioId: z.ZodString;
+            type: z.ZodLiteral<"squat">;
+            repetitions: z.ZodNumber;
+            /** Required hip drop as a fraction of the player's own torso length. */
+            depthRatio: z.ZodNumber;
+            /** Knee angle (degrees, straight = 180) that must be reached at the bottom. */
+            kneeAngleMaxDeg: z.ZodNumber;
+            /** Hold at the bottom before the repetition counts. */
+            holdMs: z.ZodNumber;
+            /** Minimum time between counted repetitions; rejects bounce double counts. */
+            cooldownMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "squat";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        }, {
+            type: "squat";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        }>, z.ZodObject<{
+            timeBudgetMs: z.ZodNumber;
+            successAudioId: z.ZodString;
+            encourageAudioId: z.ZodString;
+            type: z.ZodLiteral<"pose_match">;
+            poses: z.ZodArray<z.ZodObject<{
+                id: z.ZodString;
+                joints: z.ZodArray<z.ZodObject<{
+                    joint: z.ZodEnum<["left_elbow", "right_elbow", "left_knee", "right_knee", "left_shoulder", "right_shoulder", "left_hip", "right_hip"]>;
+                    angleDeg: z.ZodNumber;
+                    toleranceDeg: z.ZodNumber;
+                }, "strict", z.ZodTypeAny, {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }, {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }>, "many">;
+                holdMs: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }, {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }>, "many">;
+            /** Fraction of listed joints that must be inside tolerance at once. */
+            matchRatio: z.ZodNumber;
+            /** "either" also accepts the left/right mirrored pose. */
+            mirrorPolicy: z.ZodEnum<["strict", "either"]>;
+        }, "strict", z.ZodTypeAny, {
+            type: "pose_match";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        }, {
+            type: "pose_match";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        }>, z.ZodObject<{
+            timeBudgetMs: z.ZodNumber;
+            successAudioId: z.ZodString;
+            encourageAudioId: z.ZodString;
+            type: z.ZodLiteral<"jump">;
+            repetitions: z.ZodNumber;
+            /** Required hip rise relative to the player's own torso length. */
+            minRiseRatio: z.ZodNumber;
+            /** Both feet must be back down and stable for this long to count a landing. */
+            landingStableMs: z.ZodNumber;
+            cooldownMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "jump";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        }, {
+            type: "jump";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        }>, z.ZodObject<{
+            timeBudgetMs: z.ZodNumber;
+            successAudioId: z.ZodString;
+            encourageAudioId: z.ZodString;
+            type: z.ZodLiteral<"velocity_hit">;
+            count: z.ZodNumber;
+            zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
+            targetScale: z.ZodNumber;
+            limb: z.ZodEnum<["hands", "feet", "any"]>;
+            /** On-screen limb speed (normalized units/second) required at contact. */
+            minSpeed: z.ZodNumber;
+            direction: z.ZodEnum<["any", "up", "down", "left", "right"]>;
+        }, "strict", z.ZodTypeAny, {
+            type: "velocity_hit";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        }, {
+            type: "velocity_hit";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        }>, z.ZodObject<{
+            timeBudgetMs: z.ZodNumber;
+            successAudioId: z.ZodString;
+            encourageAudioId: z.ZodString;
+            type: z.ZodLiteral<"step">;
+            pattern: z.ZodArray<z.ZodEnum<["left", "right"]>, "many">;
+            /** Lateral foot travel required, relative to the player's own torso length. */
+            stepRatio: z.ZodNumber;
+            /** Settle time on the new stance before the step counts. */
+            holdMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "step";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        }, {
+            type: "step";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        }>, z.ZodObject<{
+            timeBudgetMs: z.ZodNumber;
+            successAudioId: z.ZodString;
+            encourageAudioId: z.ZodString;
+            type: z.ZodLiteral<"sequence">;
+            steps: z.ZodArray<z.ZodDiscriminatedUnion<"type", [z.ZodObject<{
+                type: z.ZodLiteral<"touch_targets">;
+                count: z.ZodNumber;
+                zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
+                targetScale: z.ZodNumber;
+                dwellMs: z.ZodNumber;
+                limb: z.ZodEnum<["hands", "feet", "any"]>;
+            }, "strict", z.ZodTypeAny, {
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            }, {
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            }>, z.ZodObject<{
+                type: z.ZodLiteral<"freeze">;
+                /** How long the whole body must stay under motionThreshold. */
+                holdMs: z.ZodNumber;
+                /** Mean landmark motion (normalized units/second) treated as "still". */
+                motionThreshold: z.ZodNumber;
+                /** Motion spikes shorter than this do not reset the hold. */
+                graceMs: z.ZodNumber;
+                rounds: z.ZodNumber;
+                /** Frames with fewer confident joints pause, never fail, the hold. */
+                minVisibleJoints: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            }, {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            }>, z.ZodObject<{
+                type: z.ZodLiteral<"body_zone">;
+                part: z.ZodEnum<["head", "hands", "feet", "torso", "any"]>;
+                mode: z.ZodEnum<["enter", "avoid"]>;
+                zones: z.ZodArray<z.ZodObject<{
+                    id: z.ZodString;
+                    box: z.ZodEffects<z.ZodObject<{
+                        x0: z.ZodNumber;
+                        y0: z.ZodNumber;
+                        x1: z.ZodNumber;
+                        y1: z.ZodNumber;
+                    }, "strict", z.ZodTypeAny, {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    }, {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    }>, {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    }, {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    }>;
+                }, "strict", z.ZodTypeAny, {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }, {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }>, "many">;
+                /** Time the part must stay inside (enter) or outside (avoid) the active zone. */
+                holdMs: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            }, {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            }>, z.ZodObject<{
+                type: z.ZodLiteral<"squat">;
+                repetitions: z.ZodNumber;
+                /** Required hip drop as a fraction of the player's own torso length. */
+                depthRatio: z.ZodNumber;
+                /** Knee angle (degrees, straight = 180) that must be reached at the bottom. */
+                kneeAngleMaxDeg: z.ZodNumber;
+                /** Hold at the bottom before the repetition counts. */
+                holdMs: z.ZodNumber;
+                /** Minimum time between counted repetitions; rejects bounce double counts. */
+                cooldownMs: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            }, {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            }>, z.ZodObject<{
+                type: z.ZodLiteral<"pose_match">;
+                poses: z.ZodArray<z.ZodObject<{
+                    id: z.ZodString;
+                    joints: z.ZodArray<z.ZodObject<{
+                        joint: z.ZodEnum<["left_elbow", "right_elbow", "left_knee", "right_knee", "left_shoulder", "right_shoulder", "left_hip", "right_hip"]>;
+                        angleDeg: z.ZodNumber;
+                        toleranceDeg: z.ZodNumber;
+                    }, "strict", z.ZodTypeAny, {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }, {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }>, "many">;
+                    holdMs: z.ZodNumber;
+                }, "strict", z.ZodTypeAny, {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }, {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }>, "many">;
+                /** Fraction of listed joints that must be inside tolerance at once. */
+                matchRatio: z.ZodNumber;
+                /** "either" also accepts the left/right mirrored pose. */
+                mirrorPolicy: z.ZodEnum<["strict", "either"]>;
+            }, "strict", z.ZodTypeAny, {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            }, {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            }>, z.ZodObject<{
+                type: z.ZodLiteral<"jump">;
+                repetitions: z.ZodNumber;
+                /** Required hip rise relative to the player's own torso length. */
+                minRiseRatio: z.ZodNumber;
+                /** Both feet must be back down and stable for this long to count a landing. */
+                landingStableMs: z.ZodNumber;
+                cooldownMs: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            }, {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            }>, z.ZodObject<{
+                type: z.ZodLiteral<"velocity_hit">;
+                count: z.ZodNumber;
+                zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
+                targetScale: z.ZodNumber;
+                limb: z.ZodEnum<["hands", "feet", "any"]>;
+                /** On-screen limb speed (normalized units/second) required at contact. */
+                minSpeed: z.ZodNumber;
+                direction: z.ZodEnum<["any", "up", "down", "left", "right"]>;
+            }, "strict", z.ZodTypeAny, {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            }, {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            }>, z.ZodObject<{
+                type: z.ZodLiteral<"step">;
+                pattern: z.ZodArray<z.ZodEnum<["left", "right"]>, "many">;
+                /** Lateral foot travel required, relative to the player's own torso length. */
+                stepRatio: z.ZodNumber;
+                /** Settle time on the new stance before the step counts. */
+                holdMs: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            }, {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            }>]>, "many">;
+            /** Pause allowed between completed steps before the next one arms. */
+            interStepGraceMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "sequence";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            steps: ({
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            } | {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            } | {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            } | {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            } | {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            } | {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            } | {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            } | {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            })[];
+            interStepGraceMs: number;
+        }, {
+            type: "sequence";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            steps: ({
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            } | {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            } | {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            } | {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            } | {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            } | {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            } | {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            } | {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            })[];
+            interStepGraceMs: number;
+        }>]>>;
         learning: z.ZodNullable<z.ZodObject<{
             kind: z.ZodEnum<["counting", "colors", "letters", "body-parts", "directions", "animals", "none"]>;
             payload: z.ZodArray<z.ZodString, "many">;
@@ -2932,14 +12921,169 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
         energy: "calm" | "medium" | "high";
         challenge: {
             type: "touch_targets";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
             count: number;
             zone: "upper" | "lower" | "full" | "reachable";
             targetScale: number;
             dwellMs: number;
             limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        } | {
+            type: "sequence";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            steps: ({
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            } | {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            } | {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            } | {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            } | {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            } | {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            } | {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            } | {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            })[];
+            interStepGraceMs: number;
         } | null;
         terminal: false;
         transitions: {
@@ -2950,6 +13094,11 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             } | null;
         }[];
         narration: {
@@ -2975,14 +13124,169 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
         energy: "calm" | "medium" | "high";
         challenge: {
             type: "touch_targets";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
             count: number;
             zone: "upper" | "lower" | "full" | "reachable";
             targetScale: number;
             dwellMs: number;
             limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        } | {
+            type: "sequence";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            steps: ({
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            } | {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            } | {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            } | {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            } | {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            } | {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            } | {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            } | {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            })[];
+            interStepGraceMs: number;
         } | null;
         terminal: false;
         transitions: {
@@ -2993,6 +13297,11 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             } | null;
         }[];
         narration: {
@@ -3022,16 +13331,35 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
                 dwellMsMul: z.ZodNumber;
                 countDelta: z.ZodNumber;
                 timeBudgetMul: z.ZodNumber;
+                /**
+                 * schemaVersion 2 adaptation for motion primitives. Optional keys keep every
+                 * existing v1 pack valid byte-for-byte.
+                 */
+                toleranceMul: z.ZodOptional<z.ZodNumber>;
+                holdMsMul: z.ZodOptional<z.ZodNumber>;
+                repetitionsDelta: z.ZodOptional<z.ZodNumber>;
+                speedMul: z.ZodOptional<z.ZodNumber>;
+                motionThresholdMul: z.ZodOptional<z.ZodNumber>;
             }, "strict", z.ZodTypeAny, {
                 targetScaleMul: number;
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             }, {
                 targetScaleMul: number;
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             }>>;
         }, "strict", z.ZodTypeAny, {
             on: "success" | "partial" | "struggle" | "always";
@@ -3041,6 +13369,11 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             } | null;
         }, {
             on: "success" | "partial" | "struggle" | "always";
@@ -3050,6 +13383,11 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             } | null;
         }>, "many">;
         id: z.ZodString;
@@ -3094,7 +13432,7 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
             characterId: string;
             animation: string;
         }>>;
-        challenge: z.ZodNullable<z.ZodObject<{
+        challenge: z.ZodNullable<z.ZodDiscriminatedUnion<"type", [z.ZodObject<{
             timeBudgetMs: z.ZodNumber;
             successAudioId: z.ZodString;
             encourageAudioId: z.ZodString;
@@ -3106,25 +13444,777 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
             limb: z.ZodEnum<["hands", "feet", "any"]>;
         }, "strict", z.ZodTypeAny, {
             type: "touch_targets";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
             count: number;
             zone: "upper" | "lower" | "full" | "reachable";
             targetScale: number;
             dwellMs: number;
             limb: "hands" | "feet" | "any";
-            timeBudgetMs: number;
-            successAudioId: string;
-            encourageAudioId: string;
         }, {
             type: "touch_targets";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
             count: number;
             zone: "upper" | "lower" | "full" | "reachable";
             targetScale: number;
             dwellMs: number;
             limb: "hands" | "feet" | "any";
+        }>, z.ZodObject<{
+            timeBudgetMs: z.ZodNumber;
+            successAudioId: z.ZodString;
+            encourageAudioId: z.ZodString;
+            type: z.ZodLiteral<"freeze">;
+            /** How long the whole body must stay under motionThreshold. */
+            holdMs: z.ZodNumber;
+            /** Mean landmark motion (normalized units/second) treated as "still". */
+            motionThreshold: z.ZodNumber;
+            /** Motion spikes shorter than this do not reset the hold. */
+            graceMs: z.ZodNumber;
+            rounds: z.ZodNumber;
+            /** Frames with fewer confident joints pause, never fail, the hold. */
+            minVisibleJoints: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "freeze";
+            holdMs: number;
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
-        }>>;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        }, {
+            type: "freeze";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        }>, z.ZodObject<{
+            timeBudgetMs: z.ZodNumber;
+            successAudioId: z.ZodString;
+            encourageAudioId: z.ZodString;
+            type: z.ZodLiteral<"body_zone">;
+            part: z.ZodEnum<["head", "hands", "feet", "torso", "any"]>;
+            mode: z.ZodEnum<["enter", "avoid"]>;
+            zones: z.ZodArray<z.ZodObject<{
+                id: z.ZodString;
+                box: z.ZodEffects<z.ZodObject<{
+                    x0: z.ZodNumber;
+                    y0: z.ZodNumber;
+                    x1: z.ZodNumber;
+                    y1: z.ZodNumber;
+                }, "strict", z.ZodTypeAny, {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                }, {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                }>, {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                }, {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                }>;
+            }, "strict", z.ZodTypeAny, {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }, {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }>, "many">;
+            /** Time the part must stay inside (enter) or outside (avoid) the active zone. */
+            holdMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "body_zone";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        }, {
+            type: "body_zone";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        }>, z.ZodObject<{
+            timeBudgetMs: z.ZodNumber;
+            successAudioId: z.ZodString;
+            encourageAudioId: z.ZodString;
+            type: z.ZodLiteral<"squat">;
+            repetitions: z.ZodNumber;
+            /** Required hip drop as a fraction of the player's own torso length. */
+            depthRatio: z.ZodNumber;
+            /** Knee angle (degrees, straight = 180) that must be reached at the bottom. */
+            kneeAngleMaxDeg: z.ZodNumber;
+            /** Hold at the bottom before the repetition counts. */
+            holdMs: z.ZodNumber;
+            /** Minimum time between counted repetitions; rejects bounce double counts. */
+            cooldownMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "squat";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        }, {
+            type: "squat";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        }>, z.ZodObject<{
+            timeBudgetMs: z.ZodNumber;
+            successAudioId: z.ZodString;
+            encourageAudioId: z.ZodString;
+            type: z.ZodLiteral<"pose_match">;
+            poses: z.ZodArray<z.ZodObject<{
+                id: z.ZodString;
+                joints: z.ZodArray<z.ZodObject<{
+                    joint: z.ZodEnum<["left_elbow", "right_elbow", "left_knee", "right_knee", "left_shoulder", "right_shoulder", "left_hip", "right_hip"]>;
+                    angleDeg: z.ZodNumber;
+                    toleranceDeg: z.ZodNumber;
+                }, "strict", z.ZodTypeAny, {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }, {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }>, "many">;
+                holdMs: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }, {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }>, "many">;
+            /** Fraction of listed joints that must be inside tolerance at once. */
+            matchRatio: z.ZodNumber;
+            /** "either" also accepts the left/right mirrored pose. */
+            mirrorPolicy: z.ZodEnum<["strict", "either"]>;
+        }, "strict", z.ZodTypeAny, {
+            type: "pose_match";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        }, {
+            type: "pose_match";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        }>, z.ZodObject<{
+            timeBudgetMs: z.ZodNumber;
+            successAudioId: z.ZodString;
+            encourageAudioId: z.ZodString;
+            type: z.ZodLiteral<"jump">;
+            repetitions: z.ZodNumber;
+            /** Required hip rise relative to the player's own torso length. */
+            minRiseRatio: z.ZodNumber;
+            /** Both feet must be back down and stable for this long to count a landing. */
+            landingStableMs: z.ZodNumber;
+            cooldownMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "jump";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        }, {
+            type: "jump";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        }>, z.ZodObject<{
+            timeBudgetMs: z.ZodNumber;
+            successAudioId: z.ZodString;
+            encourageAudioId: z.ZodString;
+            type: z.ZodLiteral<"velocity_hit">;
+            count: z.ZodNumber;
+            zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
+            targetScale: z.ZodNumber;
+            limb: z.ZodEnum<["hands", "feet", "any"]>;
+            /** On-screen limb speed (normalized units/second) required at contact. */
+            minSpeed: z.ZodNumber;
+            direction: z.ZodEnum<["any", "up", "down", "left", "right"]>;
+        }, "strict", z.ZodTypeAny, {
+            type: "velocity_hit";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        }, {
+            type: "velocity_hit";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        }>, z.ZodObject<{
+            timeBudgetMs: z.ZodNumber;
+            successAudioId: z.ZodString;
+            encourageAudioId: z.ZodString;
+            type: z.ZodLiteral<"step">;
+            pattern: z.ZodArray<z.ZodEnum<["left", "right"]>, "many">;
+            /** Lateral foot travel required, relative to the player's own torso length. */
+            stepRatio: z.ZodNumber;
+            /** Settle time on the new stance before the step counts. */
+            holdMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "step";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        }, {
+            type: "step";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        }>, z.ZodObject<{
+            timeBudgetMs: z.ZodNumber;
+            successAudioId: z.ZodString;
+            encourageAudioId: z.ZodString;
+            type: z.ZodLiteral<"sequence">;
+            steps: z.ZodArray<z.ZodDiscriminatedUnion<"type", [z.ZodObject<{
+                type: z.ZodLiteral<"touch_targets">;
+                count: z.ZodNumber;
+                zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
+                targetScale: z.ZodNumber;
+                dwellMs: z.ZodNumber;
+                limb: z.ZodEnum<["hands", "feet", "any"]>;
+            }, "strict", z.ZodTypeAny, {
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            }, {
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            }>, z.ZodObject<{
+                type: z.ZodLiteral<"freeze">;
+                /** How long the whole body must stay under motionThreshold. */
+                holdMs: z.ZodNumber;
+                /** Mean landmark motion (normalized units/second) treated as "still". */
+                motionThreshold: z.ZodNumber;
+                /** Motion spikes shorter than this do not reset the hold. */
+                graceMs: z.ZodNumber;
+                rounds: z.ZodNumber;
+                /** Frames with fewer confident joints pause, never fail, the hold. */
+                minVisibleJoints: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            }, {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            }>, z.ZodObject<{
+                type: z.ZodLiteral<"body_zone">;
+                part: z.ZodEnum<["head", "hands", "feet", "torso", "any"]>;
+                mode: z.ZodEnum<["enter", "avoid"]>;
+                zones: z.ZodArray<z.ZodObject<{
+                    id: z.ZodString;
+                    box: z.ZodEffects<z.ZodObject<{
+                        x0: z.ZodNumber;
+                        y0: z.ZodNumber;
+                        x1: z.ZodNumber;
+                        y1: z.ZodNumber;
+                    }, "strict", z.ZodTypeAny, {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    }, {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    }>, {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    }, {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    }>;
+                }, "strict", z.ZodTypeAny, {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }, {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }>, "many">;
+                /** Time the part must stay inside (enter) or outside (avoid) the active zone. */
+                holdMs: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            }, {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            }>, z.ZodObject<{
+                type: z.ZodLiteral<"squat">;
+                repetitions: z.ZodNumber;
+                /** Required hip drop as a fraction of the player's own torso length. */
+                depthRatio: z.ZodNumber;
+                /** Knee angle (degrees, straight = 180) that must be reached at the bottom. */
+                kneeAngleMaxDeg: z.ZodNumber;
+                /** Hold at the bottom before the repetition counts. */
+                holdMs: z.ZodNumber;
+                /** Minimum time between counted repetitions; rejects bounce double counts. */
+                cooldownMs: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            }, {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            }>, z.ZodObject<{
+                type: z.ZodLiteral<"pose_match">;
+                poses: z.ZodArray<z.ZodObject<{
+                    id: z.ZodString;
+                    joints: z.ZodArray<z.ZodObject<{
+                        joint: z.ZodEnum<["left_elbow", "right_elbow", "left_knee", "right_knee", "left_shoulder", "right_shoulder", "left_hip", "right_hip"]>;
+                        angleDeg: z.ZodNumber;
+                        toleranceDeg: z.ZodNumber;
+                    }, "strict", z.ZodTypeAny, {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }, {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }>, "many">;
+                    holdMs: z.ZodNumber;
+                }, "strict", z.ZodTypeAny, {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }, {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }>, "many">;
+                /** Fraction of listed joints that must be inside tolerance at once. */
+                matchRatio: z.ZodNumber;
+                /** "either" also accepts the left/right mirrored pose. */
+                mirrorPolicy: z.ZodEnum<["strict", "either"]>;
+            }, "strict", z.ZodTypeAny, {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            }, {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            }>, z.ZodObject<{
+                type: z.ZodLiteral<"jump">;
+                repetitions: z.ZodNumber;
+                /** Required hip rise relative to the player's own torso length. */
+                minRiseRatio: z.ZodNumber;
+                /** Both feet must be back down and stable for this long to count a landing. */
+                landingStableMs: z.ZodNumber;
+                cooldownMs: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            }, {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            }>, z.ZodObject<{
+                type: z.ZodLiteral<"velocity_hit">;
+                count: z.ZodNumber;
+                zone: z.ZodEnum<["upper", "lower", "full", "reachable"]>;
+                targetScale: z.ZodNumber;
+                limb: z.ZodEnum<["hands", "feet", "any"]>;
+                /** On-screen limb speed (normalized units/second) required at contact. */
+                minSpeed: z.ZodNumber;
+                direction: z.ZodEnum<["any", "up", "down", "left", "right"]>;
+            }, "strict", z.ZodTypeAny, {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            }, {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            }>, z.ZodObject<{
+                type: z.ZodLiteral<"step">;
+                pattern: z.ZodArray<z.ZodEnum<["left", "right"]>, "many">;
+                /** Lateral foot travel required, relative to the player's own torso length. */
+                stepRatio: z.ZodNumber;
+                /** Settle time on the new stance before the step counts. */
+                holdMs: z.ZodNumber;
+            }, "strict", z.ZodTypeAny, {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            }, {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            }>]>, "many">;
+            /** Pause allowed between completed steps before the next one arms. */
+            interStepGraceMs: z.ZodNumber;
+        }, "strict", z.ZodTypeAny, {
+            type: "sequence";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            steps: ({
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            } | {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            } | {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            } | {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            } | {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            } | {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            } | {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            } | {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            })[];
+            interStepGraceMs: number;
+        }, {
+            type: "sequence";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            steps: ({
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            } | {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            } | {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            } | {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            } | {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            } | {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            } | {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            } | {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            })[];
+            interStepGraceMs: number;
+        }>]>>;
         learning: z.ZodNullable<z.ZodObject<{
             kind: z.ZodEnum<["counting", "colors", "letters", "body-parts", "directions", "animals", "none"]>;
             payload: z.ZodArray<z.ZodString, "many">;
@@ -3143,14 +14233,169 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
         energy: "calm" | "medium" | "high";
         challenge: {
             type: "touch_targets";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
             count: number;
             zone: "upper" | "lower" | "full" | "reachable";
             targetScale: number;
             dwellMs: number;
             limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        } | {
+            type: "sequence";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            steps: ({
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            } | {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            } | {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            } | {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            } | {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            } | {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            } | {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            } | {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            })[];
+            interStepGraceMs: number;
         } | null;
         terminal: true;
         transitions: {
@@ -3161,6 +14406,11 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             } | null;
         }[];
         narration: {
@@ -3186,14 +14436,169 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
         energy: "calm" | "medium" | "high";
         challenge: {
             type: "touch_targets";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
             count: number;
             zone: "upper" | "lower" | "full" | "reachable";
             targetScale: number;
             dwellMs: number;
             limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        } | {
+            type: "sequence";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            steps: ({
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            } | {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            } | {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            } | {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            } | {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            } | {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            } | {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            } | {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            })[];
+            interStepGraceMs: number;
         } | null;
         terminal: true;
         transitions: {
@@ -3204,6 +14609,11 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             } | null;
         }[];
         narration: {
@@ -3802,7 +15212,7 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
         }[];
     }>;
 }, "strict", z.ZodTypeAny, {
-    schemaVersion: 1;
+    schemaVersion: 1 | 2;
     permissions: {
         camera: boolean;
         deviceLocalStorage: boolean;
@@ -3830,6 +15240,11 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
             generatedAt: string;
             reasoningEffort: string;
         } | null;
+        players?: {
+            min: number;
+            max: number;
+            mode: "solo" | "coop" | "versus";
+        } | undefined;
     };
     cast: {
         name: {
@@ -3847,14 +15262,169 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
         energy: "calm" | "medium" | "high";
         challenge: {
             type: "touch_targets";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
             count: number;
             zone: "upper" | "lower" | "full" | "reachable";
             targetScale: number;
             dwellMs: number;
             limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        } | {
+            type: "sequence";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            steps: ({
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            } | {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            } | {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            } | {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            } | {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            } | {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            } | {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            } | {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            })[];
+            interStepGraceMs: number;
         } | null;
         terminal: false;
         transitions: {
@@ -3865,6 +15435,11 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             } | null;
         }[];
         narration: {
@@ -3890,14 +15465,169 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
         energy: "calm" | "medium" | "high";
         challenge: {
             type: "touch_targets";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
             count: number;
             zone: "upper" | "lower" | "full" | "reachable";
             targetScale: number;
             dwellMs: number;
             limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        } | {
+            type: "sequence";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            steps: ({
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            } | {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            } | {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            } | {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            } | {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            } | {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            } | {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            } | {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            })[];
+            interStepGraceMs: number;
         } | null;
         terminal: true;
         transitions: {
@@ -3908,6 +15638,11 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             } | null;
         }[];
         narration: {
@@ -4024,7 +15759,7 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
         }[];
     };
 }, {
-    schemaVersion: 1;
+    schemaVersion: 1 | 2;
     permissions: {
         camera: boolean;
         deviceLocalStorage: boolean;
@@ -4052,6 +15787,11 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
             generatedAt: string;
             reasoningEffort: string;
         } | null;
+        players?: {
+            min: number;
+            max: number;
+            mode: "solo" | "coop" | "versus";
+        } | undefined;
     };
     cast: {
         name: {
@@ -4069,14 +15809,169 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
         energy: "calm" | "medium" | "high";
         challenge: {
             type: "touch_targets";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
             count: number;
             zone: "upper" | "lower" | "full" | "reachable";
             targetScale: number;
             dwellMs: number;
             limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        } | {
+            type: "sequence";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            steps: ({
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            } | {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            } | {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            } | {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            } | {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            } | {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            } | {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            } | {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            })[];
+            interStepGraceMs: number;
         } | null;
         terminal: false;
         transitions: {
@@ -4087,6 +15982,11 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             } | null;
         }[];
         narration: {
@@ -4112,14 +16012,169 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
         energy: "calm" | "medium" | "high";
         challenge: {
             type: "touch_targets";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
             count: number;
             zone: "upper" | "lower" | "full" | "reachable";
             targetScale: number;
             dwellMs: number;
             limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        } | {
+            type: "sequence";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            steps: ({
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            } | {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            } | {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            } | {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            } | {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            } | {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            } | {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            } | {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            })[];
+            interStepGraceMs: number;
         } | null;
         terminal: true;
         transitions: {
@@ -4130,6 +16185,11 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             } | null;
         }[];
         narration: {
@@ -4246,7 +16306,7 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
         }[];
     };
 }>, {
-    schemaVersion: 1;
+    schemaVersion: 1 | 2;
     permissions: {
         camera: boolean;
         deviceLocalStorage: boolean;
@@ -4274,6 +16334,11 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
             generatedAt: string;
             reasoningEffort: string;
         } | null;
+        players?: {
+            min: number;
+            max: number;
+            mode: "solo" | "coop" | "versus";
+        } | undefined;
     };
     cast: {
         name: {
@@ -4291,14 +16356,169 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
         energy: "calm" | "medium" | "high";
         challenge: {
             type: "touch_targets";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
             count: number;
             zone: "upper" | "lower" | "full" | "reachable";
             targetScale: number;
             dwellMs: number;
             limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        } | {
+            type: "sequence";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            steps: ({
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            } | {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            } | {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            } | {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            } | {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            } | {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            } | {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            } | {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            })[];
+            interStepGraceMs: number;
         } | null;
         terminal: false;
         transitions: {
@@ -4309,6 +16529,11 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             } | null;
         }[];
         narration: {
@@ -4334,14 +16559,169 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
         energy: "calm" | "medium" | "high";
         challenge: {
             type: "touch_targets";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
             count: number;
             zone: "upper" | "lower" | "full" | "reachable";
             targetScale: number;
             dwellMs: number;
             limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        } | {
+            type: "sequence";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            steps: ({
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            } | {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            } | {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            } | {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            } | {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            } | {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            } | {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            } | {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            })[];
+            interStepGraceMs: number;
         } | null;
         terminal: true;
         transitions: {
@@ -4352,6 +16732,11 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             } | null;
         }[];
         narration: {
@@ -4468,7 +16853,7 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
         }[];
     };
 }, {
-    schemaVersion: 1;
+    schemaVersion: 1 | 2;
     permissions: {
         camera: boolean;
         deviceLocalStorage: boolean;
@@ -4496,6 +16881,11 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
             generatedAt: string;
             reasoningEffort: string;
         } | null;
+        players?: {
+            min: number;
+            max: number;
+            mode: "solo" | "coop" | "versus";
+        } | undefined;
     };
     cast: {
         name: {
@@ -4513,14 +16903,169 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
         energy: "calm" | "medium" | "high";
         challenge: {
             type: "touch_targets";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
             count: number;
             zone: "upper" | "lower" | "full" | "reachable";
             targetScale: number;
             dwellMs: number;
             limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        } | {
+            type: "sequence";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            steps: ({
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            } | {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            } | {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            } | {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            } | {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            } | {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            } | {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            } | {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            })[];
+            interStepGraceMs: number;
         } | null;
         terminal: false;
         transitions: {
@@ -4531,6 +17076,11 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             } | null;
         }[];
         narration: {
@@ -4556,14 +17106,169 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
         energy: "calm" | "medium" | "high";
         challenge: {
             type: "touch_targets";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
             count: number;
             zone: "upper" | "lower" | "full" | "reachable";
             targetScale: number;
             dwellMs: number;
             limb: "hands" | "feet" | "any";
+        } | {
+            type: "freeze";
+            holdMs: number;
             timeBudgetMs: number;
             successAudioId: string;
             encourageAudioId: string;
+            motionThreshold: number;
+            graceMs: number;
+            rounds: number;
+            minVisibleJoints: number;
+        } | {
+            type: "body_zone";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            part: "hands" | "feet" | "any" | "head" | "torso";
+            mode: "enter" | "avoid";
+            zones: {
+                id: string;
+                box: {
+                    x0: number;
+                    y0: number;
+                    x1: number;
+                    y1: number;
+                };
+            }[];
+        } | {
+            type: "squat";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            depthRatio: number;
+            kneeAngleMaxDeg: number;
+            cooldownMs: number;
+        } | {
+            type: "pose_match";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            poses: {
+                id: string;
+                joints: {
+                    joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                    angleDeg: number;
+                    toleranceDeg: number;
+                }[];
+                holdMs: number;
+            }[];
+            matchRatio: number;
+            mirrorPolicy: "strict" | "either";
+        } | {
+            type: "jump";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            repetitions: number;
+            cooldownMs: number;
+            minRiseRatio: number;
+            landingStableMs: number;
+        } | {
+            type: "velocity_hit";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            count: number;
+            zone: "upper" | "lower" | "full" | "reachable";
+            targetScale: number;
+            limb: "hands" | "feet" | "any";
+            minSpeed: number;
+            direction: "any" | "up" | "down" | "left" | "right";
+        } | {
+            type: "step";
+            holdMs: number;
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            pattern: ("left" | "right")[];
+            stepRatio: number;
+        } | {
+            type: "sequence";
+            timeBudgetMs: number;
+            successAudioId: string;
+            encourageAudioId: string;
+            steps: ({
+                type: "touch_targets";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                dwellMs: number;
+                limb: "hands" | "feet" | "any";
+            } | {
+                type: "freeze";
+                holdMs: number;
+                motionThreshold: number;
+                graceMs: number;
+                rounds: number;
+                minVisibleJoints: number;
+            } | {
+                type: "body_zone";
+                holdMs: number;
+                part: "hands" | "feet" | "any" | "head" | "torso";
+                mode: "enter" | "avoid";
+                zones: {
+                    id: string;
+                    box: {
+                        x0: number;
+                        y0: number;
+                        x1: number;
+                        y1: number;
+                    };
+                }[];
+            } | {
+                type: "squat";
+                holdMs: number;
+                repetitions: number;
+                depthRatio: number;
+                kneeAngleMaxDeg: number;
+                cooldownMs: number;
+            } | {
+                type: "pose_match";
+                poses: {
+                    id: string;
+                    joints: {
+                        joint: "left_elbow" | "right_elbow" | "left_knee" | "right_knee" | "left_shoulder" | "right_shoulder" | "left_hip" | "right_hip";
+                        angleDeg: number;
+                        toleranceDeg: number;
+                    }[];
+                    holdMs: number;
+                }[];
+                matchRatio: number;
+                mirrorPolicy: "strict" | "either";
+            } | {
+                type: "jump";
+                repetitions: number;
+                cooldownMs: number;
+                minRiseRatio: number;
+                landingStableMs: number;
+            } | {
+                type: "velocity_hit";
+                count: number;
+                zone: "upper" | "lower" | "full" | "reachable";
+                targetScale: number;
+                limb: "hands" | "feet" | "any";
+                minSpeed: number;
+                direction: "any" | "up" | "down" | "left" | "right";
+            } | {
+                type: "step";
+                holdMs: number;
+                pattern: ("left" | "right")[];
+                stepRatio: number;
+            })[];
+            interStepGraceMs: number;
         } | null;
         terminal: true;
         transitions: {
@@ -4574,6 +17279,11 @@ export declare const EpisodePackSchema: z.ZodEffects<z.ZodObject<{
                 dwellMsMul: number;
                 countDelta: number;
                 timeBudgetMul: number;
+                toleranceMul?: number | undefined;
+                holdMsMul?: number | undefined;
+                repetitionsDelta?: number | undefined;
+                speedMul?: number | undefined;
+                motionThresholdMul?: number | undefined;
             } | null;
         }[];
         narration: {

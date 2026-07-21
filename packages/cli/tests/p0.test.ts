@@ -25,12 +25,17 @@ async function writeJson(path: string, value: unknown): Promise<void> {
 
 async function seedGame(
   webRoot: string,
-  options: { readonly engineVersion?: string; readonly html?: string } = {},
+  options: {
+    readonly engineVersion?: string;
+    readonly html?: string;
+    readonly packFixture?: string;
+    readonly provenance?: unknown;
+  } = {},
 ): Promise<{ readonly manifestPath: string; readonly packPath: string; readonly packRoot: string }> {
   const manifest = await readFixture("manse-game.json");
   if (options.engineVersion !== undefined) manifest.engineVersion = options.engineVersion;
-  const pack = await readFixture("manse.pack.json");
-  const provenance = await readFixture("provenance.json");
+  const pack = await readFixture(options.packFixture ?? "manse.pack.json");
+  const provenance = options.provenance ?? await readFixture("provenance.json");
   const manifestPath = join(webRoot, ".well-known", "manse-game.json");
   const packRoot = join(webRoot, "packs", "example");
   const packPath = join(packRoot, "manse.pack.json");
@@ -95,7 +100,51 @@ describe("P0 project validation", () => {
       await expect(validateProjectRoot(root)).rejects.toMatchObject({ code: "ENGINE_INCOMPATIBLE" });
     });
   });
+
+  it("validates a schemaVersion 2 motion pack against a 0.2 engine", async () => {
+    await withTempRoot(async (root) => {
+      await seedGame(join(root, "public"), {
+        engineVersion: "0.2.0",
+        packFixture: "manse.pack.v2.json",
+        provenance: MOTION_PACK_PROVENANCE,
+      });
+      const documents = await validateProjectRoot(root);
+      expect(documents.map(({ kind }) => kind)).toEqual(["manifest", "pack"]);
+    });
+  });
+
+  it("rejects a schemaVersion 2 motion pack on a 0.1 engine", async () => {
+    await withTempRoot(async (root) => {
+      await seedGame(join(root, "public"), {
+        engineVersion: "0.1.0",
+        packFixture: "manse.pack.v2.json",
+        provenance: MOTION_PACK_PROVENANCE,
+      });
+      await expect(validateProjectRoot(root)).rejects.toMatchObject({ code: "ENGINE_INCOMPATIBLE" });
+    });
+  });
 });
+
+const MOTION_PACK_PROVENANCE = {
+  schemaVersion: 1,
+  assets: [
+    {
+      assetId: "cue-sfx",
+      path: "assets/audio/cue.wav",
+      license: {
+        spdxId: "CC0-1.0",
+        name: "CC0 1.0 Universal",
+        url: "https://creativecommons.org/publicdomain/zero/1.0/",
+        attribution: null,
+      },
+      provenance: {
+        kind: "original",
+        creator: "Example Creator",
+        createdAt: "2026-07-21T00:00:00.000Z",
+      },
+    },
+  ],
+};
 
 describe("P0 publication safety", () => {
   it("builds the exact versioned snapshot consumed by the Showcase", async () => {
