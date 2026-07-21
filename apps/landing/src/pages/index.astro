@@ -1,0 +1,352 @@
+---
+import { Font, Image } from "astro:assets";
+import logo from "../assets/brand/manse-logo-trim.png";
+import brandMark from "../assets/brand/manse-mark-trim.png";
+import "../styles/landing.css";
+
+const SHOWCASE_URL = "https://manse-showcase.ran584000.chatgpt.site";
+const GITHUB_URL = "https://github.com/ahndohun/manse";
+
+const title = "Manse | Every screen can be a playground";
+const description =
+  "Discover open-source browser motion games, or use Codex to create and publish your own with Manse.";
+const ogImage = new URL("/og.jpg", Astro.site);
+
+const motionVerbs = ["Reach", "Jump", "Dodge", "Stretch", "Wave", "Balance", "Spin", "Freeze"];
+
+const creatorSteps = [
+  ["01", "Install Manse Creator", "Add the open-source plugin to Codex. No Manse account or API key is required."],
+  ["02", "Describe your game", "Turn an idea into a motion game with original assets, accessible defaults, and a live preview."],
+  ["03", "Publish with Sites", "Ship a standalone, creator-owned game Site with its engine and assets bundled."],
+  ["04", "Join the Showcase", "Submit its public manifest. Automated checks and maintainer review keep listings dependable."],
+];
+
+const platformLayers = [
+  ["Engine", "Camera-native play", "Pose input, responsive rendering, challenge primitives, captions, audio, and authored difficulty steps.", "coral"],
+  ["Open format", "Games as portable data", "A strict versioned contract keeps games inspectable, remixable, and free of uploaded code.", "blue"],
+  ["Codex plugin", "A studio for everyone", "Create, generate, preview, validate, remix, publish, and submit without hand-editing source.", "lime"],
+  ["Showcase", "Discovery, not a gate", "The catalog links to independent creator Sites and never embeds third-party game code.", "yellow"],
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Manse" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <Font cssVariable="--font-geist" preload />
+    <Font cssVariable="--font-geist-mono" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+
+    <header class="site-header">
+      <div class="shell header-inner">
+        <a class="brand" href="/" aria-label="Manse home">
+          <Image src={logo} alt="Manse" height={88} densities={[1, 2]} loading="eager" />
+        </a>
+        <nav class="site-nav" aria-label="Primary navigation">
+          <a href={`${SHOWCASE_URL}/#games`}>Games</a>
+          <a href="#platform">Platform</a>
+          <a href="/create/install/">Docs</a>
+          <a href="/showcase/submit/">List a game</a>
+        </nav>
+        <a class="button button-small button-ink header-cta" href={`${SHOWCASE_URL}/playground`}>
+          Try the engine
+          <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <section class="hero">
+        <div class="hero-float-field" aria-hidden="true">
+          <div class="float-item float-a" data-depth="1.15">
+            <span class="sticker sticker-coral">Jump!</span>
+          </div>
+          <div class="float-item float-b" data-depth="0.85">
+            <span class="sticker sticker-blue">Dodge</span>
+          </div>
+          <div class="float-item float-c" data-depth="0.7">
+            <span class="sticker sticker-lime">Stretch</span>
+          </div>
+          <div class="float-item float-d" data-depth="1.3">
+            <span class="sticker sticker-yellow">Wave</span>
+          </div>
+          <div class="float-item float-chip" data-depth="0.65">
+            <span class="hero-chip"><span class="chip-dot"></span> camera on · frames stay on device</span>
+          </div>
+        </div>
+        <div class="shell hero-stack">
+          <h1>
+            Every screen<br />can be a
+            <span class="rotate-pill"><span class="rotate-word" id="hero-rotate">playground</span></span>
+          </h1>
+          <p class="hero-lede">
+            Manse turns any camera-equipped browser into a motion game console. Anyone can make and
+            publish their own games with Codex.
+          </p>
+          <div class="button-row hero-ctas">
+            <a class="button button-coral button-large" href={`${SHOWCASE_URL}/playground`}>
+              Try the engine <span aria-hidden="true">↗</span>
+            </a>
+            <a class="button button-ghost button-large" href="/create/install/">
+              Get Manse Creator <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <script>
+        // Kinetic hero: rotating headline word + pointer-parallax stickers.
+        // Grammar ported from 21st.dev (Fancy Components "landing hero");
+        // implemented as ~60 lines of vanilla JS so Astro ships no framework here.
+        const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const words = ["playground", "dance floor", "trampoline", "dojo", "stage"];
+        const word = document.getElementById("hero-rotate");
+        const pill = word?.parentElement;
+
+        if (word && pill) {
+          const build = (next: string) => {
+            word.innerHTML = "";
+            [...next].forEach((ch, j) => {
+              const s = document.createElement("span");
+              s.className = "rl";
+              s.style.setProperty("--d", `${j * 34}ms`);
+              s.textContent = ch === " " ? " " : ch;
+              word.append(s);
+            });
+          };
+          const fit = () => {
+            const prev = pill.getBoundingClientRect().width;
+            pill.style.width = "auto";
+            const next = pill.getBoundingClientRect().width;
+            pill.style.width = `${prev}px`;
+            void pill.offsetWidth;
+            pill.style.width = `${next}px`;
+          };
+          let i = 0;
+          build(words[0]);
+          fit();
+          setInterval(() => {
+            i = (i + 1) % words.length;
+            if (reduced) {
+              word.textContent = words[i];
+              pill.style.width = "auto";
+              return;
+            }
+            word.classList.add("out");
+            setTimeout(() => {
+              word.classList.remove("out");
+              build(words[i]);
+              fit();
+            }, 190);
+          }, 2700);
+        }
+
+        if (!reduced && window.matchMedia("(hover: hover)").matches) {
+          const items = [...document.querySelectorAll<HTMLElement>(".float-item")].map((el) => ({
+            el,
+            depth: Number(el.dataset.depth ?? 1),
+          }));
+          let tx = 0, ty = 0, cx = 0, cy = 0;
+          window.addEventListener("pointermove", (e) => {
+            tx = e.clientX / window.innerWidth - 0.5;
+            ty = e.clientY / window.innerHeight - 0.5;
+          }, { passive: true });
+          const tick = () => {
+            cx += (tx - cx) * 0.06;
+            cy += (ty - cy) * 0.06;
+            for (const { el, depth } of items) {
+              el.style.transform = `translate3d(${cx * depth * -46}px, ${cy * depth * -34}px, 0)`;
+            }
+            requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+        }
+      </script>
+
+      <div class="verb-marquee" aria-hidden="true">
+        <div class="verb-track">
+          {[...motionVerbs, ...motionVerbs].map((verb) => <span>{verb}</span>)}
+        </div>
+      </div>
+
+      <section class="showcase-section section" id="games">
+        <div class="shell">
+          <div class="section-heading stacked-heading">
+            <h2>Play something that moves you.</h2>
+            <p>
+              Every listing is a reviewed link to an independent, creator-owned ChatGPT Site. Games
+              open directly, never in an iframe.
+            </p>
+          </div>
+          <div class="showcase-panel">
+            <div class="showcase-aurora" aria-hidden="true"></div>
+            <div class="showcase-copy">
+              <h3>The stage is open.</h3>
+              <p>
+                Browse the live catalog on the official Showcase, then open any game straight on its
+                creator's Site. The first wave of community games lands with this release.
+              </p>
+              <a class="button button-ink button-large" href={`${SHOWCASE_URL}/#games`}>
+                Browse the Showcase <span aria-hidden="true">↗</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="creator-section section" id="create">
+        <div class="shell creator-grid">
+          <div class="creator-intro">
+            <p class="eyebrow eyebrow-light">Made with Codex. Owned by you.</p>
+            <h2>From an idea to a public game Site.</h2>
+            <p>
+              Manse Creator turns Codex into a motion game studio. You keep the source, Site,
+              assets, and deployment history.
+            </p>
+            <a class="button button-light button-large" href="/create/install/">
+              Get Manse Creator <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+          <ol class="creator-steps">
+            {creatorSteps.map(([number, stepTitle, body]) => (
+              <li>
+                <span class="step-number">{number}</span>
+                <div>
+                  <h3>{stepTitle}</h3>
+                  <p>{body}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      <section class="platform-section section" id="platform">
+        <div class="shell">
+          <div class="section-heading centered-heading">
+            <h2>One platform. Four pieces that fit.</h2>
+            <p>Build on the engine, publish through Sites, and stay compatible through a small public contract.</p>
+          </div>
+          <div class="platform-grid">
+            {platformLayers.map(([label, cardTitle, body, accent]) => (
+              <article class={`platform-card accent-${accent}`}>
+                <div class="platform-card-top"><span>{label}</span></div>
+                <h3>{cardTitle}</h3>
+                <p>{body}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="performance-section section">
+        <div class="shell performance-grid">
+          <div class="performance-visual" aria-hidden="true">
+            <Image
+              src={brandMark}
+              alt=""
+              class="perf-mark"
+              widths={[360]}
+              sizes="360px"
+              loading="lazy"
+            />
+            <span class="perf-chip chip-one">Pose input</span>
+            <span class="perf-chip chip-two">Smooth render</span>
+            <span class="perf-chip chip-three">Device tiers</span>
+          </div>
+          <div class="performance-copy">
+            <h2>Designed to feel responsive across real-world devices.</h2>
+            <p>
+              Manse separates pose inference from rendering, smooths motion without hiding intent,
+              and selects a quality tier from the device's browser capabilities at startup.
+            </p>
+            <dl class="performance-list">
+              <div><dt>Local pose processing</dt><dd>Camera frames stay in the player's browser.</dd></div>
+              <div><dt>Device quality tiers</dt><dd>Each tier sets the model, inference cadence, pixel density, and effects budget.</dd></div>
+              <div><dt>Graceful input paths</dt><dd>Simulator and accessible alternatives keep games inclusive.</dd></div>
+            </dl>
+            <div class="device-row" aria-label="Target devices">
+              <span>Phones</span><span>Tablets</span><span>Computers</span><span>Smart TVs</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="privacy-section">
+        <div class="shell privacy-grid">
+          <div><h2>Your room stays in your room.</h2></div>
+          <div class="privacy-points">
+            <div><span aria-hidden="true">01</span><p>Camera frames are processed on the playing device and never uploaded by Manse.</p></div>
+            <div><span aria-hidden="true">02</span><p>No player login, behavioral analytics, central profile, or child-data collection.</p></div>
+            <div><span aria-hidden="true">03</span><p>Open source makes the runtime and permissions inspectable before anyone plays.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="final-cta section">
+        <div class="shell final-cta-card">
+          <div>
+            <h2>Make the game you wish existed.</h2>
+            <p>Describe it in Codex. Preview it with Manse. Publish it with Sites.</p>
+          </div>
+          <div class="button-row">
+            <a class="button button-coral button-large" href="/create/install/">
+              Get Manse Creator <span aria-hidden="true">↗</span>
+            </a>
+            <a class="button button-ghost button-large" href={GITHUB_URL} target="_blank" rel="noreferrer">
+              View source <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="shell">
+        <div class="footer-grid">
+          <div>
+            <a class="brand-footer" href="/" aria-label="Manse home">
+              <Image src={logo} alt="Manse" height={80} densities={[1, 2]} loading="lazy" />
+            </a>
+            <p class="footer-note">Open-source active play for every camera-equipped screen.</p>
+          </div>
+          <div class="footer-links">
+            <p>Platform</p>
+            <a href={`${SHOWCASE_URL}/playground`}>Engine playground</a>
+            <a href={`${SHOWCASE_URL}/#games`}>Explore games</a>
+            <a href="/reference/runtime/">How it works</a>
+            <a href="/create/install/">Documentation</a>
+          </div>
+          <div class="footer-links">
+            <p>Creators</p>
+            <a href="/create/install/">Install plugin</a>
+            <a href="/reference/game-contract/">Game contract</a>
+            <a href="/showcase/submit/">Submit a game</a>
+          </div>
+          <div class="footer-links">
+            <p>Open source</p>
+            <a href={GITHUB_URL} target="_blank" rel="noreferrer">GitHub</a>
+            <a href={`${GITHUB_URL}/blob/main/LICENSE`} target="_blank" rel="noreferrer">MIT license</a>
+            <a href="/reference/privacy/">Privacy</a>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <span>MIT licensed. Built in the open.</span>
+          <span>Manse is an independent open-source project.</span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

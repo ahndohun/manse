@@ -83,7 +83,7 @@ export default function DocsPage() {
             <h2>Target the browser, adapt to the device.</h2>
             <p>The engine keeps pose inference and rendering independent so each can scale without slowing the other. Quality tiers can adjust model complexity, inference cadence, effects, and resolution while preserving the game rules.</p>
             <div className="info-table" role="table" aria-label="Supported platform goals"><div role="row"><strong role="columnheader">Device</strong><strong role="columnheader">Experience</strong></div><div role="row"><span role="cell">Phone and tablet</span><span role="cell">Front or rear camera, touch-friendly setup, responsive layout</span></div><div role="row"><span role="cell">Laptop and desktop</span><span role="cell">Webcam play, keyboard-accessible setup, simulator fallback</span></div><div role="row"><span role="cell">Camera-equipped smart TV</span><span role="cell">Large-display layout with device capability detection</span></div></div>
-            <div className="callout callout-neutral"><strong>Honest compatibility</strong><p>Individual game manifests disclose their supported inputs and access features. The engine adapts aggressively, but creators must still test the devices they claim.</p></div>
+            <div className="callout callout-neutral"><strong>Honest compatibility</strong><p>Individual game manifests disclose their supported inputs and access features. The engine selects a device tier at startup, but creators must still test every device class they claim.</p></div>
           </section>
 
           <section id="privacy" className="docs-section">

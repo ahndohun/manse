@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 const navigation = [
-  { href: "/playground", label: "Try engine" },
   { href: "/#games", label: "Games" },
   { href: "/#platform", label: "Platform" },
   { href: "/docs", label: "Docs" },
@@ -29,7 +28,7 @@ export function SiteHeader() {
         </nav>
 
         <Link className="button button-small button-ink header-cta" href="/playground">
-          Try it now
+          Try the engine
           <span aria-hidden="true">↗</span>
         </Link>
       </div>

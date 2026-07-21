@@ -1,0 +1,50 @@
+/* Manse brand theme for Starlight docs.
+   Accent follows the landing's coral; grays stay warm to match the paper tone. */
+
+:root {
+  --sl-color-accent-low: #ffe1da;
+  --sl-color-accent: #d8432e;
+  --sl-color-accent-high: #8a2718;
+  --sl-color-white: #171a18;
+  --sl-color-gray-1: #2c302d;
+  --sl-color-gray-2: #454943;
+  --sl-color-gray-3: #62665f;
+  --sl-color-gray-4: #8a8e88;
+  --sl-color-gray-5: #d5cfc0;
+  --sl-color-gray-6: #f1ebdd;
+  --sl-color-gray-7: #faf4e9;
+  --sl-color-black: #fef8ef;
+}
+
+:root[data-theme="dark"] {
+  --sl-color-accent-low: #4a1509;
+  --sl-color-accent: #ff6448;
+  --sl-color-accent-high: #ffc9bd;
+  --sl-color-white: #f4f1e8;
+  --sl-color-gray-1: #e0ddd2;
+  --sl-color-gray-2: #b9beb4;
+  --sl-color-gray-3: #868b81;
+  --sl-color-gray-4: #545850;
+  --sl-color-gray-5: #343833;
+  --sl-color-gray-6: #22261f;
+  --sl-color-gray-7: #1b1f19;
+  --sl-color-black: #14170f;
+}
+
+/* Starlight renders :::tip asides with the purple hue tokens; pull them to the
+   brand's lime-green family so docs stay in the landing palette. */
+:root {
+  --sl-color-purple-low: #eef7d4;
+  --sl-color-purple: #6d8c1e;
+  --sl-color-purple-high: #465c11;
+}
+
+:root[data-theme="dark"] {
+  --sl-color-purple-low: #2a3313;
+  --sl-color-purple: #c9f45d;
+  --sl-color-purple-high: #e4fa9f;
+}
+
+.site-title img {
+  border-radius: 8px;
+}

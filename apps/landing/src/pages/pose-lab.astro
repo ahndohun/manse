@@ -1,0 +1,210 @@
+---
+// Internal QA harness for the hero tracking puppet. Synthetic landmark
+// scenarios are fed through the SAME measurement/blend/render pipeline the
+// live camera uses, so broken forms show up in a headless screenshot.
+// Not linked anywhere; noindex. See DECISIONS.md D013.
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex" />
+    <title>Pose Lab — Manse hero QA</title>
+    <style>
+      body { margin: 0; padding: 24px; background: #fef8ef; color: #171a18; font-family: ui-monospace, monospace; }
+      h1 { font-size: 18px; }
+      .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+      .cell { border: 1px solid #e2dccd; border-radius: 10px; overflow: hidden; background: #fef8ef; }
+      .cell canvas { display: block; width: 100%; }
+      .cell .meta { padding: 8px 10px; border-top: 1px solid #e2dccd; }
+      .cell .name { font-weight: 700; font-size: 12px; }
+      .cell .expect { font-size: 11px; color: #62665f; margin-top: 2px; }
+    </style>
+  </head>
+  <body>
+    <h1>Pose Lab — synthetic landmark scenarios through the real pipeline</h1>
+    <div class="grid" id="grid"></div>
+    <script>
+      import {
+        LM,
+        createLiveState,
+        measureFrame,
+        planFromPuppet,
+        drawField,
+        stageMetrics,
+      } from "../components/pose-puppet";
+
+      const VA = 640 / 480;
+      const W = 420;
+      const H = 460;
+      const U = 0.26; // synthetic upper-arm length, frame-height units
+      const F = 0.24; // synthetic forearm length
+      const SH = 0.33; // synthetic half shoulder width
+      const SHY = 0.42; // shoulder line height
+
+      // Build 33 landmarks from a screen-space skeleton (x right, y down, in
+      // frame-height units, x centered at 0). Screen space = what the mirror
+      // shows; the builder un-mirrors into camera coordinates.
+      function skeleton(spec) {
+        const lms = Array.from({ length: 33 }, () => ({ x: 0.5, y: 0.5, visibility: 0 }));
+        const put = (i, sx, sy, visibility = 0.99) => {
+          lms[i] = { x: 0.5 - sx / VA, y: sy, visibility };
+        };
+        // Person's LEFT = screen RIGHT. Arm visibility (visL/visR) gates
+        // elbow/wrist only; shoulders have their own optional override.
+        put(LM.nose, spec.nose[0], spec.nose[1]);
+        put(LM.shL, spec.shR[0], spec.shR[1], spec.visShR ?? 0.99);
+        put(LM.shR, spec.shL[0], spec.shL[1], spec.visShL ?? 0.99);
+        put(LM.elL, spec.elR[0], spec.elR[1], spec.visR ?? 0.99);
+        put(LM.elR, spec.elL[0], spec.elL[1], spec.visL ?? 0.99);
+        put(LM.wrL, spec.wrR[0], spec.wrR[1], spec.visR ?? 0.99);
+        put(LM.wrR, spec.wrL[0], spec.wrL[1], spec.visL ?? 0.99);
+        return lms;
+      }
+
+      // Screen-space arm from a shoulder point + desired screen angles.
+      function arm(sh, a1, flex) {
+        const el = [sh[0] + Math.cos(a1) * U, sh[1] + Math.sin(a1) * U];
+        const wr = [el[0] + Math.cos(a1 + flex) * F, el[1] + Math.sin(a1 + flex) * F];
+        return { el, wr };
+      }
+
+      function armsFromAngles(
+        a1L = Math.PI / 2 + 0.15, flexL = -0.2,
+        a1R = Math.PI / 2 - 0.15, flexR = 0.2,
+        shL = [-SH, SHY], shR = [SH, SHY],
+      ) {
+        const L = arm(shL, a1L, flexL);
+        const R = arm(shR, a1R, flexR);
+        return { shL, shR, elL: L.el, wrL: L.wr, elR: R.el, wrR: R.wr };
+      }
+
+      function person(over = {}) {
+        return {
+          nose: [0, 0.22],
+          ...armsFromAngles(over.a1L, over.flexL, over.a1R, over.flexR, over.shL, over.shR),
+          ...over.extra,
+        };
+      }
+
+      const scaleSpec = (spec, k) => {
+        const out = {};
+        for (const key of ["nose", "shL", "shR", "elL", "wrL", "elR", "wrR"]) {
+          out[key] = [spec[key][0] * k, SHY + (spec[key][1] - SHY) * k];
+        }
+        return out;
+      };
+
+      const scenarios = [
+        {
+          name: "1. seated neutral",
+          expect: "Relaxed bust, arms hang with a slight natural bend.",
+          frames: () => person(),
+        },
+        {
+          name: "2. wave visitor's right hand",
+          expect: "SCREEN-LEFT arm goes up (mirror), forearm upright.",
+          frames: () => person({ a1L: -Math.PI / 2 - 0.3, flexL: -0.4 }),
+        },
+        {
+          name: "3. goalpost both arms",
+          expect: "Both forearms point UP, elbows 90 deg, symmetric.",
+          // True goalpost: upper arms out to the sides, forearms up.
+          frames: () =>
+            person({
+              a1L: Math.PI + 0.25, flexL: 1.22,
+              a1R: -0.25, flexR: -1.22,
+            }),
+        },
+        {
+          name: "4. both hands to face",
+          expect: "Both elbows fully bent, hands at cheeks — not straightened.",
+          frames: () =>
+            person({
+              a1L: Math.PI / 2 + 0.15, flexL: -2.3,
+              a1R: Math.PI / 2 - 0.15, flexR: 2.3,
+            }),
+        },
+        {
+          name: "5. lean close",
+          expect: "Bust grows, clamped below the copy line.",
+          frames: () => scaleSpec(person(), 1.35),
+        },
+        {
+          name: "6. step back",
+          expect: "Whole bust shrinks, stays composed.",
+          frames: () => scaleSpec(person(), 0.6),
+        },
+        {
+          name: "7. left arm occluded + garbage coords",
+          expect: "Screen-right arm fades out; never jumps to the garbage.",
+          sequence: [
+            { n: 60, spec: () => person({ a1R: 0.0, flexR: 0.9 }) },
+            {
+              n: 70,
+              spec: () => ({
+                ...person({ a1R: 0.0, flexR: 0.9 }),
+                elR: [1.9, 1.8], // garbage far outside the body
+                wrR: [-1.7, 1.9],
+                visR: 0.2,
+              }),
+            },
+          ],
+        },
+        {
+          name: "8. extreme shoulder tilt",
+          expect: "Torso lean clamps at ~17 deg, head stays attached.",
+          frames: () =>
+            person({
+              shL: [-SH, SHY + 0.22],
+              shR: [SH, SHY - 0.22],
+            }),
+        },
+        {
+          name: "9. heavy landmark jitter",
+          expect: "Random elbow/wrist noise smooths into a stable arm.",
+          frames: () => {
+            const j = () => (Math.random() - 0.5) * 0.09;
+            const p = person({ a1R: -0.9, flexR: 0.7 });
+            p.elL = [p.elL[0] + j(), p.elL[1] + j()];
+            p.wrL = [p.wrL[0] + j(), p.wrL[1] + j()];
+            p.elR = [p.elR[0] + j(), p.elR[1] + j()];
+            p.wrR = [p.wrR[0] + j(), p.wrR[1] + j()];
+            return p;
+          },
+        },
+      ];
+
+      const grid = document.getElementById("grid");
+      const stage = stageMetrics(W, H);
+      for (const sc of scenarios) {
+        const cell = document.createElement("div");
+        cell.className = "cell";
+        const canvas = document.createElement("canvas");
+        canvas.width = W;
+        canvas.height = H;
+        cell.appendChild(canvas);
+        const meta = document.createElement("div");
+        meta.className = "meta";
+        meta.innerHTML = `<div class="name">${sc.name}</div><div class="expect">${sc.expect}</div>`;
+        cell.appendChild(meta);
+        grid.appendChild(cell);
+
+        const L = createLiveState();
+        const ctx = canvas.getContext("2d");
+        let measured = null;
+        const steps = sc.sequence ?? [{ n: 120, spec: sc.frames }];
+        let nowS = 0;
+        for (const step of steps) {
+          for (let f = 0; f < step.n; f++) {
+            nowS += 1 / 60;
+            measured = measureFrame(L, skeleton(step.spec()), { nowS, va: VA, stage, w: W });
+          }
+        }
+        drawField(ctx, planFromPuppet(measured ?? L.frozen, stage.anchorX, stage.neckY), W, H);
+      }
+      window.__LAB_DONE__ = true;
+    </script>
+  </body>
+</html>
