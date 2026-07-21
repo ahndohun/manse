@@ -5,11 +5,11 @@ actions. Update it whenever the release artifact or public URLs change.
 
 ## Current release candidate
 
-- Deployed source commit: `22fda902264d3faae40709d6da7599b324f00258`
+- Deployed source commit: `2372fe30e473cb0906c165ecbcf6739b7da351fb`
 - Repository: https://github.com/ahndohun/manse
-- Saved Sites version: **10**
+- Saved Sites version: **11**
 - Packaged Showcase content hash recorded by Sites:
-  `sha256:2933b2ff11eda2ebf27fb5e8b33d3c35e5ad8262e776d62b19411f63b990ce22`
+  `sha256:9d827c95dd23f8ef90dccca3a30b8ccf1dfd65e639128d151098253be8006b88`
 - Public Showcase origin:
   `https://manse-showcase.ran584000.chatgpt.site`
 - Current access state: **public; no Manse or ChatGPT account required**
@@ -35,9 +35,40 @@ submission guidance, and playground routes. Fresh public requests confirmed
 the new hero, brand assets, and all four routes, and the signed-out playground
 gate again completed 3 / 3 with no rebuild or camera permission.
 
+Version 11 published the six-game catalog and the reviewed hero cleanup. The
+first server-rendered rotating word is the complete `playground` string with no
+entrance-animation class, the removed camera status chip has zero occurrences,
+and the hero copy is now "Play motion games in any browser. Create and publish
+your own with Codex." Fresh signed-out verification found all six cards plus the
+non-touch `Dodge`, `Freeze`, `Squat`, and `Jump` tags. The public playground
+again completed 3 / 3, and the deployed home page contains zero occurrences of
+the removed "Auto quality" claim.
+
+## Six public creator game Sites
+
+Each game is an independent public ChatGPT Site backed by its own public GitHub
+repository. On 2026-07-22 KST, every game passed its content validator, release
+validator, production build, and production-only npm audit before Sites version
+2 was deployed publicly.
+
+| Game | Public Site | Deployed source commit |
+| --- | --- | --- |
+| Morning Star Catch | https://morning-star-catch.ran584000.chatgpt.site | `a5ee94dc85d4686d0bd47cef4b3a86c4078bedcb` |
+| Fire Hose Hero | https://fire-hose-hero.ran584000.chatgpt.site | `f9bac0ee9a6e3aeef210d5d1561e4101bd87f062` |
+| Fruit Basket Catch | https://fruit-basket.ran584000.chatgpt.site | `c34dfdb1669ff1c17c4933c8635ea48bf3d6f185` |
+| Museum Statues | https://museum-statues.ran584000.chatgpt.site | `b37c8a2eb1b53645d804db2090182871a68b0c66` |
+| Froggy Hops | https://froggy-hops.ran584000.chatgpt.site | `14f7a25a0105fdcc745c4f4b9e4ea46d08e400e2` |
+| Monkey Bananas | https://monkey-bananas.ran584000.chatgpt.site | `4ed7e7e2abeb2246107ea1369f411da96d5c5c9f` |
+
+Anonymous HTTPS checks returned 200 for all 72 requested paths: each Site root,
+public manifest, thumbnail, asset provenance, game pack, pack provenance, both
+bundled pose models, and all four bundled MediaPipe JavaScript/WebAssembly
+files. Every manifest exposes exact same-origin game, thumbnail, and provenance
+URLs plus both `ko` and `en` localized metadata.
+
 ## Verified repository gate
 
-The following checks passed on 2026-07-21 KST against the release candidate:
+The following checks passed again on 2026-07-22 KST against the release candidate:
 
 ```bash
 npm run validate
@@ -51,7 +82,7 @@ Evidence covered:
 - schema generation and one versioned contract across schema, CLI, runtime,
   starter, plugin, and catalog;
 - valid and intentionally invalid fixture behavior;
-- 31 unit and rendered-route tests across Showcase, CLI, runtime, and schema;
+- 69 unit and rendered-route tests across Showcase, CLI, runtime, and schema;
 - workspace typechecks and production builds;
 - exact catalog snapshot compatibility;
 - all seven Manse Creator skills and plugin manifest validation;
@@ -148,8 +179,9 @@ reproducible across the developer Mac and the GitHub runner.
 | D008 anonymous Sites decision | Recorded | Public Sites access is the v0.1 judge path; no fallback host is needed. |
 | GitHub catalog CI | Verified | Clean Linux `npm ci` and the full repository validation passed on GitHub Actions. |
 | Deployed Playground E2E | Verified | The signed-out browser workflow completed the deployed simulator 3 / 3. |
-| Real creator-owned game | Not published | Owner creates the game through Manse Creator, approves its Site publication, and submits its manifest. |
-| Full creator loop | Local stages verified | Public manifest reachability, catalog contribution, and Showcase rendering remain to be proven with the owner game. |
+| Real creator-owned game | Verified | Six independent public game Sites and their public source repositories are linked above. |
+| Full creator loop | Verified | Six public manifests passed catalog ingestion and render as six independent Showcase cards. |
+| Owner camera feel smoke | Outstanding, non-blocking | Run the mechanic diagnostic and real-camera aiming check; the release wrapper changes only MediaPipe frames and the published release remains shippable if feel tuning fails. |
 | Demo video | Not recorded | Record from `docs/DEMO-SCRIPT.md`, upload publicly to YouTube, and verify duration. |
 | Devpost project | Not drafted here | Owner creates/approves the external project, selects Developer Tools, and pastes the reviewed submission copy. |
 | `/feedback` ID | Not captured | Run `/feedback` in the primary Codex task and record the resulting Session ID. |
