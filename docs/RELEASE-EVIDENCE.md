@@ -49,22 +49,25 @@ the removed "Auto quality" claim.
 Each game is an independent public ChatGPT Site backed by its own public GitHub
 repository. On 2026-07-22 KST, every game passed its content validator, release
 validator, production build, and production-only npm audit before Sites version
-2 was deployed publicly.
+3 was deployed publicly. Version 3 adds a generated install-time precache for
+the navigation shell, hashed client assets, and game pack while leaving the
+heavy camera model and WebAssembly payloads lazy.
 
 | Game | Public Site | Deployed source commit |
 | --- | --- | --- |
-| Morning Star Catch | https://morning-star-catch.ran584000.chatgpt.site | `a5ee94dc85d4686d0bd47cef4b3a86c4078bedcb` |
-| Fire Hose Hero | https://fire-hose-hero.ran584000.chatgpt.site | `f9bac0ee9a6e3aeef210d5d1561e4101bd87f062` |
-| Fruit Basket Catch | https://fruit-basket.ran584000.chatgpt.site | `c34dfdb1669ff1c17c4933c8635ea48bf3d6f185` |
-| Museum Statues | https://museum-statues.ran584000.chatgpt.site | `b37c8a2eb1b53645d804db2090182871a68b0c66` |
-| Froggy Hops | https://froggy-hops.ran584000.chatgpt.site | `14f7a25a0105fdcc745c4f4b9e4ea46d08e400e2` |
-| Monkey Bananas | https://monkey-bananas.ran584000.chatgpt.site | `4ed7e7e2abeb2246107ea1369f411da96d5c5c9f` |
+| Morning Star Catch | https://morning-star-catch.ran584000.chatgpt.site | `9db05265f083e0cd5f0fdddd6b817fde55138982` |
+| Fire Hose Hero | https://fire-hose-hero.ran584000.chatgpt.site | `4e9a808f87a813172c22b513fbe7a6075eb3fd07` |
+| Fruit Basket Catch | https://fruit-basket.ran584000.chatgpt.site | `23f8b3f121f0a0c4fea7512aae451462dcba85c0` |
+| Museum Statues | https://museum-statues.ran584000.chatgpt.site | `3f58adbece7a4972bdea81db46d95af6d6ff4aee` |
+| Froggy Hops | https://froggy-hops.ran584000.chatgpt.site | `07781c1886dec9098104bce775b66c84def52d96` |
+| Monkey Bananas | https://monkey-bananas.ran584000.chatgpt.site | `4fffcb4df3b8ac4a92dd1d34926072e530e07fa0` |
 
-Anonymous HTTPS checks returned 200 for all 72 requested paths: each Site root,
+Anonymous HTTPS checks returned 200 for all 78 requested paths: each Site root,
 public manifest, thumbnail, asset provenance, game pack, pack provenance, both
 bundled pose models, and all four bundled MediaPipe JavaScript/WebAssembly
-files. Every manifest exposes exact same-origin game, thumbnail, and provenance
-URLs plus both `ko` and `en` localized metadata.
+files, plus each generated `sw-precache.js`. Every precache contains the shell
+and its own game pack, and every manifest exposes exact same-origin game,
+thumbnail, and provenance URLs plus both `ko` and `en` localized metadata.
 
 ## Verified repository gate
 
