@@ -1,8 +1,7 @@
 # Devpost submission copy
 
-This file is the canonical English copy-paste draft for the OpenAI Build Week
-submission. Replace every angle-bracket placeholder and re-read all claims
-against the final video and deployed build before submitting.
+This file preserves the canonical English copy used for the OpenAI Build Week
+submission. The final public links and submission receipt are recorded below.
 
 ## Project identity
 
@@ -13,8 +12,11 @@ against the final video and deployed build before submitting.
 - **Public Showcase:** https://manse-showcase.ran584000.chatgpt.site
 - **No-camera playground:** https://manse-showcase.ran584000.chatgpt.site/playground?provider=simulated
 - **Flagship game used in the demo:** https://fire-hose-hero.ran584000.chatgpt.site
-- **Public YouTube demo:** `<DEMO_VIDEO_URL>`
+- **Public YouTube demo:** https://www.youtube.com/watch?v=yFgUyrsdgfo (2:27)
 - **Primary Codex `/feedback` Session ID:** `019f8035-dbb1-7213-8946-84a80b7343f8`
+- **Devpost status:** Submitted
+- **Devpost submission ID:** `1112468`
+- **Submitted at:** `2026-07-21T19:53:11.493-04:00`
 
 ## Submission form answers
 

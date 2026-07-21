@@ -21,8 +21,8 @@ need a Manse account, a controller, a subscription, or a runtime AI service.
 
 ## Release links
 
-The platform and creator-game links below are live. Only the video link remains
-unresolved until the final upload passes its public release gate.
+The platform, creator-game links, and 2:27 demo video below are public. The
+Devpost entry was submitted before the deadline.
 
 | Artifact | Release value |
 | --- | --- |
@@ -31,13 +31,13 @@ unresolved until the final upload passes its public release gate.
 | Flagship creator game | [Fire Hose Hero](https://fire-hose-hero.ran584000.chatgpt.site) |
 | Source repository | [github.com/ahndohun/manse](https://github.com/ahndohun/manse) |
 | Manse Creator source | [repository marketplace plugin](https://github.com/ahndohun/manse/tree/main/plugins/manse-creator) |
-| Devpost demo video | `<DEMO_VIDEO_URL>` |
+| Devpost demo video | [Manse — Open-Source Motion Games Built with Codex + GPT-5.6](https://www.youtube.com/watch?v=yFgUyrsdgfo) (2:27, public) |
 | Primary Codex `/feedback` Session ID | `019f8035-dbb1-7213-8946-84a80b7343f8` |
+| Devpost submission | Submitted — ID `1112468` at `2026-07-21T19:53:11.493-04:00` |
 
 Submission maintainers can use the prepared [Devpost copy](docs/DEVPOST-SUBMISSION.md),
 [three-minute demo script](docs/DEMO-SCRIPT.md), and
-[release evidence](docs/RELEASE-EVIDENCE.md). Public placeholders must remain
-visibly unresolved until their artifacts pass the signed-out release gate.
+[release evidence](docs/RELEASE-EVIDENCE.md).
 
 ## What Manse provides
 

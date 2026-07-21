@@ -8,14 +8,14 @@ signed-in project dashboard on 2026-07-22.
 - [x] Entrant is registered for OpenAI Build Week.
 - [x] Create the `Manse` Devpost project draft and upload its project thumbnail.
 - [x] Prepare **Developer Tools** as the submission category. The core submission is an installable creator/publisher plugin plus an open-source game engine and platform.
-- [ ] Submit before **July 21, 2026 at 5:00 PM PT / July 22, 2026 at 9:00 AM KST**.
+- [x] Submit before **July 21, 2026 at 5:00 PM PT / July 22, 2026 at 9:00 AM KST**. Devpost status: **Submitted**, submission ID `1112468`, at `2026-07-21T19:53:11.493-04:00`.
 - [ ] Keep the deployed project available free of charge through August 5, 2026 at 5:00 PM PT under the official rules, and conservatively through August 9 at 5:00 PM PT because the live schedule currently shows the later judging end.
 
 ## Required submission material
 
 - [x] Working project built with Codex and meaningfully using GPT-5.6
 - [x] English project description prepared in `docs/DEVPOST-SUBMISSION.md`
-- [ ] Public YouTube demo, no longer than three minutes
+- [x] Public YouTube demo, no longer than three minutes: https://www.youtube.com/watch?v=yFgUyrsdgfo (2:27)
 - [x] Rendered demo audio explains what was built, how Codex was used, and how GPT-5.6 was used
 - [x] Repository URL is public and MIT licensed
 - [x] README has setup, fixture data, testing path, Codex collaboration, key decisions, and GPT-5.6 usage
@@ -47,7 +47,7 @@ signed-in project dashboard on 2026-07-22.
 - [x] Plugin install can be completed from documented steps
 - [x] Creator can produce, validate, and publish a new game Site, then prepare a Showcase catalog entry
 - [x] README links directly to the live platform, reference game, plugin instructions, architecture, and privacy model
-- [ ] README links to the final public demo video and records the `/feedback` Session ID
+- [x] README links to the final public demo video and records the `/feedback` Session ID
 
 ## Before final submission
 
@@ -55,6 +55,6 @@ signed-in project dashboard on 2026-07-22.
 - [x] Verify the deployed URL in a clean browser session
 - [x] Verify the reference game after disabling the network following first load
 - [x] Verify the repository is accessible to judges
-- [ ] Verify the YouTube video is public and under three minutes
+- [x] Verify the YouTube video is public and under three minutes (2:27): https://www.youtube.com/watch?v=yFgUyrsdgfo
 - [x] Capture the primary task's `/feedback` Session ID
 - [x] Save a local copy of all submitted text and URLs before the deadline
