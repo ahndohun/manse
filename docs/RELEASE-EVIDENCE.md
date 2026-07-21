@@ -6,10 +6,11 @@ artifact or public URLs change.
 
 ## Current release candidate
 
-- Source commit: `9208f3851b6f0150115a44707a9ae376405657d6`
+- Deployed source commit: `e41083f35d7776d0d768b0d0dd5e80231a5c73f9`
 - Repository: https://github.com/ahndohun/manse
-- Packaged Showcase content hash:
-  `sha256:dc23c089e34e7cf8eca93cd7887003befc4206eafad3531636cd6ca934d51862`
+- Saved Sites version: **5**
+- Packaged Showcase content hash recorded by Sites:
+  `sha256:835672615c0774a30eb0a5387f0eed97b09f2d7027ffeb53c7b32e590f825451`
 - Public Showcase origin:
   `https://manse-showcase.ran584000.chatgpt.site`
 - Current access state: **public; no Manse or ChatGPT account required**
