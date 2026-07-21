@@ -41,6 +41,8 @@ Verified against the official Devpost overview, rules, resources, and FAQ on 202
 - [x] Public catalog opens without sign-in
 - [x] Engine/starter playground starts without a build step or API key
 - [x] Simulator path works when camera access is unavailable
+- [x] Signed-out browser and GitHub release workflow complete the deployed simulator 3 / 3
+- [x] Clean Linux CI runs the full repository validation from `npm ci`
 - [x] Plugin install can be completed from documented steps
 - [ ] Creator can produce, validate, and publish a new game Site, then prepare a Showcase catalog entry
 - [ ] README links directly to the live platform, reference game, plugin instructions, demo video, architecture, and privacy model
@@ -48,7 +50,7 @@ Verified against the official Devpost overview, rules, resources, and FAQ on 202
 ## Before final submission
 
 - [x] Run the repository eligibility and security audit; evidence is in `docs/RELEASE-EVIDENCE.md`
-- [ ] Verify the deployed URL in a clean browser session
+- [x] Verify the deployed URL in a clean browser session
 - [ ] Verify the reference game after disabling the network following first load
 - [x] Verify the repository is accessible to judges
 - [ ] Verify the YouTube video is public and under three minutes

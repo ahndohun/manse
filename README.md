@@ -140,7 +140,14 @@ npm run showcase:build
 npm run typecheck
 npm test
 npm run build
+npx playwright install chromium
+npm run release:verify-public
 ```
+
+`release:verify-public` opens the deployed Showcase in a fresh signed-out
+browser context, asserts the expected two-layer WebGL renderer, and completes
+the three-target simulator path. The same command runs in the manually
+dispatchable `Public release gate` GitHub Actions workflow after deployment.
 
 The CLI surface is `manse` from the `@manse/cli` workspace. These are the
 intended deterministic commands; run `manse --help` in the built checkout to
