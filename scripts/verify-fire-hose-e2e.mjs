@@ -9,6 +9,7 @@ const cases = [
 const browser = await chromium.launch({ headless: true });
 try {
   for (const testCase of cases) await verifyCase(browser, testCase);
+  await verifyFailureStatus(browser);
 } finally {
   await browser.close();
 }
@@ -81,6 +82,44 @@ async function verifyCase(browser, testCase) {
 
     if (errors.length > 0) throw new Error(`${testCase.name}: browser errors:\n${errors.join("\n")}`);
     process.stdout.write(`E2E PASS ${testCase.name}: 12/12, restart, focus, captions, overflow, errors.\n`);
+  } finally {
+    await context.close();
+  }
+}
+
+async function verifyFailureStatus(browser) {
+  const context = await browser.newContext({
+    locale: "en-US",
+    viewport: { width: 1280, height: 900 },
+    reducedMotion: "reduce",
+    deviceScaleFactor: 1,
+  });
+  const page = await context.newPage();
+  const errors = [];
+  page.on("console", (message) => {
+    if (message.type() === "error") errors.push(`console: ${message.text()}`);
+  });
+  page.on("pageerror", (error) => errors.push(`page: ${error.message}`));
+  page.on("requestfailed", (request) => errors.push(`request: ${request.url()} (${request.failure()?.errorText ?? "failed"})`));
+
+  try {
+    const response = await page.goto(origin, { waitUntil: "networkidle" });
+    if (response === null || !response.ok()) throw new Error("failure-status: initial request failed.");
+    await page.getByRole("button", { name: "Start pointer training" }).click();
+    await page.waitForFunction(() => {
+      const raw = document.querySelector(".stage")?.getAttribute("data-manse-targets") ?? "[]";
+      return JSON.parse(raw).length === 3;
+    });
+
+    await page.getByText("Ready to retry", { exact: true }).waitFor({ state: "visible", timeout: 45_000 });
+    const caption = await page.locator(".player-footer .sr-only").textContent();
+    if (!caption?.includes("The alarm is still active")) {
+      throw new Error("failure-status: terminal failure caption was not exposed.");
+    }
+    await page.getByRole("button", { name: "Restart with pointer" }).waitFor({ state: "visible" });
+    await assertNoHorizontalOverflow(page, "failure-status terminal");
+    if (errors.length > 0) throw new Error(`failure-status: browser errors:\n${errors.join("\n")}`);
+    process.stdout.write("E2E PASS failure-status: timed out naturally, retry label, caption, restart, overflow, errors.\n");
   } finally {
     await context.close();
   }

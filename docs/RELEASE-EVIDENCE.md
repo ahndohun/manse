@@ -97,6 +97,9 @@ reduced-motion completion. Version 8 also distinguishes a failed mission's
 retry-ready shell status from the successful completion label. Its saved Sites
 archive contains 42 files with content hash
 `sha256:5df36db1f9105657b492d8678ce266c41c8988f6462c1bb5af269001cdad7005`.
+A separate signed-out browser run let the first 28-second alarm expire naturally
+and verified the `Ready to retry` status, terminal failure caption, restart
+control, layout, and zero console, page, or request errors.
 
 ## Verified repository gate
 
@@ -136,6 +139,8 @@ submission documents. It found no release-blocking defect. Its two remaining
 presentation notes were resolved before upload: the opening gameplay frame now
 shows the full HUD without edge cropping, and a failed Fire Hose Hero mission
 uses a retry-specific shell status instead of the successful-completion label.
+A focused follow-up review of those exact deltas returned **DELTA PASS** with no
+blockers.
 Automated validation and public browser checks remain the authoritative release
 evidence; the advisory review is an additional product-quality gate.
 
