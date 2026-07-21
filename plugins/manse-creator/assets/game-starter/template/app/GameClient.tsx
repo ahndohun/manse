@@ -108,6 +108,10 @@ export function GameClient() {
         className="stage"
         ref={stageRef}
         onPointerDown={(event) => {
+          // Let clicks on interactive children (start-card buttons) through:
+          // capturing the pointer here would retarget pointerup/click to the
+          // stage and the button's onClick would never fire.
+          if ((event.target as HTMLElement).closest("button, a")) return;
           event.currentTarget.setPointerCapture(event.pointerId);
           movePointer(event.clientX, event.clientY);
         }}

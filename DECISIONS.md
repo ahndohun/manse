@@ -147,3 +147,39 @@ The Creator plugin generates all nine mechanics (`--mechanic`), keeps
 the 0.2 engine it bundles. The Playground gained a mechanic selector with live
 evaluator diagnostics and deterministic replay drives for body mechanics that a
 pointer cannot simulate.
+
+### D015 — Demo catalog games are creator-owned projects; aim-from-distance is game-level only
+
+Six Tier-1 demo games (Advisory 017, owner-approved list) were generated with the
+Creator generator into `demo-games/<slug>/` and validated end to end: morning-star-catch
+(touch), fire-hose-hero (touch + aim wrapper), fruit-basket (body_zone), museum-statues
+(freeze), froggy-hops (squat), monkey-bananas (jump). They are creator-owned projects,
+not monorepo packages — they stay out of git here; the catalog will reference their
+deployed manifests after publication, per D007.
+
+Two rulings fell out of the build:
+
+- **Aim-from-distance is game-app code, never engine code.** Fire Hose Hero injects a
+  `providerFactory` wrapper that projects the elbow→wrist ray to a fixed-distance,
+  EMA-smoothed impact point and rewrites the wrist landmarks before the frame reaches
+  the engine. Scoring, completion, validation, and the simulator path run the stock
+  `touch_targets` evaluator unchanged; `packages/runtime-web` and the vendored bundles
+  are untouched. Simulated/replay providers pass through unwrapped, so pointer E2E and
+  replay fixtures stay byte-identical. This wrapper is the prototype for a
+  post-submission `projectile_stream` behavior ingredient; promoting anything like it
+  into the engine is a separate contract decision.
+- **Generated starters must not swallow button clicks.** The starter's stage captured
+  the pointer on every `pointerdown`, retargeting `click` away from the "Play with
+  pointer" / "Use my camera" buttons — every generated game was unstartable by a real
+  user. Fixed in the starter template (skip capture when the event target is inside
+  `button, a`) and game-side in the six demos; `plugin:validate` regenerates and
+  validates a game against the fixed template.
+
+Verification per game: `npm run validate` `"ok": true`; pointer E2E on the production
+build (`demo-games/verify-game.mjs`, headless Chromium, trusted input) completes
+touch/body_zone/freeze games to "Complete" with zero page errors; squat and jump are
+proven by replay-driven evaluator harnesses (`tests/motion.test.mjs`) using the real
+pack configs and engine session — negative controls confirm the harness scores honestly.
+Real-camera feel (especially the aim wrapper) and ChatGPT Sites publication remain
+owner/Codex-environment steps; the catalog stays empty until a public manifest passes
+CI and maintainer review, per the platform invariants.
