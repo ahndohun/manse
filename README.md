@@ -87,6 +87,11 @@ See [Publishing a game](docs/PUBLISHING.md) for the complete workflow and
 
 ### From the repository marketplace
 
+Creating and previewing a game needs Git and Node.js 22.13 or newer installed
+once on your computer — Codex runs the commands, but the tools must exist. If
+you have never installed them, follow the short first-time setup in
+[Publishing a game](docs/PUBLISHING.md#first-time-setup-if-you-have-never-used-git-or-nodejs).
+
 Until the public marketplace URL above is filled, install from a local checkout:
 
 ```bash

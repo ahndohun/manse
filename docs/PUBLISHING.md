@@ -19,13 +19,47 @@ dependency.
 You need:
 
 - the Codex app and Git;
+- Node.js 22.13 or newer — Manse Creator generates the project, runs the
+  local preview server, and validates the game with Node on your computer,
+  even though Codex types those commands for you;
 - access to ChatGPT Sites for the official publishing path;
-- a folder in which Codex may create the game project;
-- a public source repository before Showcase submission; and
-- Node.js 22.13 or newer only when running the Manse tools manually.
+- a folder in which Codex may create the game project; and
+- a public source repository before Showcase submission. A free GitHub
+  account is enough, and it is only needed at the Showcase step — you can
+  create, preview, and validate a game without one.
 
 A camera is not required while authoring. Preview with the simulator first.
 Camera access should be tested only after the simulated path works.
+
+### First-time setup if you have never used Git or Node.js
+
+This is a one-time setup of about ten minutes. After it, you will not need
+to touch these tools directly again — Codex runs every command for you once
+they exist on your computer.
+
+1. Open the terminal: on macOS the **Terminal** app, on Windows
+   **PowerShell**. Check what is already installed by running these two
+   lines, one at a time:
+
+   ```bash
+   git --version
+   node --version
+   ```
+
+   If each prints a version number, that tool is ready. `node` must print
+   `v22.13` or newer.
+2. If Git is missing on macOS, running `git --version` offers to install
+   Apple's command line tools — accept the dialog and let it finish. On
+   Windows, download Git from <https://git-scm.com/downloads> and install
+   it with the default options.
+3. If Node.js is missing or too old, download the **LTS** installer from
+   <https://nodejs.org> and install it with the default options.
+4. Close the terminal, open it again, and run the two version commands once
+   more to confirm.
+
+If any of these steps fails or prints something confusing, copy the exact
+message into a Codex task and ask what it means. That is the intended way to
+get unstuck — it is not a sign that you did something wrong.
 
 Publishing a Site and opening a catalog pull request change external state.
 Manse Creator should show the intended target and ask for confirmation before
