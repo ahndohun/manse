@@ -1,4 +1,23 @@
 {
-  "schemaVersion": 1,
-  "games": []
+  "games": [
+    {
+      "manifestUrl": "https://fire-hose-hero.ran584000.chatgpt.site/.well-known/manse-game.json"
+    },
+    {
+      "manifestUrl": "https://froggy-hops.ran584000.chatgpt.site/.well-known/manse-game.json"
+    },
+    {
+      "manifestUrl": "https://fruit-basket.ran584000.chatgpt.site/.well-known/manse-game.json"
+    },
+    {
+      "manifestUrl": "https://monkey-bananas.ran584000.chatgpt.site/.well-known/manse-game.json"
+    },
+    {
+      "manifestUrl": "https://morning-star-catch.ran584000.chatgpt.site/.well-known/manse-game.json"
+    },
+    {
+      "manifestUrl": "https://museum-statues.ran584000.chatgpt.site/.well-known/manse-game.json"
+    }
+  ],
+  "schemaVersion": 1
 }

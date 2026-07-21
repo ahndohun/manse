@@ -1,6 +1,16 @@
 import catalogSnapshotJson from "./catalog.snapshot.json";
 
-export const movementTags = ["touch"] as const;
+export const movementTags = [
+  "touch",
+  "freeze",
+  "dodge",
+  "squat",
+  "pose",
+  "jump",
+  "strike",
+  "step",
+  "combo",
+] as const;
 
 export const energyLevels = ["gentle", "moderate", "active"] as const;
 

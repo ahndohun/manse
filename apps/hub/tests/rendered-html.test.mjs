@@ -24,7 +24,15 @@ test("server-renders the public Showcase from the reviewed static catalog", asyn
 
   const html = await response.text();
   assert.match(html, /Every screen can be a/);
+  assert.match(html, /Play motion games in any browser\. Create and publish your own with Codex\./);
   assert.match(html, /Community showcase/);
+  assert.match(html, /Morning Star Catch/);
+  assert.match(html, /Fire Hose Hero/);
+  assert.match(html, /Fruit Basket Catch/);
+  assert.match(html, /Museum Statues/);
+  assert.match(html, /Froggy Hops/);
+  assert.match(html, /Monkey Bananas/);
+  assert.doesNotMatch(html, /camera on · frames stay on device/i);
   assert.match(html, /Install Manse Creator/);
   assert.match(html, /Camera frames are processed on the playing device/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/i);
@@ -63,7 +71,7 @@ test("server-renders the camera-free engine playground judge path", async () => 
   assert.doesNotMatch(html, /sign in|API key required|<iframe\b/i);
 });
 
-test("keeps catalog data local, typed, empty-ready, and storage-free", async () => {
+test("keeps the six-game catalog local, typed, movement-complete, and storage-free", async () => {
   const [snapshotText, catalogSource, layoutSource, hostingText, packageText] = await Promise.all([
     readFile(new URL("app/catalog/catalog.snapshot.json", projectRoot), "utf8"),
     readFile(new URL("app/catalog/catalog.ts", projectRoot), "utf8"),
@@ -74,7 +82,12 @@ test("keeps catalog data local, typed, empty-ready, and storage-free", async () 
   const snapshot = JSON.parse(snapshotText);
   const hosting = JSON.parse(hostingText);
 
-  assert.deepEqual(snapshot, { schemaVersion: 1, games: [] });
+  assert.equal(snapshot.schemaVersion, 1);
+  assert.equal(snapshot.games.length, 6);
+  assert.deepEqual(
+    new Set(snapshot.games.flatMap((game) => game.manifest.movementTags)),
+    new Set(["touch", "freeze", "dodge", "squat", "jump"]),
+  );
   assert.equal(hosting.project_id, "appgprj_6a5ea92484688191b35d04b21d5d5cf9");
   assert.equal(hosting.d1, null);
   assert.equal(hosting.r2, null);
@@ -83,7 +96,9 @@ test("keeps catalog data local, typed, empty-ready, and storage-free", async () 
   assert.match(catalogSource, /export function filterCatalogGames/);
   assert.match(catalogSource, /parsed\.protocol !== "https:"/);
   assert.doesNotMatch(catalogSource, /fetch\s*\(/);
-  assert.match(catalogSource, /export const movementTags = \["touch"\] as const/);
+  for (const tag of ["touch", "freeze", "dodge", "squat", "pose", "jump", "strike", "step", "combo"]) {
+    assert.match(catalogSource, new RegExp(`"${tag}"`));
+  }
   assert.match(layoutSource, /manse-showcase\.ran584000\.chatgpt\.site/);
   assert.doesNotMatch(layoutSource, /["']manse\.chatgpt\.site["']/);
   assert.doesNotMatch(packageText, /react-loading-skeleton/);

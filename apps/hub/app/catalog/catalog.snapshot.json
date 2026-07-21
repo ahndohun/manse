@@ -1,4 +1,485 @@
 {
-  "games": [],
+  "games": [
+    {
+      "manifest": {
+        "accessibility": {
+          "audioCues": true,
+          "captions": true,
+          "highContrast": true,
+          "reducedStimulation": true,
+          "seatedMode": true
+        },
+        "ageRange": {
+          "max": 8,
+          "min": 4
+        },
+        "contentProvenance": {
+          "hasGeneratedAssets": false,
+          "hasThirdPartyAssets": true,
+          "provenanceUrl": "https://fire-hose-hero.ran584000.chatgpt.site/asset-provenance.json"
+        },
+        "creator": "Manse",
+        "energy": "active",
+        "engineVersion": "0.2.0",
+        "gameUrl": "https://fire-hose-hero.ran584000.chatgpt.site/",
+        "id": "manse.fire-hose-hero",
+        "license": {
+          "attribution": "Manse — 소방수 물줄기 (Fire Hose Hero)",
+          "name": "MIT License",
+          "spdxId": "MIT",
+          "url": "https://spdx.org/licenses/MIT.html"
+        },
+        "locales": [
+          "ko",
+          "en"
+        ],
+        "movementTags": [
+          "touch"
+        ],
+        "permissions": {
+          "camera": true,
+          "deviceLocalStorage": true
+        },
+        "schemaVersion": 1,
+        "slug": "fire-hose-hero",
+        "sourceUrl": "https://github.com/ahndohun/manse-game-fire-hose-hero",
+        "summary": [
+          {
+            "locale": "ko",
+            "text": "소방 호스를 조준해 모든 불꽃을 끄고 하루를 구하세요."
+          },
+          {
+            "locale": "en",
+            "text": "Aim your fire hose and put out every flame to save the day."
+          }
+        ],
+        "thumbnail": {
+          "alt": [
+            {
+              "locale": "ko",
+              "text": "소방수 물줄기 모션 게임 아트워크"
+            },
+            {
+              "locale": "en",
+              "text": "Motion-game artwork for Fire Hose Hero"
+            }
+          ],
+          "mediaType": "image/png",
+          "url": "https://fire-hose-hero.ran584000.chatgpt.site/thumbnail.png"
+        },
+        "title": [
+          {
+            "locale": "ko",
+            "text": "소방수 물줄기"
+          },
+          {
+            "locale": "en",
+            "text": "Fire Hose Hero"
+          }
+        ]
+      },
+      "manifestUrl": "https://fire-hose-hero.ran584000.chatgpt.site/.well-known/manse-game.json"
+    },
+    {
+      "manifest": {
+        "accessibility": {
+          "audioCues": true,
+          "captions": true,
+          "highContrast": true,
+          "reducedStimulation": true,
+          "seatedMode": true
+        },
+        "ageRange": {
+          "max": 9,
+          "min": 4
+        },
+        "contentProvenance": {
+          "hasGeneratedAssets": false,
+          "hasThirdPartyAssets": true,
+          "provenanceUrl": "https://froggy-hops.ran584000.chatgpt.site/asset-provenance.json"
+        },
+        "creator": "Manse",
+        "energy": "gentle",
+        "engineVersion": "0.2.0",
+        "gameUrl": "https://froggy-hops.ran584000.chatgpt.site/",
+        "id": "manse.froggy-hops",
+        "license": {
+          "attribution": "Manse — 개구리 폴짝 (Froggy Hops)",
+          "name": "MIT License",
+          "spdxId": "MIT",
+          "url": "https://spdx.org/licenses/MIT.html"
+        },
+        "locales": [
+          "ko",
+          "en"
+        ],
+        "movementTags": [
+          "squat"
+        ],
+        "permissions": {
+          "camera": true,
+          "deviceLocalStorage": true
+        },
+        "schemaVersion": 1,
+        "slug": "froggy-hops",
+        "sourceUrl": "https://github.com/ahndohun/manse-game-froggy-hops",
+        "summary": [
+          {
+            "locale": "ko",
+            "text": "몸을 낮췄다가 개구리처럼 뛰어 연잎을 건너세요."
+          },
+          {
+            "locale": "en",
+            "text": "Squat down and hop like a frog across the lily pads."
+          }
+        ],
+        "thumbnail": {
+          "alt": [
+            {
+              "locale": "ko",
+              "text": "개구리 폴짝 모션 게임 아트워크"
+            },
+            {
+              "locale": "en",
+              "text": "Motion-game artwork for Froggy Hops"
+            }
+          ],
+          "mediaType": "image/png",
+          "url": "https://froggy-hops.ran584000.chatgpt.site/thumbnail.png"
+        },
+        "title": [
+          {
+            "locale": "ko",
+            "text": "개구리 폴짝"
+          },
+          {
+            "locale": "en",
+            "text": "Froggy Hops"
+          }
+        ]
+      },
+      "manifestUrl": "https://froggy-hops.ran584000.chatgpt.site/.well-known/manse-game.json"
+    },
+    {
+      "manifest": {
+        "accessibility": {
+          "audioCues": true,
+          "captions": true,
+          "highContrast": true,
+          "reducedStimulation": true,
+          "seatedMode": true
+        },
+        "ageRange": {
+          "max": 7,
+          "min": 3
+        },
+        "contentProvenance": {
+          "hasGeneratedAssets": false,
+          "hasThirdPartyAssets": true,
+          "provenanceUrl": "https://fruit-basket.ran584000.chatgpt.site/asset-provenance.json"
+        },
+        "creator": "Manse",
+        "energy": "moderate",
+        "engineVersion": "0.2.0",
+        "gameUrl": "https://fruit-basket.ran584000.chatgpt.site/",
+        "id": "manse.fruit-basket",
+        "license": {
+          "attribution": "Manse — 과일 바구니 (Fruit Basket Catch)",
+          "name": "MIT License",
+          "spdxId": "MIT",
+          "url": "https://spdx.org/licenses/MIT.html"
+        },
+        "locales": [
+          "ko",
+          "en"
+        ],
+        "movementTags": [
+          "dodge"
+        ],
+        "permissions": {
+          "camera": true,
+          "deviceLocalStorage": true
+        },
+        "schemaVersion": 1,
+        "slug": "fruit-basket",
+        "sourceUrl": "https://github.com/ahndohun/manse-game-fruit-basket",
+        "summary": [
+          {
+            "locale": "ko",
+            "text": "떨어지는 과일 아래로 움직여 바구니에 받아 보세요."
+          },
+          {
+            "locale": "en",
+            "text": "Move under the falling fruit and catch it in your basket."
+          }
+        ],
+        "thumbnail": {
+          "alt": [
+            {
+              "locale": "ko",
+              "text": "과일 바구니 모션 게임 아트워크"
+            },
+            {
+              "locale": "en",
+              "text": "Motion-game artwork for Fruit Basket Catch"
+            }
+          ],
+          "mediaType": "image/png",
+          "url": "https://fruit-basket.ran584000.chatgpt.site/thumbnail.png"
+        },
+        "title": [
+          {
+            "locale": "ko",
+            "text": "과일 바구니"
+          },
+          {
+            "locale": "en",
+            "text": "Fruit Basket Catch"
+          }
+        ]
+      },
+      "manifestUrl": "https://fruit-basket.ran584000.chatgpt.site/.well-known/manse-game.json"
+    },
+    {
+      "manifest": {
+        "accessibility": {
+          "audioCues": true,
+          "captions": true,
+          "highContrast": true,
+          "reducedStimulation": true,
+          "seatedMode": true
+        },
+        "ageRange": {
+          "max": 8,
+          "min": 4
+        },
+        "contentProvenance": {
+          "hasGeneratedAssets": false,
+          "hasThirdPartyAssets": true,
+          "provenanceUrl": "https://monkey-bananas.ran584000.chatgpt.site/asset-provenance.json"
+        },
+        "creator": "Manse",
+        "energy": "active",
+        "engineVersion": "0.2.0",
+        "gameUrl": "https://monkey-bananas.ran584000.chatgpt.site/",
+        "id": "manse.monkey-bananas",
+        "license": {
+          "attribution": "Manse — 원숭이 바나나 (Monkey Bananas)",
+          "name": "MIT License",
+          "spdxId": "MIT",
+          "url": "https://spdx.org/licenses/MIT.html"
+        },
+        "locales": [
+          "ko",
+          "en"
+        ],
+        "movementTags": [
+          "jump"
+        ],
+        "permissions": {
+          "camera": true,
+          "deviceLocalStorage": true
+        },
+        "schemaVersion": 1,
+        "slug": "monkey-bananas",
+        "sourceUrl": "https://github.com/ahndohun/manse-game-monkey-bananas",
+        "summary": [
+          {
+            "locale": "ko",
+            "text": "높이 뛰어 나무에 매달린 바나나를 따세요."
+          },
+          {
+            "locale": "en",
+            "text": "Jump up high to pick the bananas hanging in the tree."
+          }
+        ],
+        "thumbnail": {
+          "alt": [
+            {
+              "locale": "ko",
+              "text": "원숭이 바나나 모션 게임 아트워크"
+            },
+            {
+              "locale": "en",
+              "text": "Motion-game artwork for Monkey Bananas"
+            }
+          ],
+          "mediaType": "image/png",
+          "url": "https://monkey-bananas.ran584000.chatgpt.site/thumbnail.png"
+        },
+        "title": [
+          {
+            "locale": "ko",
+            "text": "원숭이 바나나"
+          },
+          {
+            "locale": "en",
+            "text": "Monkey Bananas"
+          }
+        ]
+      },
+      "manifestUrl": "https://monkey-bananas.ran584000.chatgpt.site/.well-known/manse-game.json"
+    },
+    {
+      "manifest": {
+        "accessibility": {
+          "audioCues": true,
+          "captions": true,
+          "highContrast": true,
+          "reducedStimulation": true,
+          "seatedMode": true
+        },
+        "ageRange": {
+          "max": 6,
+          "min": 3
+        },
+        "contentProvenance": {
+          "hasGeneratedAssets": false,
+          "hasThirdPartyAssets": true,
+          "provenanceUrl": "https://morning-star-catch.ran584000.chatgpt.site/asset-provenance.json"
+        },
+        "creator": "Manse",
+        "energy": "gentle",
+        "engineVersion": "0.2.0",
+        "gameUrl": "https://morning-star-catch.ran584000.chatgpt.site/",
+        "id": "manse.morning-star-catch",
+        "license": {
+          "attribution": "Manse — 반짝별 잡기 (Morning Star Catch)",
+          "name": "MIT License",
+          "spdxId": "MIT",
+          "url": "https://spdx.org/licenses/MIT.html"
+        },
+        "locales": [
+          "ko",
+          "en"
+        ],
+        "movementTags": [
+          "touch"
+        ],
+        "permissions": {
+          "camera": true,
+          "deviceLocalStorage": true
+        },
+        "schemaVersion": 1,
+        "slug": "morning-star-catch",
+        "sourceUrl": "https://github.com/ahndohun/manse-game-morning-star-catch",
+        "summary": [
+          {
+            "locale": "ko",
+            "text": "밤하늘을 떠다니는 반짝이는 별을 손을 뻗어 잡아 보세요."
+          },
+          {
+            "locale": "en",
+            "text": "Reach out and catch the twinkling stars drifting across the night sky."
+          }
+        ],
+        "thumbnail": {
+          "alt": [
+            {
+              "locale": "ko",
+              "text": "반짝별 잡기 모션 게임 아트워크"
+            },
+            {
+              "locale": "en",
+              "text": "Motion-game artwork for Morning Star Catch"
+            }
+          ],
+          "mediaType": "image/png",
+          "url": "https://morning-star-catch.ran584000.chatgpt.site/thumbnail.png"
+        },
+        "title": [
+          {
+            "locale": "ko",
+            "text": "반짝별 잡기"
+          },
+          {
+            "locale": "en",
+            "text": "Morning Star Catch"
+          }
+        ]
+      },
+      "manifestUrl": "https://morning-star-catch.ran584000.chatgpt.site/.well-known/manse-game.json"
+    },
+    {
+      "manifest": {
+        "accessibility": {
+          "audioCues": true,
+          "captions": true,
+          "highContrast": true,
+          "reducedStimulation": true,
+          "seatedMode": true
+        },
+        "ageRange": {
+          "max": 7,
+          "min": 3
+        },
+        "contentProvenance": {
+          "hasGeneratedAssets": false,
+          "hasThirdPartyAssets": true,
+          "provenanceUrl": "https://museum-statues.ran584000.chatgpt.site/asset-provenance.json"
+        },
+        "creator": "Manse",
+        "energy": "moderate",
+        "engineVersion": "0.2.0",
+        "gameUrl": "https://museum-statues.ran584000.chatgpt.site/",
+        "id": "manse.museum-statues",
+        "license": {
+          "attribution": "Manse — 박물관 조각상 (Museum Statues)",
+          "name": "MIT License",
+          "spdxId": "MIT",
+          "url": "https://spdx.org/licenses/MIT.html"
+        },
+        "locales": [
+          "ko",
+          "en"
+        ],
+        "movementTags": [
+          "freeze"
+        ],
+        "permissions": {
+          "camera": true,
+          "deviceLocalStorage": true
+        },
+        "schemaVersion": 1,
+        "slug": "museum-statues",
+        "sourceUrl": "https://github.com/ahndohun/manse-game-museum-statues",
+        "summary": [
+          {
+            "locale": "ko",
+            "text": "경비원의 손전등이 지나갈 때는 조각상처럼 멈추고, 사라지면 춤추세요."
+          },
+          {
+            "locale": "en",
+            "text": "Freeze like a statue when the guard's flashlight sweeps past, dance when it is gone."
+          }
+        ],
+        "thumbnail": {
+          "alt": [
+            {
+              "locale": "ko",
+              "text": "박물관 조각상 모션 게임 아트워크"
+            },
+            {
+              "locale": "en",
+              "text": "Motion-game artwork for Museum Statues"
+            }
+          ],
+          "mediaType": "image/png",
+          "url": "https://museum-statues.ran584000.chatgpt.site/thumbnail.png"
+        },
+        "title": [
+          {
+            "locale": "ko",
+            "text": "박물관 조각상"
+          },
+          {
+            "locale": "en",
+            "text": "Museum Statues"
+          }
+        ]
+      },
+      "manifestUrl": "https://museum-statues.ran584000.chatgpt.site/.well-known/manse-game.json"
+    }
+  ],
   "schemaVersion": 1
 }

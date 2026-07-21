@@ -9,6 +9,7 @@ export function LandingHero() {
   const sectionRef = useRef<HTMLElement>(null);
   const [wordIndex, setWordIndex] = useState(0);
   const [leaving, setLeaving] = useState(false);
+  const [hasRotated, setHasRotated] = useState(false);
 
   useEffect(() => {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -20,6 +21,7 @@ export function LandingHero() {
       setLeaving(true);
       window.setTimeout(() => {
         setWordIndex((current) => (current + 1) % words.length);
+        setHasRotated(true);
         setLeaving(false);
       }, 190);
     }, 2700);
@@ -71,16 +73,13 @@ export function LandingHero() {
         <div className="float-item float-b" data-depth="0.85"><span className="sticker sticker-blue">Dodge</span></div>
         <div className="float-item float-c" data-depth="0.7"><span className="sticker sticker-lime">Stretch</span></div>
         <div className="float-item float-d" data-depth="1.3"><span className="sticker sticker-yellow">Wave</span></div>
-        <div className="float-item float-chip" data-depth="0.65">
-          <span className="hero-chip"><span className="chip-dot" /> camera on · frames stay on device</span>
-        </div>
       </div>
 
       <div className="shell hero-stack">
         <h1>
           Every screen<br />can be a{" "}
           <span className="rotate-pill">
-            <span className={`rotate-word${leaving ? " out" : ""}`}>
+            <span className={`rotate-word${leaving ? " out" : hasRotated ? " animate" : ""}`}>
               {[...word].map((letter, index) => (
                 <span className="rl" key={`${word}-${index}`} style={{ "--d": `${index * 34}ms` } as CSSProperties}>
                   {letter === " " ? "\u00a0" : letter}
@@ -90,8 +89,7 @@ export function LandingHero() {
           </span>
         </h1>
         <p className="hero-lede">
-          Manse turns any camera-equipped browser into a motion game console. Anyone can make and
-          publish their own games with Codex.
+          Play motion games in any browser. Create and publish your own with Codex.
         </p>
         <div className="button-row hero-ctas">
           <Link className="button button-coral button-large" href="/playground">Try the engine <span aria-hidden="true">↗</span></Link>
