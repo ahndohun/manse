@@ -8,18 +8,22 @@
     "apps/*",
     "packages/*"
   ],
+  "overrides": {
+    "postcss": "8.5.20"
+  },
   "scripts": {
     "build": "npm run build --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "pretypecheck": "npm run build --workspace @manse/schema",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
-    "validate": "npm run schema:generate && npm run typecheck && npm run test && npm run build && npm run catalog:check && npm run plugin:validate",
+    "validate": "npm run schema:generate && npm run typecheck && npm run test && npm run build && npm run catalog:check && npm run plugin:validate && npm run licenses:check",
     "schema:generate": "npm run schema:generate --workspace @manse/schema",
     "catalog:build": "node packages/cli/dist/cli.js catalog build catalog/catalog.json --out apps/hub/app/catalog/catalog.snapshot.json --json",
     "catalog:check": "node scripts/check-catalog.mjs",
     "plugin:sync": "npm run build --workspace @manse/schema --workspace @manse/cli --workspace @manse/runtime-web && node plugins/manse-creator/scripts/sync-vendor.mjs",
     "plugin:validate": "node scripts/validate-plugin.mjs",
+    "licenses:check": "node scripts/check-licenses.mjs",
     "showcase:dev": "npm run dev --workspace @manse/showcase",
     "showcase:build": "npm run build --workspace @manse/showcase"
   },

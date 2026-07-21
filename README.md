@@ -32,6 +32,11 @@ Remaining placeholders will be replaced after the corresponding public artifacts
 | Devpost demo video | `<DEMO_VIDEO_URL>` |
 | Primary Codex `/feedback` Session ID | `<CODEX_SESSION_ID>` |
 
+Submission maintainers can use the prepared [Devpost copy](docs/DEVPOST-SUBMISSION.md),
+[three-minute demo script](docs/DEMO-SCRIPT.md), and
+[release evidence](docs/RELEASE-EVIDENCE.md). Public placeholders must remain
+visibly unresolved until their artifacts pass the signed-out release gate.
+
 ## What Manse provides
 
 - **Manse Engine** — on-device camera setup, pose input, rendering, challenge
@@ -209,6 +214,8 @@ Read [Architecture](docs/ARCHITECTURE.md) and
 The Showcase is a discovery layer, not a security sandbox for creator-owned
 Sites. Players leave the Showcase when they open a game, and the creator remains
 responsible for that Site. Read the complete [privacy model](docs/PRIVACY.md).
+The dependency and runtime-asset inventory is documented in
+[Third-party software and assets](docs/THIRD-PARTY.md).
 
 ## Performance and device support
 

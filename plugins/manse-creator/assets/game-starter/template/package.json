@@ -7,6 +7,9 @@
   "engines": {
     "node": ">=22.13.0"
   },
+  "overrides": {
+    "postcss": "8.5.20"
+  },
   "scripts": {
     "dev": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext dev",
     "prebuild": "node scripts/sync-runtime-assets.mjs",
