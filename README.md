@@ -28,7 +28,7 @@ Remaining placeholders will be replaced after the corresponding public artifacts
 | Public Showcase | `<SHOWCASE_URL>` |
 | Engine/starter playground | `<PLAYGROUND_URL>` |
 | Source repository | [github.com/ahndohun/manse](https://github.com/ahndohun/manse) |
-| Manse Creator listing | `<PLUGIN_LISTING_URL>` |
+| Manse Creator source | [repository marketplace plugin](https://github.com/ahndohun/manse/tree/main/plugins/manse-creator) |
 | Devpost demo video | `<DEMO_VIDEO_URL>` |
 | Primary Codex `/feedback` Session ID | `<CODEX_SESSION_ID>` |
 
@@ -87,12 +87,11 @@ Until the public marketplace URL above is filled, install from a local checkout:
 git clone https://github.com/ahndohun/manse.git
 cd manse
 codex plugin marketplace add "$(pwd)"
-codex plugin add manse-creator@personal
+codex plugin add manse-creator@manse
 ```
 
-Then start a **new Codex task** so the app loads the plugin's skills. The
-marketplace name is the `name` in `.agents/plugins/marketplace.json`; use that
-value instead of `personal` if a release changes it.
+Then start a **new Codex task** so the app loads the plugin's skills. `manse` is
+the stable marketplace name declared in `.agents/plugins/marketplace.json`.
 
 ### Local plugin development
 
@@ -146,8 +145,8 @@ manse doctor
 manse validate ./path/to/game-site
 manse manifest ./path/to/game-site
 manse pack ./path/to/game-site --out ./release
-manse catalog add https://game.example/.well-known/manse-game.json --catalog ./catalog.json
-manse catalog build ./catalog.json --out ./catalog.snapshot.json
+manse catalog add https://game.example/.well-known/manse-game.json --catalog ./catalog/catalog.json
+manse catalog build ./catalog/catalog.json --out ./apps/hub/app/catalog/catalog.snapshot.json
 ```
 
 Each command supports `--json` for automation. The CLI deliberately has no
@@ -165,6 +164,7 @@ packages/
   schema/                 shared manifest and pack contract
 plugins/
   manse-creator/          installable Codex creator/publisher plugin
+catalog/                  reviewed public manifest references
 docs/                     product, format, publishing, privacy, and support docs
 .agents/plugins/          repository marketplace metadata
 ```

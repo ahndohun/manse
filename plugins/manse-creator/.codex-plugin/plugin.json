@@ -1,18 +1,43 @@
 {
   "name": "manse-creator",
-  "version": "0.1.0",
-  "description": "Manse Creator plugin",
+  "version": "0.1.0+codex.20260721001202",
+  "description": "Create, validate, publish, and list open Manse motion games from Codex.",
   "author": {
-    "name": "Local developer"
+    "name": "Manse contributors",
+    "url": "https://github.com/ahndohun/manse"
   },
+  "homepage": "https://github.com/ahndohun/manse#install-manse-creator",
+  "repository": "https://github.com/ahndohun/manse",
+  "license": "MIT",
+  "keywords": [
+    "manse",
+    "games",
+    "motion",
+    "camera",
+    "sites",
+    "creator"
+  ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Manse Creator",
-    "shortDescription": "Use Manse Creator in Codex.",
-    "longDescription": "Manse Creator adds a local Codex plugin scaffold.",
-    "developerName": "Local developer",
+    "shortDescription": "Make and publish open motion games with Codex",
+    "longDescription": "Turn a plain-language idea into a self-contained Manse game Site, preview it safely, validate packs and assets, publish with Sites, and prepare a reviewed Showcase listing.",
+    "developerName": "Manse contributors",
     "category": "Productivity",
-    "capabilities": [],
-    "defaultPrompt": "Help me use Manse Creator."
+    "capabilities": [
+      "Create games",
+      "Generate assets",
+      "Preview and validate",
+      "Publish with Sites",
+      "Submit to Showcase"
+    ],
+    "websiteURL": "https://github.com/ahndohun/manse",
+    "privacyPolicyURL": "https://github.com/ahndohun/manse/blob/main/docs/PRIVACY.md",
+    "brandColor": "#FF6547",
+    "defaultPrompt": [
+      "Create a gentle three-minute Manse motion game for ages 6\u20139.",
+      "Preview and validate this Manse game without enabling the camera.",
+      "Publish this validated game as its own Site, then verify public access."
+    ]
   }
 }

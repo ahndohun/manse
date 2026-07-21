@@ -4,6 +4,8 @@
   "slug": "manse-example",
   "title": [{ "locale": "en", "text": "Unsafe game" }],
   "summary": [{ "locale": "en", "text": "This fixture intentionally uses an insecure game URL." }],
+  "creator": "Fixture Creator",
+  "energy": "gentle",
   "gameUrl": "http://game.example/",
   "sourceUrl": "https://github.com/example/manse-game",
   "engineVersion": "0.1.0",

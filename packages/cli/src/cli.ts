@@ -1,6 +1,7 @@
 #!/usr/bin/env node
+import { realpathSync } from "node:fs";
 import { parseArgs } from "node:util";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
 import { addCatalogEntry, buildCatalogSnapshot } from "./catalog.js";
 import { readProjectManifest, validateTarget } from "./documents.js";
 import { runDoctor } from "./doctor.js";
@@ -244,7 +245,15 @@ export async function runCli(argv: readonly string[], dependencies: CliDependenc
   }
 }
 
-const invokedPath = process.argv[1];
-if (invokedPath !== undefined && import.meta.url === pathToFileURL(invokedPath).href) {
+export function isDirectCliInvocation(moduleUrl: string, invokedPath: string | undefined): boolean {
+  if (invokedPath === undefined) return false;
+  try {
+    return realpathSync(fileURLToPath(moduleUrl)) === realpathSync(invokedPath);
+  } catch {
+    return false;
+  }
+}
+
+if (isDirectCliInvocation(import.meta.url, process.argv[1])) {
   process.exitCode = await runCli(process.argv.slice(2));
 }

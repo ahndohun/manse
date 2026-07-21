@@ -66,6 +66,8 @@ export const ManseGameManifestBaseSchema = z
     slug: SlugSchema,
     title: z.array(LocalizedTextSchema).min(1),
     summary: z.array(LocalizedTextSchema).min(1),
+    creator: z.string().trim().min(1).max(200),
+    energy: z.enum(["gentle", "moderate", "active"]),
     gameUrl: HttpsUrlSchema,
     sourceUrl: HttpsUrlSchema,
     engineVersion: SemverSchema,

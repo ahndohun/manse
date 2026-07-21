@@ -1,85 +1,26 @@
 ---
 name: preview-game
-description: [TODO: Complete and informative explanation of what the skill does and when to use it. Include WHEN to use this skill - specific scenarios, file types, or tasks that trigger it.]
+description: Run and inspect a Manse game locally through its safe pointer simulator, with optional user-authorized camera testing. Use when a creator asks to preview, playtest, debug the experience, or check device layouts.
 ---
 
 # Preview Game
 
-## Overview
+Exercise the actual built experience and return evidence, not a screenshot-only opinion.
 
-[TODO: 1-2 sentences explaining what this skill enables]
+## Required contract
 
-## Structuring This Skill
+Read `../../references/creator-contract.md` before starting the preview.
 
-[TODO: Choose the structure that best fits this skill's purpose. Common patterns:
+## Workflow
 
-**1. Workflow-Based** (best for sequential processes)
-- Works well when there are clear step-by-step procedures
-- Example: DOCX skill with "Workflow Decision Tree" -> "Reading" -> "Creating" -> "Editing"
-- Structure: ## Overview -> ## Workflow Decision Tree -> ## Step 1 -> ## Step 2...
+1. Confirm the project root contains `.openai/hosting.json`, the public manifest, and at least one pack. Run `npm install` if dependencies are absent.
+2. Run `npm run validate:content` before preview. Fix only when the user asked to build or repair; for a diagnosis-only request, report the failure without modifying files.
+3. Start `npm run dev` in a reusable terminal session and wait for the local URL. Keep the session available for logs.
+4. Use browser automation when available. Start with **Play with pointer**, never camera. Complete the entire reachable scene path and verify captions, target progress, completion, restart, touch/pointer input, console errors, and network failures.
+5. Check at least a desktop viewport and a narrow phone viewport. Verify no horizontal overflow, hidden controls, unreadable captions, or inaccessible focus order. Exercise reduced-motion behavior when practical.
+6. Only test the camera path after the user explicitly requests camera QA. Explain that permission will be requested, then let the user grant or deny it. Confirm denial or unavailable hardware leaves simulator play usable. Never capture, save, upload, or attach camera frames.
+7. Stop the local server when it is no longer useful. Report tested paths, viewport/device assumptions, completed scenes, errors, and anything not tested.
 
-**2. Task-Based** (best for tool collections)
-- Works well when the skill offers different operations/capabilities
-- Example: PDF skill with "Quick Start" -> "Merge PDFs" -> "Split PDFs" -> "Extract Text"
-- Structure: ## Overview -> ## Quick Start -> ## Task Category 1 -> ## Task Category 2...
+## Evidence standard
 
-**3. Reference/Guidelines** (best for standards or specifications)
-- Works well for brand guidelines, coding standards, or requirements
-- Example: Brand styling with "Brand Guidelines" -> "Colors" -> "Typography" -> "Features"
-- Structure: ## Overview -> ## Guidelines -> ## Specifications -> ## Usage...
-
-**4. Capabilities-Based** (best for integrated systems)
-- Works well when the skill provides multiple interrelated features
-- Example: Product Management with "Core Capabilities" -> numbered capability list
-- Structure: ## Overview -> ## Core Capabilities -> ### 1. Feature -> ### 2. Feature...
-
-Patterns can be mixed and matched as needed. Most skills combine patterns (e.g., start with task-based, add workflow for complex operations).
-
-Delete this entire "Structuring This Skill" section when done - it's just guidance.]
-
-## [TODO: Replace with the first main section based on chosen structure]
-
-[TODO: Add content here. See examples in existing skills:
-- Code samples for technical skills
-- Decision trees for complex workflows
-- Concrete examples with realistic user requests
-- References to scripts/templates/references as needed]
-
-## Resources (optional)
-
-Create only the resource directories this skill actually needs. Delete this section if no resources are required.
-
-### scripts/
-Executable code (Python/Bash/etc.) that can be run directly to perform specific operations.
-
-**Examples from other skills:**
-- PDF skill: `fill_fillable_fields.py`, `extract_form_field_info.py` - utilities for PDF manipulation
-- DOCX skill: `document.py`, `utilities.py` - Python modules for document processing
-
-**Appropriate for:** Python scripts, shell scripts, or any executable code that performs automation, data processing, or specific operations.
-
-**Note:** Scripts may be executed without loading into context, but can still be read by Codex for patching or environment adjustments.
-
-### references/
-Documentation and reference material intended to be loaded into context to inform Codex's process and thinking.
-
-**Examples from other skills:**
-- Product management: `communication.md`, `context_building.md` - detailed workflow guides
-- BigQuery: API reference documentation and query examples
-- Finance: Schema documentation, company policies
-
-**Appropriate for:** In-depth documentation, API references, database schemas, comprehensive guides, or any detailed information that Codex should reference while working.
-
-### assets/
-Files not intended to be loaded into context, but rather used within the output Codex produces.
-
-**Examples from other skills:**
-- Brand styling: PowerPoint template files (.pptx), logo files
-- Frontend builder: HTML/React boilerplate project directories
-- Typography: Font files (.ttf, .woff2)
-
-**Appropriate for:** Templates, boilerplate code, document templates, images, icons, fonts, or any files meant to be copied or used in the final output.
-
----
-
-**Not every skill requires all three types of resources.**
+A loading page is not a passing preview. A pass requires reaching the terminal scene through the simulator with no unexplained console or runtime error.

@@ -40,15 +40,14 @@ The Manse repository contains a Codex marketplace at
 announced, clone the public repository and register that checkout:
 
 ```bash
-MANSE_REPOSITORY_URL='<MANSE_REPOSITORY_URL>'
-git clone "$MANSE_REPOSITORY_URL" manse
+git clone https://github.com/ahndohun/manse.git manse
 cd manse
 codex plugin marketplace add "$(pwd)"
-codex plugin add manse-creator@personal
+codex plugin add manse-creator@manse
 ```
 
-`personal` is the current marketplace name. If a later release changes it, use
-the `name` declared in `.agents/plugins/marketplace.json`.
+`manse` is the stable marketplace name declared in
+`.agents/plugins/marketplace.json`.
 
 Start a **new Codex task** after installation. Plugin skills are loaded when a
 task starts; an already-open task may not see a newly installed version.
@@ -60,7 +59,7 @@ Maintainers can register an existing checkout without cloning it again:
 ```bash
 cd /absolute/path/to/manse
 codex plugin marketplace add "$(pwd)"
-codex plugin add manse-creator@personal
+codex plugin add manse-creator@manse
 ```
 
 The marketplace entry resolves directly to `plugins/manse-creator`. Confirm the

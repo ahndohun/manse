@@ -192,7 +192,8 @@ through the game's setup/start control and confirm the device is not muted.
 
 ## Reporting compatibility results
 
-File compatibility issues in the source repository at `<REPOSITORY_URL>`. Include
+File compatibility issues in the source repository at
+`https://github.com/ahndohun/manse/issues`. Include
 the test matrix fields above, the public game or playground URL, the selected
 provider and tier, and a description of whether the simulator succeeds. Do not
 attach camera footage or personal information unless it is essential and you

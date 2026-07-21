@@ -43,6 +43,7 @@ function GameCard({ game }: { game: CatalogGame }) {
           </span>
         </div>
         <h3>{game.title}</h3>
+        <p className="game-creator">By {game.creator}</p>
         <p>{game.summary}</p>
         <ul className="tag-list" aria-label="Movement tags">
           {game.movementTags.map((tag) => (

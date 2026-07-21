@@ -13,10 +13,10 @@ const models = [
   ["pose_landmarker_full.task", "4eaa5eb7a98365221087693fcc286334cf0858e2eb6e15b506aa4a7ecdcec4ad"],
 ];
 const wasmFiles = [
-  "vision_wasm_internal.js",
-  "vision_wasm_internal.wasm",
-  "vision_wasm_nosimd_internal.js",
-  "vision_wasm_nosimd_internal.wasm",
+  ["vision_wasm_internal.js", "e7fd9858e8e8f221d9b96eddc11f8e077f263e0b7bbd79d3cbe882b134274f8c"],
+  ["vision_wasm_internal.wasm", "6a5c64584c2ab61c763b6e204afbdbc7ce1caf7f5216187322bca8df94f646bc"],
+  ["vision_wasm_nosimd_internal.js", "438d1fe8ff7f4d946025bc211c291543c037d8a3785ed4eee60f1f521b236296"],
+  ["vision_wasm_nosimd_internal.wasm", "8a3092d34c79d3f57e6ba8592105e8a90f6b07c27891ffecd14cca428bfd3e31"],
 ];
 
 await mkdir(resolve(destinationRoot, "models"), { recursive: true });
@@ -30,8 +30,11 @@ for (const [filename, expectedHash] of models) {
   await cp(source, resolve(destinationRoot, "models", filename));
 }
 
-for (const filename of wasmFiles) {
-  await cp(resolve(wasmSource, filename), resolve(destinationRoot, "vendor/mediapipe/wasm", filename));
+for (const [filename, expectedHash] of wasmFiles) {
+  const source = resolve(wasmSource, filename);
+  const digest = createHash("sha256").update(await readFile(source)).digest("hex");
+  if (digest !== expectedHash) throw new Error(`Integrity mismatch for ${filename}.`);
+  await cp(source, resolve(destinationRoot, "vendor/mediapipe/wasm", filename));
 }
 
 await writeFile(resolve(destinationRoot, "playground/success.wav"), createToneWav(660, 180));

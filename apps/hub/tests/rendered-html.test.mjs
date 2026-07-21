@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { access, readFile } from "node:fs/promises";
 import test from "node:test";
 
@@ -72,7 +73,7 @@ test("keeps catalog data local, typed, empty-ready, and storage-free", async () 
   const snapshot = JSON.parse(snapshotText);
   const hosting = JSON.parse(hostingText);
 
-  assert.deepEqual(snapshot, { schemaVersion: 1, generatedAt: null, games: [] });
+  assert.deepEqual(snapshot, { schemaVersion: 1, games: [] });
   assert.equal(hosting.project_id, "appgprj_6a5ea92484688191b35d04b21d5d5cf9");
   assert.equal(hosting.d1, null);
   assert.equal(hosting.r2, null);
@@ -85,4 +86,18 @@ test("keeps catalog data local, typed, empty-ready, and storage-free", async () 
   await assert.rejects(access(new URL("app/_sites-preview", projectRoot)));
   await access(new URL("dist/client/models/pose_landmarker_lite.task", projectRoot));
   await access(new URL("dist/client/vendor/mediapipe/wasm/vision_wasm_internal.wasm", projectRoot));
+});
+
+test("records integrity and license metadata for every bundled runtime asset", async () => {
+  const provenance = JSON.parse(await readFile(new URL("public/asset-provenance.json", projectRoot), "utf8"));
+  assert.equal(provenance.schemaVersion, 1);
+  assert.equal(provenance.assets.length, 9);
+  for (const asset of provenance.assets) {
+    assert.match(asset.path, /^\/(?:models|playground|vendor\/mediapipe\/wasm|og\.png)/);
+    assert.equal(typeof asset.license, "string");
+    assert.match(asset.sha256, /^[a-f0-9]{64}$/);
+    const contents = await readFile(new URL(`public${asset.path}`, projectRoot));
+    const digest = createHash("sha256").update(contents).digest("hex");
+    assert.equal(digest, asset.sha256, asset.path);
+  }
 });

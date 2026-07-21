@@ -9,6 +9,8 @@
         "slug": "manse-example",
         "title": [{ "locale": "en", "text": "Manse Example" }],
         "summary": [{ "locale": "en", "text": "A tiny contract fixture for the open Manse engine." }],
+        "creator": "Example Creator",
+        "energy": "moderate",
         "gameUrl": "https://game.example/",
         "sourceUrl": "https://github.com/example/manse-game",
         "engineVersion": "0.1.0",

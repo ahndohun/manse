@@ -7,7 +7,8 @@
       "generator": "OpenAI image generation via Codex",
       "createdAt": "2026-07-21",
       "license": "MIT",
-      "promptSummary": "Original Manse social card using the site's cream, charcoal, coral, lime, and forest visual system with geometric motion tracking motifs."
+      "promptSummary": "Original Manse social card using the site's cream, charcoal, coral, lime, and forest visual system with geometric motion tracking motifs.",
+      "sha256": "b95d58b4978ced30e47e8f063c22047d0de5e01c3c2f91e032a8a464b3e128d8"
     },
     {
       "path": "/playground/success.wav",
@@ -15,7 +16,8 @@
       "generator": "scripts/sync-runtime-assets.mjs",
       "createdAt": "2026-07-21",
       "license": "MIT",
-      "promptSummary": "Deterministic 660 Hz feedback tone synthesized locally at build time."
+      "promptSummary": "Deterministic 660 Hz feedback tone synthesized locally at build time.",
+      "sha256": "01799a734306b777b924f2df26c497b8d15fa0185db111cae11e121dabf27732"
     },
     {
       "path": "/playground/encourage.wav",
@@ -23,7 +25,8 @@
       "generator": "scripts/sync-runtime-assets.mjs",
       "createdAt": "2026-07-21",
       "license": "MIT",
-      "promptSummary": "Deterministic 440 Hz feedback tone synthesized locally at build time."
+      "promptSummary": "Deterministic 440 Hz feedback tone synthesized locally at build time.",
+      "sha256": "d50c7b24d247afb707b9953326dfcb46adb66c195e86facc3a36e1e7e96dc6f4"
     },
     {
       "path": "/models/pose_landmarker_lite.task",
@@ -38,6 +41,34 @@
       "source": "Google MediaPipe Pose Landmarker official model bundle",
       "license": "Apache-2.0",
       "sha256": "4eaa5eb7a98365221087693fcc286334cf0858e2eb6e15b506aa4a7ecdcec4ad"
+    },
+    {
+      "path": "/vendor/mediapipe/wasm/vision_wasm_internal.js",
+      "origin": "third-party-package",
+      "source": "@mediapipe/tasks-vision@0.10.35",
+      "license": "Apache-2.0",
+      "sha256": "e7fd9858e8e8f221d9b96eddc11f8e077f263e0b7bbd79d3cbe882b134274f8c"
+    },
+    {
+      "path": "/vendor/mediapipe/wasm/vision_wasm_internal.wasm",
+      "origin": "third-party-package",
+      "source": "@mediapipe/tasks-vision@0.10.35",
+      "license": "Apache-2.0",
+      "sha256": "6a5c64584c2ab61c763b6e204afbdbc7ce1caf7f5216187322bca8df94f646bc"
+    },
+    {
+      "path": "/vendor/mediapipe/wasm/vision_wasm_nosimd_internal.js",
+      "origin": "third-party-package",
+      "source": "@mediapipe/tasks-vision@0.10.35",
+      "license": "Apache-2.0",
+      "sha256": "438d1fe8ff7f4d946025bc211c291543c037d8a3785ed4eee60f1f521b236296"
+    },
+    {
+      "path": "/vendor/mediapipe/wasm/vision_wasm_nosimd_internal.wasm",
+      "origin": "third-party-package",
+      "source": "@mediapipe/tasks-vision@0.10.35",
+      "license": "Apache-2.0",
+      "sha256": "8a3092d34c79d3f57e6ba8592105e8a90f6b07c27891ffecd14cca428bfd3e31"
     }
   ]
 }

@@ -1,12 +1,12 @@
 import catalogSnapshotJson from "./catalog.snapshot.json";
 
 export const movementTags = [
-  "reach",
-  "jump",
-  "squat",
+  "touch",
+  "jumping",
+  "squatting",
+  "freezing",
+  "running-in-place",
   "balance",
-  "run",
-  "dance",
   "seated",
   "full-body",
 ] as const;
@@ -16,9 +16,8 @@ export const energyLevels = ["gentle", "moderate", "active"] as const;
 export const accessibilityFeatures = [
   "captions",
   "audio-cues",
-  "reduced-motion",
+  "reduced-stimulation",
   "seated-mode",
-  "no-jump-mode",
   "high-contrast",
 ] as const;
 
@@ -50,7 +49,6 @@ export interface CatalogGame {
 
 export interface CatalogSnapshot {
   schemaVersion: 1;
-  generatedAt: string | null;
   games: CatalogGame[];
 }
 
@@ -89,6 +87,28 @@ function expectStringArray(value: unknown, field: string): string[] {
   return value.map((entry, index) => expectString(entry, `${field}[${index}]`));
 }
 
+function expectBoolean(value: unknown, field: string): boolean {
+  if (typeof value !== "boolean") {
+    throw new Error(`Catalog field \"${field}\" must be a boolean.`);
+  }
+  return value;
+}
+
+function readLocalizedText(value: unknown, locales: readonly string[], field: string): string {
+  if (!Array.isArray(value) || value.length === 0) {
+    throw new Error(`Catalog field \"${field}\" must contain localized text.`);
+  }
+  const entries = value.map((entry, index) => {
+    if (!isRecord(entry)) throw new Error(`Catalog field \"${field}[${index}]\" must be an object.`);
+    return {
+      locale: expectString(entry.locale, `${field}[${index}].locale`),
+      text: expectString(entry.text, `${field}[${index}].text`),
+    };
+  });
+  const preferredLocale = locales.includes("en") ? "en" : locales[0];
+  return entries.find((entry) => entry.locale === preferredLocale)?.text ?? entries[0]!.text;
+}
+
 function expectEnumArray<T extends string>(
   value: unknown,
   field: string,
@@ -108,9 +128,18 @@ function readGame(value: unknown, index: number): CatalogGame {
     throw new Error(`Catalog game at index ${index} must be an object.`);
   }
 
-  const ageRange = value.ageRange;
+  const manifestUrl = expectPublicUrl(value.manifestUrl, `games[${index}].manifestUrl`);
+  if (new URL(manifestUrl).pathname !== "/.well-known/manse-game.json") {
+    throw new Error(`Catalog game \"${index}\" does not use the public manifest path.`);
+  }
+  const manifest = value.manifest;
+  if (!isRecord(manifest) || manifest.schemaVersion !== 1) {
+    throw new Error(`Catalog field \"games[${index}].manifest\" must be a version 1 manifest.`);
+  }
+  const locales = expectStringArray(manifest.locales, `games[${index}].manifest.locales`);
+  const ageRange = manifest.ageRange;
   if (!isRecord(ageRange)) {
-    throw new Error(`Catalog field \"games[${index}].ageRange\" must be an object.`);
+    throw new Error(`Catalog field \"games[${index}].manifest.ageRange\" must be an object.`);
   }
 
   const min = ageRange.min;
@@ -120,59 +149,68 @@ function readGame(value: unknown, index: number): CatalogGame {
     typeof max !== "number" ||
     !Number.isInteger(min) ||
     !Number.isInteger(max) ||
-    min < 0 ||
+    min < 2 ||
     max < min
   ) {
     throw new Error(`Catalog game \"${index}\" has an invalid age range.`);
   }
 
-  const thumbnailUrl = value.thumbnailUrl;
+  const thumbnail = manifest.thumbnail;
+  if (!isRecord(thumbnail)) {
+    throw new Error(`Catalog field \"games[${index}].manifest.thumbnail\" must be an object.`);
+  }
+  const accessibility = manifest.accessibility;
+  if (!isRecord(accessibility)) {
+    throw new Error(`Catalog field \"games[${index}].manifest.accessibility\" must be an object.`);
+  }
+  const license = manifest.license;
+  if (!isRecord(license)) {
+    throw new Error(`Catalog field \"games[${index}].manifest.license\" must be an object.`);
+  }
+  const gameUrl = expectPublicUrl(manifest.gameUrl, `games[${index}].manifest.gameUrl`);
+  if (new URL(gameUrl).origin !== new URL(manifestUrl).origin) {
+    throw new Error(`Catalog game \"${index}\" manifest and game origins must match.`);
+  }
+  const accessibilityValues: AccessibilityFeature[] = [];
+  if (expectBoolean(accessibility.captions, `games[${index}].manifest.accessibility.captions`)) accessibilityValues.push("captions");
+  if (expectBoolean(accessibility.audioCues, `games[${index}].manifest.accessibility.audioCues`)) accessibilityValues.push("audio-cues");
+  if (expectBoolean(accessibility.reducedStimulation, `games[${index}].manifest.accessibility.reducedStimulation`)) accessibilityValues.push("reduced-stimulation");
+  if (expectBoolean(accessibility.seatedMode, `games[${index}].manifest.accessibility.seatedMode`)) accessibilityValues.push("seated-mode");
+  if (expectBoolean(accessibility.highContrast, `games[${index}].manifest.accessibility.highContrast`)) accessibilityValues.push("high-contrast");
 
   return {
-    id: expectString(value.id, `games[${index}].id`),
-    slug: expectString(value.slug, `games[${index}].slug`),
-    title: expectString(value.title, `games[${index}].title`),
-    summary: expectString(value.summary, `games[${index}].summary`),
-    creator: expectString(value.creator, `games[${index}].creator`),
-    gameUrl: expectPublicUrl(value.gameUrl, `games[${index}].gameUrl`),
-    sourceUrl: expectPublicUrl(value.sourceUrl, `games[${index}].sourceUrl`),
-    manifestUrl: expectPublicUrl(value.manifestUrl, `games[${index}].manifestUrl`),
-    thumbnailUrl:
-      thumbnailUrl === null
-        ? null
-        : expectPublicUrl(thumbnailUrl, `games[${index}].thumbnailUrl`),
-    engineVersion: expectString(value.engineVersion, `games[${index}].engineVersion`),
-    locales: expectStringArray(value.locales, `games[${index}].locales`),
+    id: expectString(manifest.id, `games[${index}].manifest.id`),
+    slug: expectString(manifest.slug, `games[${index}].manifest.slug`),
+    title: readLocalizedText(manifest.title, locales, `games[${index}].manifest.title`),
+    summary: readLocalizedText(manifest.summary, locales, `games[${index}].manifest.summary`),
+    creator: expectString(manifest.creator, `games[${index}].manifest.creator`),
+    gameUrl,
+    sourceUrl: expectPublicUrl(manifest.sourceUrl, `games[${index}].manifest.sourceUrl`),
+    manifestUrl,
+    thumbnailUrl: expectPublicUrl(thumbnail.url, `games[${index}].manifest.thumbnail.url`),
+    engineVersion: expectString(manifest.engineVersion, `games[${index}].manifest.engineVersion`),
+    locales,
     ageRange: { min, max },
     movementTags: expectEnumArray(
-      value.movementTags,
-      `games[${index}].movementTags`,
+      manifest.movementTags,
+      `games[${index}].manifest.movementTags`,
       movementTags,
     ),
     energy: (() => {
-      const energy = expectString(value.energy, `games[${index}].energy`);
+      const energy = expectString(manifest.energy, `games[${index}].manifest.energy`);
       if (!energyLevels.includes(energy as EnergyLevel)) {
         throw new Error(`Catalog game \"${index}\" has an unsupported energy level.`);
       }
       return energy as EnergyLevel;
     })(),
-    accessibility: expectEnumArray(
-      value.accessibility,
-      `games[${index}].accessibility`,
-      accessibilityFeatures,
-    ),
-    license: expectString(value.license, `games[${index}].license`),
+    accessibility: accessibilityValues,
+    license: expectString(license.spdxId, `games[${index}].manifest.license.spdxId`),
   };
 }
 
 export function readCatalogSnapshot(value: unknown): CatalogSnapshot {
   if (!isRecord(value) || value.schemaVersion !== 1 || !Array.isArray(value.games)) {
     throw new Error("Catalog snapshot must use schemaVersion 1 and contain a games array.");
-  }
-
-  const generatedAt = value.generatedAt;
-  if (generatedAt !== null && typeof generatedAt !== "string") {
-    throw new Error("Catalog generatedAt must be an ISO timestamp or null.");
   }
 
   const games = value.games.map(readGame);
@@ -189,7 +227,6 @@ export function readCatalogSnapshot(value: unknown): CatalogSnapshot {
 
   return {
     schemaVersion: 1,
-    generatedAt,
     games,
   };
 }

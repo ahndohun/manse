@@ -178,7 +178,7 @@ privacy disclosures. To retain compatibility with the official privacy model:
 
 Do not include camera captures, personal information, credentials, or child data
 in a public issue. Use the private reporting channel identified by the source
-repository at `<REPOSITORY_URL>` when release contact details are available.
+repository at `https://github.com/ahndohun/manse`.
 
 For a game-specific concern, contact the creator identified by that game's
 manifest or source repository. For an official Showcase listing, include the

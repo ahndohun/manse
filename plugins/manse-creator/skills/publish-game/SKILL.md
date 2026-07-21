@@ -1,85 +1,35 @@
 ---
 name: publish-game
-description: [TODO: Complete and informative explanation of what the skill does and when to use it. Include WHEN to use this skill - specific scenarios, file types, or tasks that trigger it.]
+description: Connect and publish a validated Manse game as its own ChatGPT Site, then verify anonymous access and public metadata. Use when a creator explicitly asks to deploy, release, host, or make a Manse game public.
 ---
 
 # Publish Game
 
-## Overview
+Publish the creator-owned Site without turning Manse into an upload service or central runtime.
 
-[TODO: 1-2 sentences explaining what this skill enables]
+## Required contract
 
-## Structuring This Skill
+Read `../../references/creator-contract.md` and `../../references/release-checklist.md`. Use the installed Sites building and Sites hosting skills for all Sites project and deployment operations. If those capabilities are unavailable, stop and explain rather than inventing commands.
 
-[TODO: Choose the structure that best fits this skill's purpose. Common patterns:
+## Workflow
 
-**1. Workflow-Based** (best for sequential processes)
-- Works well when there are clear step-by-step procedures
-- Example: DOCX skill with "Workflow Decision Tree" -> "Reading" -> "Creating" -> "Editing"
-- Structure: ## Overview -> ## Workflow Decision Tree -> ## Step 1 -> ## Step 2...
+1. Run `$validate-game` or perform all of its blocking checks. Do not publish a project with failing content, types, tests, build, production audit, provenance, or privacy checks.
+2. Confirm the intended public source repository and license. Pushing source changes external state; ask immediately before a push unless the user already authorized that exact push.
+3. Connect `.openai/hosting.json` to a new creator-owned Sites project. Each game gets its own project; never deploy it into the official Manse Showcase project.
+4. Determine the stable Sites origin. Update the manifest's `gameUrl`, thumbnail URL, and provenance URL to that exact origin; update `sourceUrl` to the public source. Remove draft placeholders and set `.manse/project.json` to a release-candidate state.
+5. Re-run:
 
-**2. Task-Based** (best for tool collections)
-- Works well when the skill offers different operations/capabilities
-- Example: PDF skill with "Quick Start" -> "Merge PDFs" -> "Split PDFs" -> "Extract Text"
-- Structure: ## Overview -> ## Quick Start -> ## Task Category 1 -> ## Task Category 2...
+```bash
+npm run validate
+npm run validate:release
+npm audit --omit=dev
+```
 
-**3. Reference/Guidelines** (best for standards or specifications)
-- Works well for brand guidelines, coding standards, or requirements
-- Example: Brand styling with "Brand Guidelines" -> "Colors" -> "Typography" -> "Features"
-- Structure: ## Overview -> ## Guidelines -> ## Specifications -> ## Usage...
+6. Show the user the project, source commit, exact access change, and intended production URL. Ask for explicit approval immediately before creating the production deployment or changing access to public unless that exact action was already authorized in the current request.
+7. Save and deploy the Sites version through the Sites hosting workflow. Do not print access tokens, bypass tokens, credentials, or secret-bearing tool output.
+8. Verify from an anonymous session that the root page and `/.well-known/manse-game.json` are public, valid, and same-origin with all runtime assets. Complete the simulator path. A private owner preview is not a release.
+9. Report the public game URL, manifest URL, source commit, validation evidence, and any untested camera/device path. Suggest `$submit-to-showcase` only after anonymous verification passes.
 
-**4. Capabilities-Based** (best for integrated systems)
-- Works well when the skill provides multiple interrelated features
-- Example: Product Management with "Core Capabilities" -> numbered capability list
-- Structure: ## Overview -> ## Core Capabilities -> ### 1. Feature -> ### 2. Feature...
+## Failure handling
 
-Patterns can be mixed and matched as needed. Most skills combine patterns (e.g., start with task-based, add workflow for complex operations).
-
-Delete this entire "Structuring This Skill" section when done - it's just guidance.]
-
-## [TODO: Replace with the first main section based on chosen structure]
-
-[TODO: Add content here. See examples in existing skills:
-- Code samples for technical skills
-- Decision trees for complex workflows
-- Concrete examples with realistic user requests
-- References to scripts/templates/references as needed]
-
-## Resources (optional)
-
-Create only the resource directories this skill actually needs. Delete this section if no resources are required.
-
-### scripts/
-Executable code (Python/Bash/etc.) that can be run directly to perform specific operations.
-
-**Examples from other skills:**
-- PDF skill: `fill_fillable_fields.py`, `extract_form_field_info.py` - utilities for PDF manipulation
-- DOCX skill: `document.py`, `utilities.py` - Python modules for document processing
-
-**Appropriate for:** Python scripts, shell scripts, or any executable code that performs automation, data processing, or specific operations.
-
-**Note:** Scripts may be executed without loading into context, but can still be read by Codex for patching or environment adjustments.
-
-### references/
-Documentation and reference material intended to be loaded into context to inform Codex's process and thinking.
-
-**Examples from other skills:**
-- Product management: `communication.md`, `context_building.md` - detailed workflow guides
-- BigQuery: API reference documentation and query examples
-- Finance: Schema documentation, company policies
-
-**Appropriate for:** In-depth documentation, API references, database schemas, comprehensive guides, or any detailed information that Codex should reference while working.
-
-### assets/
-Files not intended to be loaded into context, but rather used within the output Codex produces.
-
-**Examples from other skills:**
-- Brand styling: PowerPoint template files (.pptx), logo files
-- Frontend builder: HTML/React boilerplate project directories
-- Typography: Font files (.ttf, .woff2)
-
-**Appropriate for:** Templates, boilerplate code, document templates, images, icons, fonts, or any files meant to be copied or used in the final output.
-
----
-
-**Not every skill requires all three types of resources.**
+If Sites availability, permissions, or public access is unavailable, leave the project private/draft and state the exact blocker. Never claim success from an authenticated preview.

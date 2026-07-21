@@ -1,0 +1,1116 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://manse.dev/schema/manse-pack-v1.schema.json",
+  "$comment": "Use @manse/schema at runtime for graph, reference, locale, and terminal-reachability checks.",
+  "$ref": "#/definitions/ManseEpisodePackV1",
+  "definitions": {
+    "ManseEpisodePackV1": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "type": "number",
+          "const": 1
+        },
+        "meta": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "pattern": "^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*$"
+            },
+            "title": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "locale": {
+                    "type": "string",
+                    "enum": [
+                      "en",
+                      "ko",
+                      "es",
+                      "ja",
+                      "zh",
+                      "fr",
+                      "de",
+                      "ar"
+                    ]
+                  },
+                  "text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 5000
+                  }
+                },
+                "required": [
+                  "locale",
+                  "text"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 1
+            },
+            "summary": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/title/items"
+              },
+              "minItems": 1
+            },
+            "theme": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "locales": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/title/items/properties/locale"
+              },
+              "minItems": 1
+            },
+            "ageBands": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "2-3",
+                  "4-5",
+                  "6-7",
+                  "8+"
+                ]
+              },
+              "minItems": 1
+            },
+            "estMinutes": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 60
+            },
+            "engine": {
+              "type": "object",
+              "properties": {
+                "minimumVersion": {
+                  "type": "string",
+                  "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$"
+                },
+                "maximumVersion": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/engine/properties/minimumVersion"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "minimumVersion",
+                "maximumVersion"
+              ],
+              "additionalProperties": false
+            },
+            "compiler": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "model": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 200
+                    },
+                    "reasoningEffort": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 100
+                    },
+                    "generatedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  },
+                  "required": [
+                    "model",
+                    "reasoningEffort",
+                    "generatedAt"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "title",
+            "summary",
+            "theme",
+            "locales",
+            "ageBands",
+            "estMinutes",
+            "engine",
+            "compiler"
+          ],
+          "additionalProperties": false
+        },
+        "permissions": {
+          "type": "object",
+          "properties": {
+            "camera": {
+              "type": "boolean"
+            },
+            "deviceLocalStorage": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "camera",
+            "deviceLocalStorage"
+          ],
+          "additionalProperties": false
+        },
+        "cast": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
+              },
+              "name": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/title/items"
+                },
+                "minItems": 1
+              },
+              "artAssetId": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "description": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "artAssetId",
+              "description"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1
+        },
+        "entrySceneId": {
+          "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
+        },
+        "scenes": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "story",
+                      "calibration-check",
+                      "challenge",
+                      "rest",
+                      "celebration"
+                    ]
+                  },
+                  "narration": {
+                    "type": "object",
+                    "properties": {
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "locale": {
+                              "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/title/items/properties/locale"
+                            },
+                            "text": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 5000
+                            },
+                            "audioAssetId": {
+                              "anyOf": [
+                                {
+                                  "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            }
+                          },
+                          "required": [
+                            "locale",
+                            "text",
+                            "audioAssetId"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "minItems": 1
+                      },
+                      "captionDefaultOn": {
+                        "type": "boolean",
+                        "const": true
+                      }
+                    },
+                    "required": [
+                      "items",
+                      "captionDefaultOn"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "demo": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "characterId": {
+                            "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
+                          },
+                          "animation": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          }
+                        },
+                        "required": [
+                          "characterId",
+                          "animation"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "challenge": {
+                    "anyOf": [
+                      {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "const": "touch_targets"
+                              },
+                              "count": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 12
+                              },
+                              "zone": {
+                                "type": "string",
+                                "enum": [
+                                  "upper",
+                                  "lower",
+                                  "full",
+                                  "reachable"
+                                ]
+                              },
+                              "targetScale": {
+                                "type": "number",
+                                "minimum": 0.5,
+                                "maximum": 2
+                              },
+                              "dwellMs": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 1500
+                              },
+                              "limb": {
+                                "type": "string",
+                                "enum": [
+                                  "hands",
+                                  "feet",
+                                  "any"
+                                ]
+                              },
+                              "timeBudgetMs": {
+                                "type": "integer",
+                                "exclusiveMinimum": 0,
+                                "maximum": 300000
+                              },
+                              "successAudioId": {
+                                "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
+                              },
+                              "encourageAudioId": {
+                                "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
+                              }
+                            },
+                            "required": [
+                              "type",
+                              "count",
+                              "zone",
+                              "targetScale",
+                              "dwellMs",
+                              "limb",
+                              "timeBudgetMs",
+                              "successAudioId",
+                              "encourageAudioId"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "const": "jump_count"
+                              },
+                              "count": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 20
+                              },
+                              "countAloud": {
+                                "type": "boolean"
+                              },
+                              "timeBudgetMs": {
+                                "$ref": "#/definitions/ManseEpisodePackV1/properties/scenes/items/anyOf/0/properties/challenge/anyOf/0/anyOf/0/properties/timeBudgetMs"
+                              },
+                              "successAudioId": {
+                                "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
+                              },
+                              "encourageAudioId": {
+                                "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
+                              }
+                            },
+                            "required": [
+                              "type",
+                              "count",
+                              "countAloud",
+                              "timeBudgetMs",
+                              "successAudioId",
+                              "encourageAudioId"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "const": "squat"
+                              },
+                              "reps": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 15
+                              },
+                              "timeBudgetMs": {
+                                "$ref": "#/definitions/ManseEpisodePackV1/properties/scenes/items/anyOf/0/properties/challenge/anyOf/0/anyOf/0/properties/timeBudgetMs"
+                              },
+                              "successAudioId": {
+                                "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
+                              },
+                              "encourageAudioId": {
+                                "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
+                              }
+                            },
+                            "required": [
+                              "type",
+                              "reps",
+                              "timeBudgetMs",
+                              "successAudioId",
+                              "encourageAudioId"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "const": "freeze"
+                              },
+                              "holdMs": {
+                                "type": "integer",
+                                "minimum": 500,
+                                "maximum": 8000
+                              },
+                              "cue": {
+                                "type": "string",
+                                "enum": [
+                                  "music-stop",
+                                  "narration",
+                                  "visual"
+                                ]
+                              },
+                              "timeBudgetMs": {
+                                "$ref": "#/definitions/ManseEpisodePackV1/properties/scenes/items/anyOf/0/properties/challenge/anyOf/0/anyOf/0/properties/timeBudgetMs"
+                              },
+                              "successAudioId": {
+                                "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
+                              },
+                              "encourageAudioId": {
+                                "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
+                              }
+                            },
+                            "required": [
+                              "type",
+                              "holdMs",
+                              "cue",
+                              "timeBudgetMs",
+                              "successAudioId",
+                              "encourageAudioId"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "const": "run_in_place"
+                              },
+                              "durationMs": {
+                                "type": "integer",
+                                "minimum": 2000,
+                                "maximum": 30000
+                              },
+                              "intensity": {
+                                "type": "string",
+                                "enum": [
+                                  "stroll",
+                                  "jog",
+                                  "sprint"
+                                ]
+                              },
+                              "timeBudgetMs": {
+                                "$ref": "#/definitions/ManseEpisodePackV1/properties/scenes/items/anyOf/0/properties/challenge/anyOf/0/anyOf/0/properties/timeBudgetMs"
+                              },
+                              "successAudioId": {
+                                "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
+                              },
+                              "encourageAudioId": {
+                                "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
+                              }
+                            },
+                            "required": [
+                              "type",
+                              "durationMs",
+                              "intensity",
+                              "timeBudgetMs",
+                              "successAudioId",
+                              "encourageAudioId"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "const": "balance"
+                              },
+                              "pose": {
+                                "type": "string",
+                                "enum": [
+                                  "one-leg",
+                                  "airplane",
+                                  "tiptoe",
+                                  "statue"
+                                ]
+                              },
+                              "holdMs": {
+                                "type": "integer",
+                                "minimum": 500,
+                                "maximum": 6000
+                              },
+                              "timeBudgetMs": {
+                                "$ref": "#/definitions/ManseEpisodePackV1/properties/scenes/items/anyOf/0/properties/challenge/anyOf/0/anyOf/0/properties/timeBudgetMs"
+                              },
+                              "successAudioId": {
+                                "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
+                              },
+                              "encourageAudioId": {
+                                "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
+                              }
+                            },
+                            "required": [
+                              "type",
+                              "pose",
+                              "holdMs",
+                              "timeBudgetMs",
+                              "successAudioId",
+                              "encourageAudioId"
+                            ],
+                            "additionalProperties": false
+                          }
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "learning": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "type": "string",
+                            "enum": [
+                              "counting",
+                              "colors",
+                              "letters",
+                              "body-parts",
+                              "directions",
+                              "animals",
+                              "none"
+                            ]
+                          },
+                          "payload": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 100
+                            },
+                            "maxItems": 10
+                          }
+                        },
+                        "required": [
+                          "kind",
+                          "payload"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "artAssetId": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "energy": {
+                    "type": "string",
+                    "enum": [
+                      "calm",
+                      "medium",
+                      "high"
+                    ]
+                  },
+                  "terminal": {
+                    "type": "boolean",
+                    "const": false
+                  },
+                  "transitions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "on": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "success",
+                                "partial",
+                                "struggle"
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "const": "always"
+                            }
+                          ]
+                        },
+                        "to": {
+                          "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
+                        },
+                        "adapt": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "targetScaleMul": {
+                                  "type": "number",
+                                  "minimum": 0.75,
+                                  "maximum": 1.5
+                                },
+                                "dwellMsMul": {
+                                  "type": "number",
+                                  "minimum": 0.5,
+                                  "maximum": 1.5
+                                },
+                                "countDelta": {
+                                  "type": "integer",
+                                  "minimum": -3,
+                                  "maximum": 3
+                                },
+                                "timeBudgetMul": {
+                                  "type": "number",
+                                  "minimum": 0.75,
+                                  "maximum": 1.6
+                                }
+                              },
+                              "required": [
+                                "targetScaleMul",
+                                "dwellMsMul",
+                                "countDelta",
+                                "timeBudgetMul"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "on",
+                        "to",
+                        "adapt"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "minItems": 1
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "narration",
+                  "demo",
+                  "challenge",
+                  "learning",
+                  "artAssetId",
+                  "energy",
+                  "terminal",
+                  "transitions"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
+                  },
+                  "kind": {
+                    "$ref": "#/definitions/ManseEpisodePackV1/properties/scenes/items/anyOf/0/properties/kind"
+                  },
+                  "narration": {
+                    "$ref": "#/definitions/ManseEpisodePackV1/properties/scenes/items/anyOf/0/properties/narration"
+                  },
+                  "demo": {
+                    "$ref": "#/definitions/ManseEpisodePackV1/properties/scenes/items/anyOf/0/properties/demo"
+                  },
+                  "challenge": {
+                    "$ref": "#/definitions/ManseEpisodePackV1/properties/scenes/items/anyOf/0/properties/challenge"
+                  },
+                  "learning": {
+                    "$ref": "#/definitions/ManseEpisodePackV1/properties/scenes/items/anyOf/0/properties/learning"
+                  },
+                  "artAssetId": {
+                    "$ref": "#/definitions/ManseEpisodePackV1/properties/scenes/items/anyOf/0/properties/artAssetId"
+                  },
+                  "energy": {
+                    "$ref": "#/definitions/ManseEpisodePackV1/properties/scenes/items/anyOf/0/properties/energy"
+                  },
+                  "terminal": {
+                    "type": "boolean",
+                    "const": true
+                  },
+                  "transitions": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/ManseEpisodePackV1/properties/scenes/items/anyOf/0/properties/transitions/items"
+                    },
+                    "maxItems": 0
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "narration",
+                  "demo",
+                  "challenge",
+                  "learning",
+                  "artAssetId",
+                  "energy",
+                  "terminal",
+                  "transitions"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          },
+          "minItems": 3
+        },
+        "adaptPolicy": {
+          "type": "object",
+          "properties": {
+            "targetSuccessBand": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "items": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              ]
+            },
+            "maxStruggleStreak": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 4
+            },
+            "maxHighEnergyMs": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 180000
+            }
+          },
+          "required": [
+            "targetSuccessBand",
+            "maxStruggleStreak",
+            "maxHighEnergyMs"
+          ],
+          "additionalProperties": false
+        },
+        "assets": {
+          "type": "object",
+          "properties": {
+            "images": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
+                  },
+                  "path": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 300
+                  },
+                  "mediaType": {
+                    "type": "string",
+                    "enum": [
+                      "image/png",
+                      "image/jpeg",
+                      "image/webp",
+                      "image/avif"
+                    ]
+                  },
+                  "alt": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/title/items"
+                    },
+                    "minItems": 1
+                  },
+                  "license": {
+                    "type": "object",
+                    "properties": {
+                      "spdxId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 100,
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9.+-]*$"
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "url": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "attribution": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 2000
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "spdxId",
+                      "name",
+                      "url",
+                      "attribution"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "provenance": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "type": "string",
+                            "const": "original"
+                          },
+                          "creator": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          },
+                          "createdAt": {
+                            "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/compiler/anyOf/0/properties/generatedAt"
+                          }
+                        },
+                        "required": [
+                          "kind",
+                          "creator",
+                          "createdAt"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "type": "string",
+                            "const": "generated"
+                          },
+                          "tool": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          },
+                          "model": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          },
+                          "prompt": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 20000
+                          },
+                          "generatedAt": {
+                            "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/compiler/anyOf/0/properties/generatedAt"
+                          }
+                        },
+                        "required": [
+                          "kind",
+                          "tool",
+                          "model",
+                          "prompt",
+                          "generatedAt"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "type": "string",
+                            "const": "third-party"
+                          },
+                          "creator": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          },
+                          "sourceUrl": {
+                            "$ref": "#/definitions/ManseEpisodePackV1/properties/assets/properties/images/items/properties/license/properties/url/anyOf/0"
+                          },
+                          "retrievedAt": {
+                            "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/compiler/anyOf/0/properties/generatedAt"
+                          }
+                        },
+                        "required": [
+                          "kind",
+                          "creator",
+                          "sourceUrl",
+                          "retrievedAt"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "path",
+                  "mediaType",
+                  "alt",
+                  "license",
+                  "provenance"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "audio": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
+                  },
+                  "path": {
+                    "$ref": "#/definitions/ManseEpisodePackV1/properties/assets/properties/images/items/properties/path"
+                  },
+                  "mediaType": {
+                    "type": "string",
+                    "enum": [
+                      "audio/mpeg",
+                      "audio/ogg",
+                      "audio/wav",
+                      "audio/mp4"
+                    ]
+                  },
+                  "locale": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/title/items/properties/locale"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "transcript": {
+                    "type": "string",
+                    "maxLength": 5000
+                  },
+                  "license": {
+                    "$ref": "#/definitions/ManseEpisodePackV1/properties/assets/properties/images/items/properties/license"
+                  },
+                  "provenance": {
+                    "$ref": "#/definitions/ManseEpisodePackV1/properties/assets/properties/images/items/properties/provenance"
+                  }
+                },
+                "required": [
+                  "id",
+                  "path",
+                  "mediaType",
+                  "locale",
+                  "transcript",
+                  "license",
+                  "provenance"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "music": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/definitions/ManseEpisodePackV1/properties/meta/properties/id"
+                  },
+                  "generator": {
+                    "type": "string",
+                    "const": "tone.js"
+                  },
+                  "seed": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "mood": {
+                    "type": "string",
+                    "enum": [
+                      "adventure",
+                      "calm",
+                      "silly",
+                      "victory"
+                    ]
+                  },
+                  "license": {
+                    "$ref": "#/definitions/ManseEpisodePackV1/properties/assets/properties/images/items/properties/license"
+                  },
+                  "provenance": {
+                    "$ref": "#/definitions/ManseEpisodePackV1/properties/assets/properties/images/items/properties/provenance"
+                  }
+                },
+                "required": [
+                  "id",
+                  "generator",
+                  "seed",
+                  "mood",
+                  "license",
+                  "provenance"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "images",
+            "audio",
+            "music"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "meta",
+        "permissions",
+        "cast",
+        "entrySceneId",
+        "scenes",
+        "adaptPolicy",
+        "assets"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

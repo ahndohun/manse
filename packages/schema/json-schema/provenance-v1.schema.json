@@ -1,0 +1,191 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://manse.dev/schema/provenance-v1.schema.json",
+  "$comment": "Use validatePackProvenance to enforce an exact 1:1 projection of pack assets.",
+  "$ref": "#/definitions/MansePackProvenanceV1",
+  "definitions": {
+    "MansePackProvenanceV1": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "type": "number",
+          "const": 1
+        },
+        "assets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "assetId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100,
+                "pattern": "^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*$"
+              },
+              "path": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 300
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "license": {
+                "type": "object",
+                "properties": {
+                  "spdxId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9.+-]*$"
+                  },
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "url": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "attribution": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "spdxId",
+                  "name",
+                  "url",
+                  "attribution"
+                ],
+                "additionalProperties": false
+              },
+              "provenance": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "const": "original"
+                      },
+                      "creator": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    },
+                    "required": [
+                      "kind",
+                      "creator",
+                      "createdAt"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "const": "generated"
+                      },
+                      "tool": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "model": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "prompt": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 20000
+                      },
+                      "generatedAt": {
+                        "$ref": "#/definitions/MansePackProvenanceV1/properties/assets/items/properties/provenance/anyOf/0/properties/createdAt"
+                      }
+                    },
+                    "required": [
+                      "kind",
+                      "tool",
+                      "model",
+                      "prompt",
+                      "generatedAt"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "const": "third-party"
+                      },
+                      "creator": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "sourceUrl": {
+                        "$ref": "#/definitions/MansePackProvenanceV1/properties/assets/items/properties/license/properties/url/anyOf/0"
+                      },
+                      "retrievedAt": {
+                        "$ref": "#/definitions/MansePackProvenanceV1/properties/assets/items/properties/provenance/anyOf/0/properties/createdAt"
+                      }
+                    },
+                    "required": [
+                      "kind",
+                      "creator",
+                      "sourceUrl",
+                      "retrievedAt"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              }
+            },
+            "required": [
+              "assetId",
+              "path",
+              "license",
+              "provenance"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "assets"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

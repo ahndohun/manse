@@ -21,8 +21,11 @@
     "node": ">=22.13.0"
   },
   "scripts": {
+    "prebuild": "npm run build --workspace @manse/schema",
     "build": "tsc -p tsconfig.build.json",
+    "pretypecheck": "npm run build --workspace @manse/schema",
     "typecheck": "tsc -p tsconfig.json --noEmit",
+    "pretest": "npm run build --workspace @manse/schema",
     "test": "vitest run"
   },
   "dependencies": {

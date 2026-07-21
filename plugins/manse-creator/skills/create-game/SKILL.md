@@ -1,85 +1,47 @@
 ---
 name: create-game
-description: [TODO: Complete and informative explanation of what the skill does and when to use it. Include WHEN to use this skill - specific scenarios, file types, or tasks that trigger it.]
+description: Create a standalone, declarative Manse active-game Site from a plain-language brief. Use when a creator asks to start, scaffold, or generate a new Manse game without hand-authoring code.
 ---
 
 # Create Game
 
-## Overview
+Create a safe, runnable game project with the bundled starter and finish with a validated local preview path.
 
-[TODO: 1-2 sentences explaining what this skill enables]
+## Required contract
 
-## Structuring This Skill
+Read `../../references/creator-contract.md` before changing files.
 
-[TODO: Choose the structure that best fits this skill's purpose. Common patterns:
+## Workflow
 
-**1. Workflow-Based** (best for sequential processes)
-- Works well when there are clear step-by-step procedures
-- Example: DOCX skill with "Workflow Decision Tree" -> "Reading" -> "Creating" -> "Editing"
-- Structure: ## Overview -> ## Workflow Decision Tree -> ## Step 1 -> ## Step 2...
+1. Determine the output directory, title, kebab-case slug, one-sentence summary, visual theme, content locale, creator credit, age range, duration, and number of targets. Ask only for choices that materially change the result; otherwise propose sensible defaults.
+2. Translate the idea into the current engine's `touch_targets` interaction. If the brief asks for jumps, squats, freeze detection, running, balance scoring, multiplayer, or live AI, explain that 0.1 does not implement it and offer a touch-target interpretation. Never label a touch game as a capability the runtime does not perform.
+3. Check movement safety and privacy. Avoid obstacles, body-contact instructions, competitive pressure, unsafe speed, personal child data, and outcome claims. Keep simulator play available.
+4. Refuse to overwrite an existing output directory. Run the bundled generator from the plugin root:
 
-**2. Task-Based** (best for tool collections)
-- Works well when the skill offers different operations/capabilities
-- Example: PDF skill with "Quick Start" -> "Merge PDFs" -> "Split PDFs" -> "Extract Text"
-- Structure: ## Overview -> ## Quick Start -> ## Task Category 1 -> ## Task Category 2...
+```bash
+node <PLUGIN_ROOT>/scripts/create-game.mjs \
+  --output <NEW_DIRECTORY> \
+  --slug <SLUG> \
+  --title <TITLE> \
+  --summary <SUMMARY> \
+  --theme <THEME> \
+  --locale <LOCALE> \
+  --creator <CREATOR> \
+  --energy <gentle|moderate|active> \
+  --age-min <MIN> \
+  --age-max <MAX> \
+  --minutes <MINUTES> \
+  --target-count <COUNT>
+```
 
-**3. Reference/Guidelines** (best for standards or specifications)
-- Works well for brand guidelines, coding standards, or requirements
-- Example: Brand styling with "Brand Guidelines" -> "Colors" -> "Typography" -> "Features"
-- Structure: ## Overview -> ## Guidelines -> ## Specifications -> ## Usage...
+Pass `--source-url` only when a real public HTTPS source repository already exists. Use `--intro`, `--instruction`, and `--celebration` when the creator supplied copy.
 
-**4. Capabilities-Based** (best for integrated systems)
-- Works well when the skill provides multiple interrelated features
-- Example: Product Management with "Core Capabilities" -> numbered capability list
-- Structure: ## Overview -> ## Core Capabilities -> ### 1. Feature -> ### 2. Feature...
+5. In the new project, run `npm install` and `npm run validate`. Inspect the manifest, pack, provenance, and generated thumbnail. A draft failure from `npm run validate:release` is expected until publishing; other failures are not.
+6. Report the created path, actual interaction, safety/accessibility choices, validation result, and the exact preview command `npm run dev`. Suggest `$generate-assets` or `$preview-game` as the next focused step.
 
-Patterns can be mixed and matched as needed. Most skills combine patterns (e.g., start with task-based, add workflow for complex operations).
+## Never do
 
-Delete this entire "Structuring This Skill" section when done - it's just guidance.]
-
-## [TODO: Replace with the first main section based on chosen structure]
-
-[TODO: Add content here. See examples in existing skills:
-- Code samples for technical skills
-- Decision trees for complex workflows
-- Concrete examples with realistic user requests
-- References to scripts/templates/references as needed]
-
-## Resources (optional)
-
-Create only the resource directories this skill actually needs. Delete this section if no resources are required.
-
-### scripts/
-Executable code (Python/Bash/etc.) that can be run directly to perform specific operations.
-
-**Examples from other skills:**
-- PDF skill: `fill_fillable_fields.py`, `extract_form_field_info.py` - utilities for PDF manipulation
-- DOCX skill: `document.py`, `utilities.py` - Python modules for document processing
-
-**Appropriate for:** Python scripts, shell scripts, or any executable code that performs automation, data processing, or specific operations.
-
-**Note:** Scripts may be executed without loading into context, but can still be read by Codex for patching or environment adjustments.
-
-### references/
-Documentation and reference material intended to be loaded into context to inform Codex's process and thinking.
-
-**Examples from other skills:**
-- Product management: `communication.md`, `context_building.md` - detailed workflow guides
-- BigQuery: API reference documentation and query examples
-- Finance: Schema documentation, company policies
-
-**Appropriate for:** In-depth documentation, API references, database schemas, comprehensive guides, or any detailed information that Codex should reference while working.
-
-### assets/
-Files not intended to be loaded into context, but rather used within the output Codex produces.
-
-**Examples from other skills:**
-- Brand styling: PowerPoint template files (.pptx), logo files
-- Frontend builder: HTML/React boilerplate project directories
-- Typography: Font files (.ttf, .woff2)
-
-**Appropriate for:** Templates, boilerplate code, document templates, images, icons, fonts, or any files meant to be copied or used in the final output.
-
----
-
-**Not every skill requires all three types of resources.**
+- Do not add arbitrary pack code or a runtime CDN.
+- Do not add analytics, authentication, OpenAI API calls, or camera upload.
+- Do not claim the project is published or publicly reachable.
+- Do not silently replace an existing game.

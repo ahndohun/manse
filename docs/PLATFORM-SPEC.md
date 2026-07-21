@@ -46,7 +46,7 @@ Every game Site exposes:
 /.well-known/manse-game.json
 ```
 
-The manifest lets the Showcase and CI discover the title, summary, game URL, source URL, engine version, locales, age range, movement tags, accessibility flags, thumbnail, license, and content provenance.
+The manifest lets the Showcase and CI discover the title, summary, creator, energy, game URL, source URL, engine version, locales, age range, movement tags, accessibility flags, thumbnail, license, and content provenance.
 
 ### 3. Manse Engine
 

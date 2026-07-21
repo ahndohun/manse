@@ -102,8 +102,8 @@ credentials, executable pack code, or a creator access token.
 8. Respond to maintainer safety, provenance, compatibility, or copy questions.
 9. A maintainer approves and merges only after automated checks pass.
 
-The official release repository and pull request form will be linked from
-`<REPOSITORY_URL>`.
+Use the official repository and its pull request flow at
+`https://github.com/ahndohun/manse`.
 
 ## Automated checks
 

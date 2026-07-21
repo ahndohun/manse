@@ -1,0 +1,296 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://manse.dev/schema/manse-game-v1.schema.json",
+  "$comment": "Runtime parsing also enforces unique and complete locale sets.",
+  "$ref": "#/definitions/ManseGameManifestV1",
+  "definitions": {
+    "ManseGameManifestV1": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "type": "number",
+          "const": 1
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*$"
+        },
+        "slug": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "title": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "locale": {
+                "type": "string",
+                "enum": [
+                  "en",
+                  "ko",
+                  "es",
+                  "ja",
+                  "zh",
+                  "fr",
+                  "de",
+                  "ar"
+                ]
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 5000
+              }
+            },
+            "required": [
+              "locale",
+              "text"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1
+        },
+        "summary": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ManseGameManifestV1/properties/title/items"
+          },
+          "minItems": 1
+        },
+        "creator": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "energy": {
+          "type": "string",
+          "enum": [
+            "gentle",
+            "moderate",
+            "active"
+          ]
+        },
+        "gameUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "sourceUrl": {
+          "$ref": "#/definitions/ManseGameManifestV1/properties/gameUrl"
+        },
+        "engineVersion": {
+          "type": "string",
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$"
+        },
+        "locales": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ManseGameManifestV1/properties/title/items/properties/locale"
+          },
+          "minItems": 1
+        },
+        "ageRange": {
+          "type": "object",
+          "properties": {
+            "min": {
+              "type": "integer",
+              "minimum": 2,
+              "maximum": 120
+            },
+            "max": {
+              "type": "integer",
+              "minimum": 2,
+              "maximum": 120
+            }
+          },
+          "required": [
+            "min",
+            "max"
+          ],
+          "additionalProperties": false
+        },
+        "movementTags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "touch",
+              "jumping",
+              "squatting",
+              "freezing",
+              "running-in-place",
+              "balance",
+              "seated",
+              "full-body"
+            ]
+          },
+          "minItems": 1
+        },
+        "accessibility": {
+          "type": "object",
+          "properties": {
+            "captions": {
+              "type": "boolean"
+            },
+            "seatedMode": {
+              "type": "boolean"
+            },
+            "highContrast": {
+              "type": "boolean"
+            },
+            "reducedStimulation": {
+              "type": "boolean"
+            },
+            "audioCues": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "captions",
+            "seatedMode",
+            "highContrast",
+            "reducedStimulation",
+            "audioCues"
+          ],
+          "additionalProperties": false
+        },
+        "thumbnail": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "$ref": "#/definitions/ManseGameManifestV1/properties/gameUrl"
+            },
+            "mediaType": {
+              "type": "string",
+              "enum": [
+                "image/png",
+                "image/jpeg",
+                "image/webp",
+                "image/avif"
+              ]
+            },
+            "alt": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ManseGameManifestV1/properties/title/items"
+              },
+              "minItems": 1
+            }
+          },
+          "required": [
+            "url",
+            "mediaType",
+            "alt"
+          ],
+          "additionalProperties": false
+        },
+        "license": {
+          "type": "object",
+          "properties": {
+            "spdxId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9.+-]*$"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "url": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/ManseGameManifestV1/properties/gameUrl"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "attribution": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "spdxId",
+            "name",
+            "url",
+            "attribution"
+          ],
+          "additionalProperties": false
+        },
+        "contentProvenance": {
+          "type": "object",
+          "properties": {
+            "hasGeneratedAssets": {
+              "type": "boolean"
+            },
+            "hasThirdPartyAssets": {
+              "type": "boolean"
+            },
+            "provenanceUrl": {
+              "$ref": "#/definitions/ManseGameManifestV1/properties/gameUrl"
+            }
+          },
+          "required": [
+            "hasGeneratedAssets",
+            "hasThirdPartyAssets",
+            "provenanceUrl"
+          ],
+          "additionalProperties": false
+        },
+        "permissions": {
+          "type": "object",
+          "properties": {
+            "camera": {
+              "type": "boolean"
+            },
+            "deviceLocalStorage": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "camera",
+            "deviceLocalStorage"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "id",
+        "slug",
+        "title",
+        "summary",
+        "creator",
+        "energy",
+        "gameUrl",
+        "sourceUrl",
+        "engineVersion",
+        "locales",
+        "ageRange",
+        "movementTags",
+        "accessibility",
+        "thumbnail",
+        "license",
+        "contentProvenance",
+        "permissions"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
