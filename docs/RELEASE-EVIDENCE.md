@@ -49,18 +49,18 @@ the removed "Auto quality" claim.
 Each game is an independent public ChatGPT Site backed by its own public GitHub
 repository. On 2026-07-22 KST, every game passed its content validator, release
 validator, production build, and production-only npm audit before Sites version
-3 was deployed publicly. Version 3 adds a generated install-time precache for
+4 was deployed publicly. Version 3 added a generated install-time precache for
 the navigation shell, hashed client assets, and game pack while leaving the
 heavy camera model and WebAssembly payloads lazy.
 
 | Game | Public Site | Deployed source commit |
 | --- | --- | --- |
-| Morning Star Catch | https://morning-star-catch.ran584000.chatgpt.site | `9db05265f083e0cd5f0fdddd6b817fde55138982` |
-| Fire Hose Hero | https://fire-hose-hero.ran584000.chatgpt.site | `4e9a808f87a813172c22b513fbe7a6075eb3fd07` |
-| Fruit Basket Catch | https://fruit-basket.ran584000.chatgpt.site | `23f8b3f121f0a0c4fea7512aae451462dcba85c0` |
-| Museum Statues | https://museum-statues.ran584000.chatgpt.site | `3f58adbece7a4972bdea81db46d95af6d6ff4aee` |
-| Froggy Hops | https://froggy-hops.ran584000.chatgpt.site | `07781c1886dec9098104bce775b66c84def52d96` |
-| Monkey Bananas | https://monkey-bananas.ran584000.chatgpt.site | `4fffcb4df3b8ac4a92dd1d34926072e530e07fa0` |
+| Morning Star Catch | https://morning-star-catch.ran584000.chatgpt.site | `ca22e8cd845ebe37a6c3b34801191f03c609f4e2` |
+| Fire Hose Hero | https://fire-hose-hero.ran584000.chatgpt.site | `07ae0f8dfe5008feea73c217ea943f2bf106eb20` |
+| Fruit Basket Catch | https://fruit-basket.ran584000.chatgpt.site | `0e9534eace4ba0567824eca23c386a6965f762b8` |
+| Museum Statues | https://museum-statues.ran584000.chatgpt.site | `5db37be38fbb538cb98e8c8cfa199864a7c2200e` |
+| Froggy Hops | https://froggy-hops.ran584000.chatgpt.site | `428151a0e01f1e904df0f1d5f520cf516027bdae` |
+| Monkey Bananas | https://monkey-bananas.ran584000.chatgpt.site | `af1a417579a832a5cb54b7a61d8ebd0afb7d6429` |
 
 Anonymous HTTPS checks returned 200 for all 78 requested paths: each Site root,
 public manifest, thumbnail, asset provenance, game pack, pack provenance, both
@@ -68,6 +68,13 @@ bundled pose models, and all four bundled MediaPipe JavaScript/WebAssembly
 files, plus each generated `sw-precache.js`. Every precache contains the shell
 and its own game pack, and every manifest exposes exact same-origin game,
 thumbnail, and provenance URLs plus both `ko` and `en` localized metadata.
+Version 4 also replaces every visible placeholder source link with the matching
+public GitHub repository; all six rendered pages were checked for the exact URL
+and zero `github.com/replace-me` occurrences.
+
+Morning Star Catch was loaded online once, then reloaded successfully with
+browser networking disabled while still showing its title, pointer-play action,
+and corrected public source link under active service-worker control.
 
 ## Verified repository gate
 
@@ -150,8 +157,9 @@ The pre-submission audit on 2026-07-21 KST found:
   upload, or child-profile implementation; and
 - both full and production-only npm audits report zero vulnerabilities.
 
-This audit covers the repository and generated starter. The final owner game,
-public Site, video, and Devpost form still require their own release checks.
+This audit covers the repository, generated starter, six public game Sites, and
+the rendered Showcase catalog. The final video and Devpost form still require
+their owner-controlled release checks.
 
 ## Public deployment smoke test
 

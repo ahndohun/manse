@@ -12,7 +12,7 @@ against the final video and deployed build before submitting.
 - **Repository:** https://github.com/ahndohun/manse
 - **Public Showcase:** https://manse-showcase.ran584000.chatgpt.site
 - **No-camera playground:** https://manse-showcase.ran584000.chatgpt.site/playground?provider=simulated
-- **Creator game used in the demo:** `<OWNER_GAME_URL>`
+- **Creator game used in the demo:** https://morning-star-catch.ran584000.chatgpt.site
 - **Public YouTube demo:** `<DEMO_VIDEO_URL>`
 - **Primary Codex `/feedback` Session ID:** `<CODEX_SESSION_ID>`
 
@@ -105,6 +105,8 @@ recognition support before completing a measured hardware matrix.
   verification; camera and child data are not transmitted by Manse.
 - The repository marketplace exposes seven complete creator workflows rather
   than demo-only instructions.
+- Six independently hosted public games demonstrate the full publish-and-list
+  loop across touch, dodge, freeze, squat, and jump movement.
 - The public judge path requires no rebuild, camera, account, or API key.
 
 ## What we learned
@@ -130,7 +132,7 @@ extensions. The contracts and platform remain MIT licensed and self-hostable.
 1. Open `https://manse-showcase.ran584000.chatgpt.site` without signing in.
 2. Open `https://manse-showcase.ran584000.chatgpt.site/playground?provider=simulated` and complete the target
    sequence with mouse or touch input.
-3. Follow the creator-game link to `<OWNER_GAME_URL>` and verify that it is an
+3. Follow the creator-game link to `https://morning-star-catch.ran584000.chatgpt.site` and verify that it is an
    independent Site.
 4. Inspect `/.well-known/manse-game.json` on that game origin.
 5. Install Manse Creator from the repository marketplace using the README steps.

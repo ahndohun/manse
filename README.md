@@ -15,19 +15,21 @@ idea -> Manse Creator in Codex -> preview -> validate
 Players follow a normal public link, allow camera access, and play. They do not
 need a Manse account, a controller, a subscription, or a runtime AI service.
 
-> **v0.1 status:** active development. This repository is currently focused on
-> the platform, engine, starter, validation tools, Showcase, and creator plugin.
-> A sample game is intentionally not part of this release slice.
+> **v0.1 status:** release candidate. The public Showcase lists six independently
+> hosted games spanning touch, dodge, freeze, squat, and jump movement, alongside
+> the engine playground, starter, validation tools, and creator plugin.
 
 ## Release links
 
-The platform links below are live. Creator-game, video, and feedback placeholders
-remain unresolved until those separate artifacts pass their release gates.
+The platform and creator-game links below are live. Only the video and feedback
+placeholders remain unresolved until those owner-provided artifacts pass their
+release gates.
 
 | Artifact | Release value |
 | --- | --- |
 | Public Showcase | [manse-showcase.ran584000.chatgpt.site](https://manse-showcase.ran584000.chatgpt.site) |
 | Engine/starter playground | [simulator judge path](https://manse-showcase.ran584000.chatgpt.site/playground?provider=simulated) |
+| Reference creator game | [Morning Star Catch](https://morning-star-catch.ran584000.chatgpt.site) |
 | Source repository | [github.com/ahndohun/manse](https://github.com/ahndohun/manse) |
 | Manse Creator source | [repository marketplace plugin](https://github.com/ahndohun/manse/tree/main/plugins/manse-creator) |
 | Devpost demo video | `<DEMO_VIDEO_URL>` |
@@ -87,12 +89,16 @@ See [Publishing a game](docs/PUBLISHING.md) for the complete workflow and
 
 ### From the repository marketplace
 
-Creating and previewing a game needs Git and Node.js 22.13 or newer installed
-once on your computer — Codex runs the commands, but the tools must exist. If
-you have never installed them, follow the short first-time setup in
+Creating and previewing a game needs the Codex CLI, Git, and Node.js 22.13 or
+newer installed once on your computer — Codex runs the commands, but the tools
+must exist. The `codex plugin` commands below come from the Codex CLI: check
+with `codex --version`, and if it is missing install it with
+`npm install -g @openai/codex` (or use the Codex app's own setup). If you have
+never installed Git or Node.js, follow the short first-time setup in
 [Publishing a game](docs/PUBLISHING.md#first-time-setup-if-you-have-never-used-git-or-nodejs).
 
-Until the public marketplace URL above is filled, install from a local checkout:
+Until a permanent public marketplace URL is announced, install from a local
+checkout:
 
 ```bash
 git clone https://github.com/ahndohun/manse.git

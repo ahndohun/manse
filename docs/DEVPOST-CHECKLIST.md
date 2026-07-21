@@ -1,14 +1,15 @@
 # OpenAI Build Week submission checklist
 
-Verified against the official Devpost overview, rules, resources, and FAQ on 2026-07-21.
+Verified against the official Devpost overview, rules, resources, updates, and
+signed-in project dashboard on 2026-07-22.
 
 ## Account and deadline
 
 - [x] Entrant is registered for OpenAI Build Week.
-- [ ] Create a Devpost project draft. This changes external state and must be done by or explicitly approved by the entrant.
+- [ ] Create a Devpost project draft. The signed-in dashboard still showed no project at 03:25 KST. This changes external state and must be done by or explicitly approved by the entrant.
 - [ ] Select **Developer Tools** in the Devpost project. The prepared submission copy uses this track because the core submission is an installable creator/publisher plugin plus an open-source game engine and platform.
 - [ ] Submit before **July 21, 2026 at 5:00 PM PT / July 22, 2026 at 9:00 AM KST**.
-- [ ] Keep the deployed project available free of charge through the judging period ending August 5, 2026 at 5:00 PM PT.
+- [ ] Keep the deployed project available free of charge through August 5, 2026 at 5:00 PM PT under the official rules, and conservatively through August 9 at 5:00 PM PT because the live schedule currently shows the later judging end.
 
 ## Required submission material
 
@@ -44,14 +45,15 @@ Verified against the official Devpost overview, rules, resources, and FAQ on 202
 - [x] Signed-out browser and GitHub release workflow complete the deployed simulator 3 / 3
 - [x] Clean Linux CI runs the full repository validation from `npm ci`
 - [x] Plugin install can be completed from documented steps
-- [ ] Creator can produce, validate, and publish a new game Site, then prepare a Showcase catalog entry
-- [ ] README links directly to the live platform, reference game, plugin instructions, demo video, architecture, and privacy model
+- [x] Creator can produce, validate, and publish a new game Site, then prepare a Showcase catalog entry
+- [x] README links directly to the live platform, reference game, plugin instructions, architecture, and privacy model
+- [ ] README links to the final public demo video and records the `/feedback` Session ID
 
 ## Before final submission
 
 - [x] Run the repository eligibility and security audit; evidence is in `docs/RELEASE-EVIDENCE.md`
 - [x] Verify the deployed URL in a clean browser session
-- [ ] Verify the reference game after disabling the network following first load
+- [x] Verify the reference game after disabling the network following first load
 - [x] Verify the repository is accessible to judges
 - [ ] Verify the YouTube video is public and under three minutes
 - [ ] Capture the primary task's `/feedback` Session ID

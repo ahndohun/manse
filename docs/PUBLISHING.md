@@ -18,7 +18,11 @@ dependency.
 
 You need:
 
-- the Codex app and Git;
+- the Codex app, with the Codex CLI available as the `codex` command in your
+  terminal — the plugin install commands below use it. Check with
+  `codex --version`; if it is missing, install it with
+  `npm install -g @openai/codex` once Node.js (next item) is set up;
+- Git;
 - Node.js 22.13 or newer — Manse Creator generates the project, runs the
   local preview server, and validates the game with Node on your computer,
   even though Codex types those commands for you;
