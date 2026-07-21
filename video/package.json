@@ -4,6 +4,7 @@
   "private": true,
   "description": "Remotion project that renders the Manse competition demo video",
   "scripts": {
+    "audio": "node gen-audio.mjs",
     "capture": "node capture-live.mjs",
     "dev": "remotion studio",
     "render": "remotion render ManseDemo out/manse-demo.mp4"

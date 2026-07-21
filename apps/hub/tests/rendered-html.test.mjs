@@ -24,7 +24,7 @@ test("server-renders the public Showcase from the reviewed static catalog", asyn
 
   const html = await response.text();
   assert.match(html, /Every screen can be a/);
-  assert.match(html, /Aim, jump, dodge, and freeze in browser-native games\./);
+  assert.match(html, /Play motion games in any browser\./);
   assert.match(html, /Playable showcase/);
   assert.match(html, /Flagship mission · real gameplay/);
   assert.match(html, /Engine mechanic demo · cover art/);
