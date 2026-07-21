@@ -39,5 +39,9 @@
     "vite": "8.1.5",
     "wrangler": "4.112.0"
   },
+  "optionalDependencies": {
+    "@tailwindcss/oxide-linux-x64-gnu": "4.2.1",
+    "lightningcss-linux-x64-gnu": "1.31.1"
+  },
   "type": "module"
 }
