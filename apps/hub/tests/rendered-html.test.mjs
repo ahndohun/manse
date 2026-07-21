@@ -64,9 +64,10 @@ test("server-renders the camera-free engine playground judge path", async () => 
 });
 
 test("keeps catalog data local, typed, empty-ready, and storage-free", async () => {
-  const [snapshotText, catalogSource, hostingText, packageText] = await Promise.all([
+  const [snapshotText, catalogSource, layoutSource, hostingText, packageText] = await Promise.all([
     readFile(new URL("app/catalog/catalog.snapshot.json", projectRoot), "utf8"),
     readFile(new URL("app/catalog/catalog.ts", projectRoot), "utf8"),
+    readFile(new URL("app/layout.tsx", projectRoot), "utf8"),
     readFile(new URL(".openai/hosting.json", projectRoot), "utf8"),
     readFile(new URL("package.json", projectRoot), "utf8"),
   ]);
@@ -82,6 +83,9 @@ test("keeps catalog data local, typed, empty-ready, and storage-free", async () 
   assert.match(catalogSource, /export function filterCatalogGames/);
   assert.match(catalogSource, /parsed\.protocol !== "https:"/);
   assert.doesNotMatch(catalogSource, /fetch\s*\(/);
+  assert.match(catalogSource, /export const movementTags = \["touch"\] as const/);
+  assert.match(layoutSource, /manse-showcase\.ran584000\.chatgpt\.site/);
+  assert.doesNotMatch(layoutSource, /["']manse\.chatgpt\.site["']/);
   assert.doesNotMatch(packageText, /react-loading-skeleton/);
   await assert.rejects(access(new URL("app/_sites-preview", projectRoot)));
   await access(new URL("dist/client/models/pose_landmarker_lite.task", projectRoot));

@@ -12,16 +12,7 @@ import {
   duplicateValues,
 } from "./common.js";
 
-export const MovementTagSchema = z.enum([
-  "touch",
-  "jumping",
-  "squatting",
-  "freezing",
-  "running-in-place",
-  "balance",
-  "seated",
-  "full-body",
-]);
+export const MovementTagSchema = z.enum(["touch"]);
 export type MovementTag = z.infer<typeof MovementTagSchema>;
 
 export const AccessibilitySchema = z

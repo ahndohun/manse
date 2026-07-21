@@ -1,5 +1,5 @@
 import { z } from "zod";
-export declare const MovementTagSchema: z.ZodEnum<["touch", "jumping", "squatting", "freezing", "running-in-place", "balance", "seated", "full-body"]>;
+export declare const MovementTagSchema: z.ZodEnum<["touch"]>;
 export type MovementTag = z.infer<typeof MovementTagSchema>;
 export declare const AccessibilitySchema: z.ZodObject<{
     captions: z.ZodBoolean;
@@ -127,7 +127,7 @@ export declare const ManseGameManifestBaseSchema: z.ZodObject<{
         min: number;
         max: number;
     }>;
-    movementTags: z.ZodArray<z.ZodEnum<["touch", "jumping", "squatting", "freezing", "running-in-place", "balance", "seated", "full-body"]>, "many">;
+    movementTags: z.ZodArray<z.ZodEnum<["touch"]>, "many">;
     accessibility: z.ZodObject<{
         captions: z.ZodBoolean;
         seatedMode: z.ZodBoolean;
@@ -242,7 +242,7 @@ export declare const ManseGameManifestBaseSchema: z.ZodObject<{
         min: number;
         max: number;
     };
-    movementTags: ("balance" | "touch" | "jumping" | "squatting" | "freezing" | "running-in-place" | "seated" | "full-body")[];
+    movementTags: "touch"[];
     accessibility: {
         captions: boolean;
         seatedMode: boolean;
@@ -295,7 +295,7 @@ export declare const ManseGameManifestBaseSchema: z.ZodObject<{
         min: number;
         max: number;
     };
-    movementTags: ("balance" | "touch" | "jumping" | "squatting" | "freezing" | "running-in-place" | "seated" | "full-body")[];
+    movementTags: "touch"[];
     accessibility: {
         captions: boolean;
         seatedMode: boolean;
@@ -368,7 +368,7 @@ export declare const ManseGameManifestSchema: z.ZodEffects<z.ZodObject<{
         min: number;
         max: number;
     }>;
-    movementTags: z.ZodArray<z.ZodEnum<["touch", "jumping", "squatting", "freezing", "running-in-place", "balance", "seated", "full-body"]>, "many">;
+    movementTags: z.ZodArray<z.ZodEnum<["touch"]>, "many">;
     accessibility: z.ZodObject<{
         captions: z.ZodBoolean;
         seatedMode: z.ZodBoolean;
@@ -483,7 +483,7 @@ export declare const ManseGameManifestSchema: z.ZodEffects<z.ZodObject<{
         min: number;
         max: number;
     };
-    movementTags: ("balance" | "touch" | "jumping" | "squatting" | "freezing" | "running-in-place" | "seated" | "full-body")[];
+    movementTags: "touch"[];
     accessibility: {
         captions: boolean;
         seatedMode: boolean;
@@ -536,7 +536,7 @@ export declare const ManseGameManifestSchema: z.ZodEffects<z.ZodObject<{
         min: number;
         max: number;
     };
-    movementTags: ("balance" | "touch" | "jumping" | "squatting" | "freezing" | "running-in-place" | "seated" | "full-body")[];
+    movementTags: "touch"[];
     accessibility: {
         captions: boolean;
         seatedMode: boolean;
@@ -589,7 +589,7 @@ export declare const ManseGameManifestSchema: z.ZodEffects<z.ZodObject<{
         min: number;
         max: number;
     };
-    movementTags: ("balance" | "touch" | "jumping" | "squatting" | "freezing" | "running-in-place" | "seated" | "full-body")[];
+    movementTags: "touch"[];
     accessibility: {
         captions: boolean;
         seatedMode: boolean;
@@ -642,7 +642,7 @@ export declare const ManseGameManifestSchema: z.ZodEffects<z.ZodObject<{
         min: number;
         max: number;
     };
-    movementTags: ("balance" | "touch" | "jumping" | "squatting" | "freezing" | "running-in-place" | "seated" | "full-body")[];
+    movementTags: "touch"[];
     accessibility: {
         captions: boolean;
         seatedMode: boolean;

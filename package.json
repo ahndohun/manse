@@ -24,8 +24,12 @@
     "plugin:sync": "npm run build --workspace @manse/schema --workspace @manse/cli --workspace @manse/runtime-web && node plugins/manse-creator/scripts/sync-vendor.mjs",
     "plugin:validate": "node scripts/validate-plugin.mjs",
     "licenses:check": "node scripts/check-licenses.mjs",
+    "release:verify-public": "node scripts/verify-public-playground.mjs",
     "showcase:dev": "npm run dev --workspace @manse/showcase",
     "showcase:build": "npm run build --workspace @manse/showcase"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.61.1"
   },
   "engines": {
     "node": ">=22.13.0"

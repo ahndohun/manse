@@ -16,7 +16,9 @@ const geistMono = Geist_Mono({
 export async function generateMetadata(): Promise<Metadata> {
   const requestHeaders = await headers();
   const forwardedHost = requestHeaders.get("x-forwarded-host")?.split(",")[0]?.trim();
-  const host = forwardedHost ?? requestHeaders.get("host") ?? "manse.chatgpt.site";
+  const host = forwardedHost
+    ?? requestHeaders.get("host")
+    ?? "manse-showcase.ran584000.chatgpt.site";
   const forwardedProtocol = requestHeaders.get("x-forwarded-proto")?.split(",")[0]?.trim();
   const protocol = forwardedProtocol === "http" || forwardedProtocol === "https"
     ? forwardedProtocol

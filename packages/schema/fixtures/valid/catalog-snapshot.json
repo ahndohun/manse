@@ -16,7 +16,7 @@
         "engineVersion": "0.1.0",
         "locales": ["en"],
         "ageRange": { "min": 4, "max": 99 },
-        "movementTags": ["touch", "full-body"],
+        "movementTags": ["touch"],
         "accessibility": {
           "captions": true,
           "seatedMode": true,

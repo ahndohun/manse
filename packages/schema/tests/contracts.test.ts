@@ -67,4 +67,13 @@ describe("version 1 public contracts", () => {
 
     expect(safeParseEpisodePack(pack).success).toBe(false);
   });
+
+  it("rejects movement metadata that runtime 0.1 cannot execute", async () => {
+    const manifest = structuredClone(await fixture("valid", "manse-game.json")) as {
+      movementTags: string[];
+    };
+    manifest.movementTags = ["jumping"];
+
+    expect(safeParseGameManifest(manifest).success).toBe(false);
+  });
 });

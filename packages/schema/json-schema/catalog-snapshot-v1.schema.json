@@ -133,14 +133,7 @@
                     "items": {
                       "type": "string",
                       "enum": [
-                        "touch",
-                        "jumping",
-                        "squatting",
-                        "freezing",
-                        "running-in-place",
-                        "balance",
-                        "seated",
-                        "full-body"
+                        "touch"
                       ]
                     },
                     "minItems": 1

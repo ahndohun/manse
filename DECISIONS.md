@@ -55,3 +55,18 @@ balance are not reserved inside the public v1 schema: adding one requires a
 reviewed engine implementation, deterministic tests, and a compatible schema
 release. This prevents the validator and creator plugin from accepting a pack
 that the player must reject at runtime.
+
+### D012 — Public discovery metadata describes executable v0.1 mechanics
+
+The v1 game manifest and Showcase movement filter expose only `touch`, matching
+the sole `touch_targets` challenge accepted by the v1 pack contract. Seated
+play, captions, high contrast, reduced stimulation, and audio cues remain
+separate accessibility facets. Future movement names are added only with a
+reviewed runtime mechanic and contract release, so catalog metadata cannot
+advertise behavior the published engine does not perform.
+
+The signed-out deployed Playground must also complete all three targets before
+a Showcase release is accepted. The repository provides a real-browser command
+and a manually dispatchable GitHub Actions workflow for this post-deployment
+gate; two renderer canvases are expected because the WebGL renderer separates
+the camera and overlay layers.

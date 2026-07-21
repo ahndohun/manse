@@ -1,15 +1,6 @@
 import { z } from "zod";
 import { HttpsUrlSchema, IdentifierSchema, LicenseSchema, LocaleSchema, LocalizedTextSchema, PermissionsSchema, SemverSchema, SlugSchema, duplicateValues, } from "./common.js";
-export const MovementTagSchema = z.enum([
-    "touch",
-    "jumping",
-    "squatting",
-    "freezing",
-    "running-in-place",
-    "balance",
-    "seated",
-    "full-body",
-]);
+export const MovementTagSchema = z.enum(["touch"]);
 export const AccessibilitySchema = z
     .object({
     captions: z.boolean(),

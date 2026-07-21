@@ -1,0 +1,28 @@
+name: Public release gate
+
+on:
+  workflow_dispatch:
+    inputs:
+      showcase_url:
+        description: Public Showcase origin to verify after deployment
+        required: true
+        default: https://manse-showcase.ran584000.chatgpt.site
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  playground:
+    runs-on: ubuntu-latest
+    env:
+      MANSE_SHOWCASE_URL: ${{ inputs.showcase_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run release:verify-public

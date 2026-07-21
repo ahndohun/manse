@@ -32,7 +32,7 @@ export declare function safeParseGameManifest(input: unknown): import("zod").Saf
         min: number;
         max: number;
     };
-    movementTags: ("balance" | "touch" | "jumping" | "squatting" | "freezing" | "running-in-place" | "seated" | "full-body")[];
+    movementTags: "touch"[];
     accessibility: {
         captions: boolean;
         seatedMode: boolean;
@@ -85,7 +85,7 @@ export declare function safeParseGameManifest(input: unknown): import("zod").Saf
         min: number;
         max: number;
     };
-    movementTags: ("balance" | "touch" | "jumping" | "squatting" | "freezing" | "running-in-place" | "seated" | "full-body")[];
+    movementTags: "touch"[];
     accessibility: {
         captions: boolean;
         seatedMode: boolean;
@@ -156,7 +156,7 @@ export declare function safeParseCatalogSnapshot(input: unknown): import("zod").
                 min: number;
                 max: number;
             };
-            movementTags: ("balance" | "touch" | "jumping" | "squatting" | "freezing" | "running-in-place" | "seated" | "full-body")[];
+            movementTags: "touch"[];
             accessibility: {
                 captions: boolean;
                 seatedMode: boolean;
@@ -215,7 +215,7 @@ export declare function safeParseCatalogSnapshot(input: unknown): import("zod").
                 min: number;
                 max: number;
             };
-            movementTags: ("balance" | "touch" | "jumping" | "squatting" | "freezing" | "running-in-place" | "seated" | "full-body")[];
+            movementTags: "touch"[];
             accessibility: {
                 captions: boolean;
                 seatedMode: boolean;
@@ -831,7 +831,7 @@ export declare function safeParseSessionStats(input: unknown): import("zod").Saf
     scenes: {
         reactionMsP50: number | null;
         sceneId: string;
-        challengeType: "touch_targets" | "jump_count" | "squat" | "freeze" | "run_in_place" | "balance" | null;
+        challengeType: "touch_targets" | null;
         outcome: "success" | "partial" | "struggle" | null;
         attempts: number;
         activeMs: number;
@@ -848,7 +848,7 @@ export declare function safeParseSessionStats(input: unknown): import("zod").Saf
     scenes: {
         reactionMsP50: number | null;
         sceneId: string;
-        challengeType: "touch_targets" | "jump_count" | "squat" | "freeze" | "run_in_place" | "balance" | null;
+        challengeType: "touch_targets" | null;
         outcome: "success" | "partial" | "struggle" | null;
         attempts: number;
         activeMs: number;

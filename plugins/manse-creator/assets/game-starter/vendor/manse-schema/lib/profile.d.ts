@@ -193,7 +193,7 @@ export declare const PlayerProfileSchema: z.ZodObject<{
 export type PlayerProfile = z.infer<typeof PlayerProfileSchema>;
 export declare const SceneStatSchema: z.ZodObject<{
     sceneId: z.ZodString;
-    challengeType: z.ZodNullable<z.ZodEnum<["touch_targets", "jump_count", "squat", "freeze", "run_in_place", "balance"]>>;
+    challengeType: z.ZodNullable<z.ZodEnum<["touch_targets"]>>;
     outcome: z.ZodNullable<z.ZodEnum<["success", "partial", "struggle"]>>;
     attempts: z.ZodNumber;
     reactionMsP50: z.ZodNullable<z.ZodNumber>;
@@ -201,14 +201,14 @@ export declare const SceneStatSchema: z.ZodObject<{
 }, "strict", z.ZodTypeAny, {
     reactionMsP50: number | null;
     sceneId: string;
-    challengeType: "touch_targets" | "jump_count" | "squat" | "freeze" | "run_in_place" | "balance" | null;
+    challengeType: "touch_targets" | null;
     outcome: "success" | "partial" | "struggle" | null;
     attempts: number;
     activeMs: number;
 }, {
     reactionMsP50: number | null;
     sceneId: string;
-    challengeType: "touch_targets" | "jump_count" | "squat" | "freeze" | "run_in_place" | "balance" | null;
+    challengeType: "touch_targets" | null;
     outcome: "success" | "partial" | "struggle" | null;
     attempts: number;
     activeMs: number;
@@ -220,7 +220,7 @@ export declare const SessionStatsSchema: z.ZodObject<{
     startedAt: z.ZodString;
     scenes: z.ZodArray<z.ZodObject<{
         sceneId: z.ZodString;
-        challengeType: z.ZodNullable<z.ZodEnum<["touch_targets", "jump_count", "squat", "freeze", "run_in_place", "balance"]>>;
+        challengeType: z.ZodNullable<z.ZodEnum<["touch_targets"]>>;
         outcome: z.ZodNullable<z.ZodEnum<["success", "partial", "struggle"]>>;
         attempts: z.ZodNumber;
         reactionMsP50: z.ZodNullable<z.ZodNumber>;
@@ -228,14 +228,14 @@ export declare const SessionStatsSchema: z.ZodObject<{
     }, "strict", z.ZodTypeAny, {
         reactionMsP50: number | null;
         sceneId: string;
-        challengeType: "touch_targets" | "jump_count" | "squat" | "freeze" | "run_in_place" | "balance" | null;
+        challengeType: "touch_targets" | null;
         outcome: "success" | "partial" | "struggle" | null;
         attempts: number;
         activeMs: number;
     }, {
         reactionMsP50: number | null;
         sceneId: string;
-        challengeType: "touch_targets" | "jump_count" | "squat" | "freeze" | "run_in_place" | "balance" | null;
+        challengeType: "touch_targets" | null;
         outcome: "success" | "partial" | "struggle" | null;
         attempts: number;
         activeMs: number;
@@ -258,7 +258,7 @@ export declare const SessionStatsSchema: z.ZodObject<{
     scenes: {
         reactionMsP50: number | null;
         sceneId: string;
-        challengeType: "touch_targets" | "jump_count" | "squat" | "freeze" | "run_in_place" | "balance" | null;
+        challengeType: "touch_targets" | null;
         outcome: "success" | "partial" | "struggle" | null;
         attempts: number;
         activeMs: number;
@@ -275,7 +275,7 @@ export declare const SessionStatsSchema: z.ZodObject<{
     scenes: {
         reactionMsP50: number | null;
         sceneId: string;
-        challengeType: "touch_targets" | "jump_count" | "squat" | "freeze" | "run_in_place" | "balance" | null;
+        challengeType: "touch_targets" | null;
         outcome: "success" | "partial" | "struggle" | null;
         attempts: number;
         activeMs: number;
