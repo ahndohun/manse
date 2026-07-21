@@ -46,7 +46,7 @@ try {
     await page.getByText(`${index + 1} / 3`, { exact: true }).waitFor({ state: "visible", timeout: 3_000 });
   }
 
-  await page.getByText("Targets cleared", { exact: true }).waitFor({ state: "visible", timeout: 3_000 });
+  await page.getByText("Runtime check complete.", { exact: true }).waitFor({ state: "visible", timeout: 3_000 });
   assert.deepEqual(pageErrors, [], `Browser errors: ${pageErrors.join("; ")}`);
 
   console.log(`Public Playground passed: ${playgroundUrl.href} completed 3 / 3 signed out.`);

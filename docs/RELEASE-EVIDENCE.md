@@ -5,11 +5,11 @@ actions. Update it whenever the release artifact or public URLs change.
 
 ## Current release candidate
 
-- Deployed source commit: `ec6f18c6c93a2eef9beb28d929fda041a4e02b15`
+- Deployed source commit: `9de12e79c9a41871c14d37176b0ca2c85a28588e`
 - Repository: https://github.com/ahndohun/manse
-- Saved Sites version: **8**
+- Saved Sites version: **9**
 - Packaged Showcase content hash recorded by Sites:
-  `sha256:96fdb5391bd761e956f5189090fef5899a59ec36d3de35bf756ff7032a450caa`
+  `sha256:886ebd8bf1f0d74a0be265a8f134b72b4e63151381d8f543cd525862083bbf16`
 - Public Showcase origin:
   `https://manse-showcase.ran584000.chatgpt.site`
 - Current access state: **public; no Manse or ChatGPT account required**
@@ -22,13 +22,12 @@ simulator playground, docs, submission guide, and provenance document. The
 bundled lite pose model also returned 200 and matched its recorded SHA-256 digest
 `59929e1d1ee95287735ddd833b19cf4ac46d29bc7afddbbf6753c459690d574a`.
 
-After version 8 deployed, a fresh browser context completed the simulator from
-0 / 3 through 3 / 3 with trusted pointer input. The automated public gate also
-asserted one renderer with the expected camera and overlay canvases, observed
-no page errors, and completed without an account, API key, camera permission,
-or rebuild. Home, playground, docs, submission guidance, and asset provenance
-all returned HTTP 200, and the rendered social image URL used the working
-Showcase origin.
+On 2026-07-22 KST, version 9's fresh signed-out browser gate completed the
+simulator from 0 / 3 through 3 / 3 with trusted pointer input and showed
+"Runtime check complete.". It asserted one renderer with the expected camera
+and overlay canvases, observed no page errors, and completed without an
+account, API key, camera permission, or rebuild. The deployed home page contains
+zero occurrences of the removed "Auto quality" claim.
 
 ## Verified repository gate
 
