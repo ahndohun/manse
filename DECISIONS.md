@@ -183,3 +183,30 @@ pack configs and engine session — negative controls confirm the harness scores
 Real-camera feel (especially the aim wrapper) and ChatGPT Sites publication remain
 owner/Codex-environment steps; the catalog stays empty until a public manifest passes
 CI and maintainer review, per the platform invariants.
+
+## 2026-07-22
+
+### D016 — The starter precaches the shell and pack at service-worker install
+
+Real-browser verification of a production demo game falsified the offline
+claim: the runtime-only service-worker cache never saw the first page load
+(the shell requests happen before the worker controls the page), so going
+offline after a single visit produced a blank page, and starting a game whose
+pack had not been fetched yet failed with "Failed to fetch". The existing
+Node VM test passed because it only exercised routes fetched through the
+worker, hiding the registration-timing gap.
+
+The starter now injects an install-time precache into the built worker:
+`scripts/generate-sw-precache.mjs` runs as `postbuild`, enumerates
+`dist/client`, and rewrites the `PRECACHE_URLS` marker inside
+`dist/client/sw.js` (the list cannot ship as a sibling file because the
+production asset manifest is frozen at build time and will not serve files
+added after the build). The precache covers the navigation shell, hashed
+assets, the public manifest, and the pack with its audio; pose models and
+mediapipe wasm stay lazy so install stays light — camera play works offline
+only after the camera has been used online once, which matches the simulator-
+first product story. Offline navigations to unvisited routes fall back to the
+cached shell. Verified end-to-end in a real browser: clean profile, one online
+load with no play, server stopped, reload, full pointer completion with zero
+console errors. Applied to the starter template and all six demo games; every
+game rebuilt with 16 precache URLs and passing tests.
