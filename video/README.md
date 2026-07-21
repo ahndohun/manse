@@ -41,3 +41,8 @@ Run `npm run capture` immediately before the final render. The capture fails if
 either public route is unavailable, emits a page error, or the Playground does
 not advance through `0/3 → 1/3 → 3/3` and display `Runtime check complete.`
 The resulting clips are embedded with Remotion's `<OffthreadVideo>` component.
+
+The final checked export is 146.624 seconds, H.264/AAC at 1920×1080/30 fps
+(20,681,273 bytes). Its integrated loudness is -16.89 LUFS, its true peak is
+-4.35 dBTP, and its SHA-256 is
+`e50b8e6cd0b09e911d5bb5b2e1c8953073a7fc40635c1eb2e6d956b02b5ef9ca`.

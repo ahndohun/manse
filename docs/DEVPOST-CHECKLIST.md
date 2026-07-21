@@ -26,14 +26,14 @@ signed-in project dashboard on 2026-07-22.
 - [x] Installation instructions
 - [x] Supported platforms
 - [x] Test path that does not require judges to rebuild: public Showcase Site, hosted engine/starter playground, and an installable plugin marketplace entry
-- [ ] Working demo must match the video and written claims
+- [x] Working demo matches the video and written claims
 
 ## Repository and legal checks
 
 - [x] MIT `LICENSE`
 - [x] Third-party dependency license inventory
 - [x] Asset provenance and license metadata
-- [ ] No unlicensed trademarks, copyrighted music, characters, or third-party footage in the video
+- [x] No unlicensed trademarks, copyrighted music, characters, or third-party footage in the video
 - [x] All submission and testing instructions are English
 - [x] Existing and new work are distinguishable through dated commits and the decision log
 
@@ -57,4 +57,4 @@ signed-in project dashboard on 2026-07-22.
 - [x] Verify the repository is accessible to judges
 - [ ] Verify the YouTube video is public and under three minutes
 - [x] Capture the primary task's `/feedback` Session ID
-- [ ] Save a local copy of all submitted text and URLs before the deadline
+- [x] Save a local copy of all submitted text and URLs before the deadline

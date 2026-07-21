@@ -94,6 +94,7 @@ export const Publish: React.FC = () => (
         </div>
         <KenBurns
           src="screens/morning-star-catch.png"
+          objectPosition="center top"
           style={{width: '100%', height: 470}}
         />
         <div

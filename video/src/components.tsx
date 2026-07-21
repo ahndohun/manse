@@ -140,8 +140,9 @@ export const KenBurns: React.FC<{
   src: string;
   from?: number;
   to?: number;
+  objectPosition?: React.CSSProperties['objectPosition'];
   style?: React.CSSProperties;
-}> = ({src, from = 1, to = 1.08, style}) => {
+}> = ({src, from = 1, to = 1.08, objectPosition = 'center', style}) => {
   const frame = useCurrentFrame();
   const {durationInFrames} = useVideoConfig();
   const scale = interpolate(frame, [0, durationInFrames], [from, to]);
@@ -153,6 +154,7 @@ export const KenBurns: React.FC<{
           width: '100%',
           height: '100%',
           objectFit: 'cover',
+          objectPosition,
           transform: `scale(${scale})`,
         }}
       />

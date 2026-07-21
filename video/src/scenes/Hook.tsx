@@ -72,7 +72,7 @@ export const Hook: React.FC = () => {
           top: 130,
           right: 72,
           width: 1050,
-          height: 660,
+          height: 591,
           overflow: 'hidden',
           transform: `translateX(${slide}px)`,
           padding: 0,
@@ -86,7 +86,8 @@ export const Hook: React.FC = () => {
           style={{
             width: '100%',
             height: '100%',
-            objectFit: 'cover',
+            objectFit: 'contain',
+            backgroundColor: '#07120f',
             borderRadius: 22,
           }}
         />

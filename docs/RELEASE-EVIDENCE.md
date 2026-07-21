@@ -5,11 +5,11 @@ actions. Update it whenever the release artifact or public URLs change.
 
 ## Current release candidate
 
-- Deployed source commit: `2372fe30e473cb0906c165ecbcf6739b7da351fb`
+- Deployed source commit: `379ada82ff73e79a14186315d8c56b426ce2ea90`
 - Repository: https://github.com/ahndohun/manse
-- Saved Sites version: **11**
+- Saved Sites version: **12**
 - Packaged Showcase content hash recorded by Sites:
-  `sha256:9d827c95dd23f8ef90dccca3a30b8ccf1dfd65e639128d151098253be8006b88`
+  `sha256:5a76e5964377bb77f8d932ae06a14ad28caf633a173d451c12a763f5966b53af`
 - Public Showcase origin:
   `https://manse-showcase.ran584000.chatgpt.site`
 - Current access state: **public; no Manse or ChatGPT account required**
@@ -44,6 +44,15 @@ non-touch `Dodge`, `Freeze`, `Squat`, and `Jump` tags. The public playground
 again completed 3 / 3, and the deployed home page contains zero occurrences of
 the removed "Auto quality" claim.
 
+Version 12 is the final presentation release. It replaces the placeholder-like
+catalog treatments with a real Fire Hose Hero play frame, labels the other five
+entries explicitly as engine-mechanic demos with cover art, and places the
+flagship's 3-alarm / 12-fire proof above the fold. Fresh signed-out desktop and
+390-pixel mobile checks verified all six cards, working filters and outbound
+game links, no horizontal overflow, and zero page or console errors. The public
+Playground again completed 3 / 3 without an account, camera, API key, or
+rebuild.
+
 ## Six public creator game Sites
 
 Each game is an independent public ChatGPT Site backed by its own public GitHub
@@ -56,7 +65,7 @@ heavy camera model and WebAssembly payloads lazy.
 | Game | Public Site | Deployed source commit |
 | --- | --- | --- |
 | Morning Star Catch | https://morning-star-catch.ran584000.chatgpt.site | `ca22e8cd845ebe37a6c3b34801191f03c609f4e2` |
-| Fire Hose Hero | https://fire-hose-hero.ran584000.chatgpt.site | `c04a7223b73b1f46aafbc852a17843d6f2f42c0d` |
+| Fire Hose Hero | https://fire-hose-hero.ran584000.chatgpt.site | `e8fb77dc7ab381e1e9a08795323a1f814e6ba0ff` |
 | Fruit Basket Catch | https://fruit-basket.ran584000.chatgpt.site | `0e9534eace4ba0567824eca23c386a6965f762b8` |
 | Museum Statues | https://museum-statues.ran584000.chatgpt.site | `5db37be38fbb538cb98e8c8cfa199864a7c2200e` |
 | Froggy Hops | https://froggy-hops.ran584000.chatgpt.site | `428151a0e01f1e904df0f1d5f520cf516027bdae` |
@@ -76,7 +85,7 @@ Morning Star Catch was loaded online once, then reloaded successfully with
 browser networking disabled while still showing its title, pointer-play action,
 and corrected public source link under active service-worker control.
 
-Fire Hose Hero version 7 is the quality-reference release. Its public,
+Fire Hose Hero version 8 is the quality-reference release. Its public,
 signed-out production build passed complete pointer runs at 1280×900 and
 390×844 with reduced motion: 12/12 fires across three alarm zones, terminal
 victory, restart to 0/12, keyboard focus, captions, no horizontal overflow, and
@@ -84,7 +93,10 @@ zero console, page, or request errors. The game also carries its own approved
 experience contract, real mid-play and completion captures, and a release gate
 covering themed entities, three reaction states, continuous hose feedback,
 authored escalation/audio, score/resolution, camera/simulator parity, and
-reduced-motion completion.
+reduced-motion completion. Version 8 also distinguishes a failed mission's
+retry-ready shell status from the successful completion label. Its saved Sites
+archive contains 42 files with content hash
+`sha256:5df36db1f9105657b492d8678ce266c41c8988f6462c1bb5af269001cdad7005`.
 
 ## Verified repository gate
 
@@ -114,6 +126,18 @@ Evidence covered:
 
 Run `npm run licenses:check -- --json` for the complete dependency license
 inventory and see `docs/THIRD-PARTY.md` for the release policy.
+
+## Independent shipping review
+
+A final read-only Fable 5 High review returned **FINAL PASS** after inspecting
+the current flagship source and captures, public signed-out URLs, Showcase v12,
+the installed creator-plugin contract, the final Remotion export, and the
+submission documents. It found no release-blocking defect. Its two remaining
+presentation notes were resolved before upload: the opening gameplay frame now
+shows the full HUD without edge cropping, and a failed Fire Hose Hero mission
+uses a retry-specific shell status instead of the successful-completion label.
+Automated validation and public browser checks remain the authoritative release
+evidence; the advisory review is an additional product-quality gate.
 
 ## Fresh creator-project forward test
 
@@ -171,9 +195,9 @@ The pre-submission audit on 2026-07-21 KST found:
   upload, or child-profile implementation; and
 - both full and production-only npm audits report zero vulnerabilities.
 
-This audit covers the repository, generated starter, six public game Sites, and
-the rendered Showcase catalog. The final video and Devpost form still require
-their owner-controlled release checks.
+This audit covers the repository, generated starter, six public game Sites, the
+rendered Showcase catalog, and the locally rendered final video. YouTube
+publication and the Devpost submission remain owner-controlled release actions.
 
 ## Public deployment smoke test
 
@@ -207,7 +231,7 @@ reproducible across the developer Mac and the GitHub runner.
 | Real creator-owned game | Verified | Six independent public game Sites and their public source repositories are linked above. |
 | Full creator loop | Verified | Six public manifests passed catalog ingestion and render as six independent Showcase cards. |
 | Owner camera feel smoke | Outstanding, non-blocking | Run the mechanic diagnostic and real-camera aiming check; the release wrapper changes only MediaPipe frames and the published release remains shippable if feel tuning fails. |
-| Demo video | Rendered; public upload pending | The reproducible Remotion edit is 146.62 seconds at 1920×1080/30 fps and includes signed-out live Showcase and judge-path captures. Upload the final post-deploy render publicly and recheck its duration. |
+| Demo video | Rendered and locally verified; public upload pending | The reproducible Remotion edit is 146.624 seconds at 1920×1080/30 fps, H.264/AAC (20,681,273 bytes). All nine scene midpoints, the corrected creator-site crop, and the full-width opening gameplay HUD were inspected; integrated loudness is -16.89 LUFS with -4.35 dBTP peak. SHA-256: `e50b8e6cd0b09e911d5bb5b2e1c8953073a7fc40635c1eb2e6d956b02b5ef9ca`. Upload it publicly and verify YouTube duration/visibility. |
 | Devpost project | Draft created | The `Manse` project draft and thumbnail exist; Developer Tools answers are prepared for the final submission gate. |
 | `/feedback` ID | Captured | Primary integration task: `019f8035-dbb1-7213-8946-84a80b7343f8`. |
 
