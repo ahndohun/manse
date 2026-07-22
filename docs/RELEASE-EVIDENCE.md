@@ -3,18 +3,20 @@
 This page separates verified implementation evidence from the remaining owner
 actions. Update it whenever the release artifact or public URLs change.
 
-## Current release candidate
+## Current post-submission state
 
-- Deployed source commit: `379ada82ff73e79a14186315d8c56b426ce2ea90`
+- Deployed Showcase source commit:
+  `93e3a8e8d6dfae8af1bc5d0eb1b5fc2466c5daaf`
 - Repository: https://github.com/ahndohun/manse
-- Saved Sites version: **12**
-- Packaged Showcase content hash recorded by Sites:
-  `sha256:5a76e5964377bb77f8d932ae06a14ad28caf633a173d451c12a763f5966b53af`
+- Public Showcase Sites version: **15**
 - Public Showcase origin:
   `https://manse-showcase.ran584000.chatgpt.site`
 - Current access state: **public; no Manse or ChatGPT account required**
 - Installed Manse Creator version:
-  `0.1.0+codex.20260721210725`
+  `0.1.0+codex.20260722011014`
+- Devpost submission: https://devpost.com/software/manse (submission ID
+  `1112468`)
+- Public demo video: https://www.youtube.com/watch?v=yFgUyrsdgfo
 
 On 2026-07-21 KST, the owner approved public access, the saved release artifact
 was deployed again, and zero-cookie HTTPS requests returned 200 for the home,
@@ -64,6 +66,13 @@ game art` treatment from source commit
 `26440f9bc0e3d906add57a232aba0b8786e2321c` and removed the former mechanic-demo
 label.
 
+Showcase version 15 deployed the shared MANSE platform shell from source commit
+`93e3a8e8d6dfae8af1bc5d0eb1b5fc2466c5daaf`. A fresh anonymous audit covered
+the Showcase and all six creator-game Sites at 1280 pixels. Every Site showed
+the exact `MANSE` wordmark, exact Showcase back-link destination
+`https://manse-showcase.ran584000.chatgpt.site`, a present `<main>` landmark,
+and no horizontal overflow.
+
 ## Six public creator game Sites
 
 Each game is an independent public ChatGPT Site backed by its own public GitHub
@@ -75,12 +84,34 @@ heavy camera model and WebAssembly payloads lazy.
 
 | Game | Public Site | Version | Deployed source commit |
 | --- | --- | --- | --- |
-| Morning Star Catch | https://morning-star-catch.ran584000.chatgpt.site | 7 | `11e122d4e8cba4b3a98e4441072a983c729acfc0` |
-| Fire Hose Hero | https://fire-hose-hero.ran584000.chatgpt.site | 8 | `e8fb77dc7ab381e1e9a08795323a1f814e6ba0ff` |
-| Fruit Basket Catch | https://fruit-basket.ran584000.chatgpt.site | 7 | `a649c2d93f9f6d1c1b346a5fe670facfac23fe51` |
-| Museum Statues | https://museum-statues.ran584000.chatgpt.site | 7 | `99f38ee79bf8d8d653b8d81e46b2259bcf608a08` |
-| Froggy Hops | https://froggy-hops.ran584000.chatgpt.site | 7 | `b60ec256572e8f3daec9c6893bf843c5fcbc6ee4` |
-| Monkey Bananas | https://monkey-bananas.ran584000.chatgpt.site | 7 | `750e92e9fa68bfe87fe0ca01e71ba48c87c818b1` |
+| Morning Star Catch | https://morning-star-catch.ran584000.chatgpt.site | 9 | `9651c65091fc8583421b048293f2d89741fc89f7` |
+| Fire Hose Hero | https://fire-hose-hero.ran584000.chatgpt.site | 9 | `417c0c2cce6db8885f255d26958c4d55973c9dc0` |
+| Fruit Basket Catch | https://fruit-basket.ran584000.chatgpt.site | 9 | `25526e34b30177b6193a2035f0d64485a505b5c5` |
+| Museum Statues | https://museum-statues.ran584000.chatgpt.site | 9 | `af8b13961f523afce991aaf227d9d564d0e3ee26` |
+| Froggy Hops | https://froggy-hops.ran584000.chatgpt.site | 9 | `671cd20116f6538e8eaa7f631807ddaa5dbe64b4` |
+| Monkey Bananas | https://monkey-bananas.ran584000.chatgpt.site | 9 | `1bcdc97a8c056d6af2d153c134a14c4010c99d5c` |
+
+The current public release for every game is Sites version 9. The anonymous
+seven-Site shell audit verified the exact platform wordmark, back-link label
+and `href`, main landmark, and absence of horizontal overflow at 1280 pixels.
+Morning Star Catch additionally completed its public v9 pointer path
+from 0 / 3 through 3 / 3 using trusted pointer input and reached the DOM status
+`완료`. The capture is checked in at
+`evidence/platform-morning-public-complete.png`.
+
+Four dash-only version 10 source commits are prepared but **not deployed**:
+
+| Game | Prepared v10 source commit | Deployment state |
+| --- | --- | --- |
+| Froggy Hops | `c736a70ce111f603cdb0cc878f80d92447c17a19` | Not deployed |
+| Fruit Basket Catch | `9b44e73dac8737dfe21c6f4a1ebd41a13e4d806d` | Not deployed |
+| Monkey Bananas | `4d839baed20c4898e52593fa4eea8189ea5cdab6` | Not deployed |
+| Morning Star Catch | `98558ec9779f674ba70fb15cbdf030e1ee99814e` | Not deployed |
+
+The attempted Sites update was stopped by the connector response HTTP 451,
+`no_biscuit_no_service`. Consequently the public origins and authoritative
+table above remain on version 9; the prepared v10 SHAs must not be represented
+as live.
 
 Fresh signed-out checks after the version 7 roll-out returned HTTP 200 for all
 six Site roots and manifests. Pointer mode entered the themed play field on all
@@ -149,8 +180,8 @@ inventory and see `docs/THIRD-PARTY.md` for the release policy.
 
 ## Independent shipping review
 
-A final read-only Fable 5 High review returned **FINAL PASS** after inspecting
-the current flagship source and captures, public signed-out URLs, Showcase v12,
+A pre-shell read-only Fable 5 High review returned **FINAL PASS** after inspecting
+the then-current flagship source and captures, public signed-out URLs, Showcase v12,
 the installed creator-plugin contract, the final Remotion export, and the
 submission documents. It found no release-blocking defect. Its two remaining
 presentation notes were resolved before upload: the opening gameplay frame now
@@ -158,8 +189,11 @@ shows the full HUD without edge cropping, and a failed Fire Hose Hero mission
 uses a retry-specific shell status instead of the successful-completion label.
 A focused follow-up review of those exact deltas returned **DELTA PASS** with no
 blockers.
-Automated validation and public browser checks remain the authoritative release
-evidence; the advisory review is an additional product-quality gate.
+Those PASS results are historical pre-shell evidence, not a review of the
+current version 15 / version 9 final state. The latest requested post-shell
+Fable review is blocked because Claude Code OAuth has expired. No newer Fable
+PASS is claimed. Automated validation and public browser checks remain the
+authoritative current release evidence.
 
 ## Fresh creator-project forward test
 
@@ -182,8 +216,8 @@ published or represented as a public sample game.
 The regenerated project also resolved the patched PostCSS build dependency and
 passed a full development-and-runtime `npm audit` with zero findings.
 
-The final plugin reinstall used cachebuster version
-`0.1.0+codex.20260721210725`. A clean-room contract run generated both touch and
+The current plugin reinstall uses cachebuster version
+`0.1.0+codex.20260722011014`. A clean-room contract run generated both touch and
 freeze projects with explicit player fantasies, physical verbs, and themed
 targets; validated their three distinct challenge beats; and proved that a
 brief missing the authored fantasy is rejected before scaffolding. An earlier
@@ -218,8 +252,9 @@ The pre-submission audit on 2026-07-21 KST found:
 - both full and production-only npm audits report zero vulnerabilities.
 
 This audit covers the repository, generated starter, six public game Sites, the
-rendered Showcase catalog, and the locally rendered final video. YouTube
-publication and the Devpost submission remain owner-controlled release actions.
+rendered Showcase catalog, and the rendered final video. The video is now public
+at https://www.youtube.com/watch?v=yFgUyrsdgfo, and the Devpost entry is submitted
+at https://devpost.com/software/manse with submission ID `1112468`.
 
 ## Public deployment smoke test
 
@@ -253,8 +288,8 @@ reproducible across the developer Mac and the GitHub runner.
 | Real creator-owned game | Verified | Six independent public game Sites and their public source repositories are linked above. |
 | Full creator loop | Verified | Six public manifests passed catalog ingestion and render as six independent Showcase cards. |
 | Owner camera feel smoke | Outstanding, non-blocking | Run the mechanic diagnostic and real-camera aiming check; the release wrapper changes only MediaPipe frames and the published release remains shippable if feel tuning fails. |
-| Demo video | Rendered and locally verified; public upload pending | The reproducible Remotion edit is 146.624 seconds at 1920×1080/30 fps, H.264/AAC (20,681,273 bytes). All nine scene midpoints, the corrected creator-site crop, and the full-width opening gameplay HUD were inspected; integrated loudness is -16.89 LUFS with -4.35 dBTP peak. SHA-256: `e50b8e6cd0b09e911d5bb5b2e1c8953073a7fc40635c1eb2e6d956b02b5ef9ca`. Upload it publicly and verify YouTube duration/visibility. |
-| Devpost project | Draft created | The `Manse` project draft and thumbnail exist; Developer Tools answers are prepared for the final submission gate. |
+| Demo video | Verified public | The 2:27 demo is public at https://www.youtube.com/watch?v=yFgUyrsdgfo. The reproducible Remotion edit is 146.624 seconds at 1920×1080/30 fps, H.264/AAC (20,681,273 bytes), with SHA-256 `e50b8e6cd0b09e911d5bb5b2e1c8953073a7fc40635c1eb2e6d956b02b5ef9ca`. The current public video uses the prior macOS Samantha narration. A later ChatGPT TTS replacement remains blocked because `OPENAI_API_KEY` is unavailable and is not part of the public artifact. |
+| Devpost project | Submitted | Public entry: https://devpost.com/software/manse; submission ID `1112468`. |
 | `/feedback` ID | Captured | Primary integration task: `019f8035-dbb1-7213-8946-84a80b7343f8`. |
 
 ## Anonymous judge-path checklist
