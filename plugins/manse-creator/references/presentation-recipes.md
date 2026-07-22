@@ -27,6 +27,21 @@ The player's `onEvent` stream emits `target-hit`, `challenge-progress`, `scene-c
 and `complete`. Feed it through `mission.ts` and `audio.ts`; add game-specific scoring,
 timers, retries, and wave state there rather than inferring the whole mission from pixels.
 
+## Fantasy-first world composition
+
+The first playable frame must already look like the promised fantasy, not like a detector
+demo waiting for decoration. Prefer one authored, same-Site, provenance-recorded full-bleed
+world image or a comparably rich code-painted set, cover-fit it behind the play layer, and
+apply only the grade needed for target and caption contrast. Keep the active character,
+prop, targets, mission HUD, and reactions above that world so the scene reads at TV distance.
+Do not ship empty gradients, debug geometry, or a landing-page illustration followed by an
+unrelated bare canvas. Use one dominant start action, room-readable state, and a brief safety
+line; put camera/device setup into the camera path instead of blocking simulator play.
+
+In camera mode the local mirrored video replaces the authored backdrop at full strength.
+Never ghost a fantasy background over the player. The same fictional objects, avatar prop,
+HUD, reactions, and outcome remain above both backdrops.
+
 ## Mechanic-to-fiction recipes
 
 ### `touch_targets` and `velocity_hit`
@@ -78,14 +93,23 @@ wrist/finger cluster (right by default) when `setPointer` is called. Therefore a
 glove, hose, wand, or other pose-anchored prop must follow the highest-confidence or
 most-recently-moved wrist. Do not use the midpoint of both wrists: it half-tracks the pointer.
 
+That default hand-only control cannot complete `squat` or `jump`. A generated game using
+either mechanic must ship a creator-owned, pointer-compatible full-body simulator adapter:
+pointer movement must produce the same safe stand/crouch or ground/rise/land phases expected
+by the evaluator while camera mode continues to use the default MediaPipe provider. Prove the
+public no-camera path reaches real progress and terminal completion; a replay-only unit test
+does not make an advertised pointer button honest.
+
 ## Required review before approval
 
 1. Replace the generic seal, zone object, avatar prop, and painted set hooks with the game's
    own fiction and keep all tunable quantities in pack/config data.
 2. Localize every canvas string for every declared locale.
 3. Verify the same game layer in camera and simulator modes, including full-strength mirrored
-   self-view and a painted simulator world.
+   self-view and a provenance-recorded full-bleed or comparably rich painted simulator world.
 4. Exercise three visible reaction states, continuous input feedback, three authored sounds,
    score/mission HUD, authored escalation, reduced motion, and distinct victory/retry outcome.
-5. Capture genuine shipped-build play, reaction, and completion evidence. Only then set the
+5. Complete the actual public pointer path for every advertised mechanic, including a
+   full-body adapter for squat/jump, then capture genuine shipped-build play, reaction, and
+   completion evidence. Only then set the
    corresponding `.manse/experience.json` gates true and change its status to `approved`.
