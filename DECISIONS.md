@@ -288,3 +288,27 @@ locale controls, renderer, source link, and game-specific interface. Compatibili
 tests cover the public Showcase URL, one-line mobile behavior, focus and active
 states, and horizontal overflow. This is a presentation contract, not a runtime
 dependency: each Site still bundles and serves its own copy.
+
+### D020 - SkillOpt promotes a bounded strategy automatically behind immutable gates
+
+SkillOpt is useful to Manse only when a measured improvement can become the
+next creator-harness strategy without a maintainer manually copying a proposal.
+The optimization target is therefore limited to
+`references/optimized-creator-strategy.md` plus a champion manifest. Platform
+policy, pack contracts, privacy rules, evaluators, fixtures, and release gates
+are mounted read-only and are never optimizer-editable.
+
+A challenger is promoted atomically only after every hard gate passes on the
+selection split, its soft-score lower confidence bound improves, the result
+repeats under another seed, and all six Showcase games remain regression-free.
+The promotion records the strategy diff, evaluator and dataset hashes, model
+IDs, evidence, cost, and rollback commit in a signed manifest. The sealed suite
+runs again after promotion; any regression restores the previous champion
+automatically. Humans may pin or roll back a champion, but ordinary passing
+cycles do not wait for manual adoption.
+
+This decision does not enable an unattended service yet. Synthetic benchmark
+rollouts run without deployment, credentials, camera access, or network access.
+Real creator sessions remain excluded until an opted-in, redacted data-boundary
+pilot and an automatic rollback drill both pass. The complete benchmark and
+rollout design is recorded in `docs/SKILLOPT-HARNESS-RESEARCH.md`.
