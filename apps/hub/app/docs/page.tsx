@@ -60,7 +60,7 @@ export default function DocsPage() {
           <section id="first-game" className="docs-section">
             <p className="docs-kicker">02 · Create</p>
             <h2>Use one conversation from idea to Site.</h2>
-            <div className="prompt-card"><span>Example prompt</span><p>“Create a gentle ocean rescue motion game for ages 6–9, playable while seated or standing, in English and Korean.”</p></div>
+            <div className="prompt-card"><span>Example prompt</span><p>“Create a gentle ocean rescue motion game for ages 6-9, playable while seated or standing, in English and Korean.”</p></div>
             <p>Codex selects the right Manse Creator skills as the project moves through the workflow:</p>
             <div className="skill-list">{pluginSkills.map(([name, description]) => <div key={name}><code>{name}</code><p>{description}</p></div>)}</div>
             <p>The plugin pauses for meaningful creative choices and performs deterministic validation before it proposes publishing.</p>
@@ -69,7 +69,7 @@ export default function DocsPage() {
           <section id="game-contract" className="docs-section">
             <p className="docs-kicker">03 · Contract</p>
             <h2>Every published game stands on its own.</h2>
-            <p>A Manse game is an independent public Site. Its runtime, packs, generated assets, and offline resources are bundled with the deployment—there is no runtime CDN or hosted AI dependency.</p>
+            <p>A Manse game is an independent public Site. Its runtime, packs, generated assets, and offline resources are bundled with the deployment. There is no runtime CDN or hosted AI dependency.</p>
             <div className="contract-grid">
               <div><span>Public manifest</span><code>/.well-known/manse-game.json</code><p>Identity, URLs, engine compatibility, locales, movement, accessibility, license, and provenance.</p></div>
               <div><span>Portable pack</span><code>/packs/&lt;game&gt;/manse.pack.json</code><p>Strict declarative scenes, challenges, localized narration, assets, and adaptation data.</p></div>

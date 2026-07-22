@@ -36,7 +36,7 @@ function GameCard({ game, featured = false }: { game: CatalogGame; featured?: bo
   const artDescription = `${game.title} game art`;
   return (
     <article className={featured ? "game-card game-card-featured" : "game-card"}>
-      <a className="game-card-art" href={game.gameUrl} target="_blank" rel="noreferrer" aria-label={`Play ${game.title}`}>
+      <a className="game-card-art" href={game.gameUrl} aria-label={`Play ${game.title}`}>
         {artUrl !== null ? (
           // Creator-owned Sites serve their own thumbnails; the Showcase must
           // display them directly instead of proxying third-party game assets.
@@ -51,7 +51,7 @@ function GameCard({ game, featured = false }: { game: CatalogGame; featured?: bo
         <div className="game-card-kicker">
           <span>{game.energy}</span>
           <span>
-            Ages {game.ageRange.min}–{game.ageRange.max}
+            Ages {game.ageRange.min}-{game.ageRange.max}
           </span>
         </div>
         <h3>{game.title}</h3>
@@ -63,8 +63,8 @@ function GameCard({ game, featured = false }: { game: CatalogGame; featured?: bo
           ))}
         </ul>
         <div className="game-card-actions">
-          <a className="button button-ink" href={game.gameUrl} target="_blank" rel="noreferrer">
-            Play game <span aria-hidden="true">↗</span>
+          <a className="button button-ink" href={game.gameUrl}>
+            Play game <span aria-hidden="true">→</span>
           </a>
           <a className="text-link" href={game.sourceUrl} target="_blank" rel="noreferrer">
             Source <span aria-hidden="true">↗</span>

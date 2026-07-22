@@ -272,3 +272,19 @@ This gate is intentionally stricter than the declarative pack schema. The pack
 continues to contain no uploaded executable code; the creator-owned Site supplies
 its reviewed presentation layer, and publication remains impossible until both
 the data contract and shipped experience have evidence.
+
+### D019 - Independent Sites share one Manse navigation shell
+
+Creator ownership and cross-Site visual continuity are compatible. The Showcase
+and official games now use the same compact off-black platform bar, uppercase
+`MANSE` wordmark, lime primary action, focus treatment, and 68px desktop / 64px
+mobile rhythm. Every game exposes one localized return action to the exact public
+Showcase URL. The Showcase opens games in the current tab, and each game provides
+the explicit return path, so discovery and play feel like one platform without
+iframes, proxy execution, shared player accounts, or central game hosting.
+
+The common shell is deliberately small. A creator-owned game keeps its own art,
+locale controls, renderer, source link, and game-specific interface. Compatibility
+tests cover the public Showcase URL, one-line mobile behavior, focus and active
+states, and horizontal overflow. This is a presentation contract, not a runtime
+dependency: each Site still bundles and serves its own copy.

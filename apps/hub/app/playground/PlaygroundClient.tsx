@@ -96,7 +96,7 @@ const MECHANICS: Readonly<Record<MechanicKey, MechanicPreset>> = {
   },
   squat: {
     label: "Squat",
-    caption: "Two gentle squats — replay demo shows the detector.",
+    caption: "Two gentle squats. The replay demo shows the detector.",
     pointerDrivable: false,
     challenge: {
       type: "squat", repetitions: 2, depthRatio: 0.2, kneeAngleMaxDeg: 140,
@@ -138,7 +138,7 @@ const MECHANICS: Readonly<Record<MechanicKey, MechanicPreset>> = {
   },
   jump: {
     label: "Jump",
-    caption: "One jump with a soft landing — replay demo shows the detector.",
+    caption: "One jump with a soft landing. The replay demo shows the detector.",
     pointerDrivable: false,
     challenge: {
       type: "jump", repetitions: 1, minRiseRatio: 0.12, landingStableMs: 300,
@@ -173,7 +173,7 @@ const MECHANICS: Readonly<Record<MechanicKey, MechanicPreset>> = {
   },
   step: {
     label: "Step",
-    caption: "Step left, then right — replay demo shows the detector.",
+    caption: "Step left, then right. The replay demo shows the detector.",
     pointerDrivable: false,
     challenge: {
       type: "step", pattern: ["left", "right"], stepRatio: 0.25,
@@ -192,7 +192,7 @@ const MECHANICS: Readonly<Record<MechanicKey, MechanicPreset>> = {
   },
   sequence: {
     label: "Combo",
-    caption: "Squat, jump, then freeze — replay demo shows the chain.",
+    caption: "Squat, jump, then freeze. The replay demo shows the chain.",
     pointerDrivable: false,
     challenge: {
       type: "sequence",
@@ -480,7 +480,7 @@ export function PlaygroundClient() {
           />
           <div className="playground-progress" aria-live="polite">
             <span>{snapshot.caption ?? "Loading the declarative pack…"}</span>
-            <strong>{progress === null ? "—" : `${progress.completed} / ${progress.total}`}</strong>
+            <strong>{progress === null ? "-" : `${progress.completed} / ${progress.total}`}</strong>
           </div>
           {guideRows.length > 0 && (
             <dl

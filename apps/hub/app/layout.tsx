@@ -30,8 +30,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: {
-      default: "Manse — Open-source active play",
-      template: "%s — Manse",
+      default: "Manse | Open-source active play",
+      template: "%s | Manse",
     },
     description:
       "An open-source AR active-game engine, Codex creator plugin, and public Showcase for browser-native motion games.",
@@ -40,13 +40,13 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       type: "website",
       siteName: "Manse",
-      title: "Manse — Every screen can be a playground",
+      title: "Manse | Every screen can be a playground",
       description: "Create motion games with Codex, publish with Sites, and play in any camera-equipped browser.",
-      images: [{ url: socialImage, width: 1731, height: 909, alt: "Manse — Every screen can be a playground" }],
+      images: [{ url: socialImage, width: 1731, height: 909, alt: "Manse | Every screen can be a playground" }],
     },
     twitter: {
       card: "summary_large_image",
-      title: "Manse — Every screen can be a playground",
+      title: "Manse | Every screen can be a playground",
       description: "Open-source, browser-native motion games made with Codex and published with Sites.",
       images: [socialImage],
     },

@@ -24,6 +24,10 @@ test("server-renders the public Showcase from the reviewed static catalog", asyn
 
   const html = await response.text();
   assert.match(html, /Every screen can be a/);
+  assert.match(html, />MANSE<\/a>/);
+  assert.match(html, /Six original motion worlds share one Manse navigation system/);
+  assert.match(html, /site-header platform-shell/);
+  assert.match(html, /Try the engine/);
   assert.match(html, /Play motion games in any browser\./);
   assert.match(html, /Playable showcase/);
   assert.match(html, /Flagship mission · real gameplay/);
@@ -41,6 +45,7 @@ test("server-renders the public Showcase from the reviewed static catalog", asyn
   assert.match(html, /Camera frames are processed on the playing device/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/i);
   assert.doesNotMatch(html, /<iframe\b|signin-with-chatgpt|<form\b/i);
+  assert.doesNotMatch(html, /Ages \d+–\d+/);
 });
 
 test("server-renders anonymous creator docs and listing guidance", async () => {

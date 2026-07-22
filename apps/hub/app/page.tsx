@@ -43,7 +43,7 @@ export default function Home() {
 
       <section className="catalog-section section" id="games">
         <div className="shell">
-          <div className="section-heading stacked-heading"><p className="eyebrow">Playable showcase</p><h2>Play something that moves you.</h2><p>Fire Hose Hero is the complete flagship mission. Five additional Sites demonstrate the engine&apos;s freeze, squat, jump, reach, and dodge mechanics. Every game opens directly on its own public Site.</p></div>
+          <div className="section-heading stacked-heading"><p className="eyebrow">Playable showcase</p><h2>Play something that moves you.</h2><p>Six original motion worlds share one Manse navigation system. Choose a game, continue straight into play, and return to the Showcase from any Site.</p></div>
           <CatalogExplorer games={catalogSnapshot.games} />
         </div>
       </section>

@@ -1,6 +1,4 @@
-import Image from "next/image";
 import Link from "next/link";
-import logo from "../../../landing/src/assets/brand/manse-logo-trim.png";
 
 const navigation = [
   { href: "/#games", label: "Games" },
@@ -11,10 +9,10 @@ const navigation = [
 
 export function SiteHeader() {
   return (
-    <header className="site-header">
+    <header className="site-header platform-shell">
       <div className="shell header-inner">
         <Link className="brand" href="/" aria-label="Manse home">
-          <Image className="brand-image" src={logo} alt="Manse" priority />
+          MANSE
         </Link>
 
         <nav className="site-nav" aria-label="Primary navigation">
@@ -25,9 +23,8 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <Link className="button button-small button-ink header-cta" href="/playground">
+        <Link className="button button-small button-light header-cta" href="/playground">
           Try the engine
-          <span aria-hidden="true">↗</span>
         </Link>
       </div>
     </header>
