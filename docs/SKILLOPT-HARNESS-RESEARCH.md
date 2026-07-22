@@ -162,14 +162,25 @@ reports that a stronger optimizer improved the static deployed skill without
 adding inference-time calls. Keep the edit budget at two for Manse initially;
 small patches are easier to audit and less likely to erase protected behavior.
 
-Acceptance must be stricter than SkillOpt's default aggregate improvement:
+Automatic adoption must be stricter than SkillOpt's default aggregate
+improvement:
 
 1. every hard gate remains at 100 percent on selection tasks;
 2. the lower confidence bound of the soft score improves;
 3. no protected regression-suite game loses a gate;
 4. at least one target-model repeat with a different seed confirms the gain;
-5. a maintainer reviews the exact Markdown diff and trajectory evidence; and
-6. adoption happens through a normal pull request, never automatically.
+5. the runner records the exact Markdown diff, trajectory evidence, evaluator
+   hash, dataset hash, model IDs, cost, and rollback commit in a signed manifest;
+6. the candidate is atomically promoted from challenger to champion when every
+   gate passes; and
+7. any post-promotion regression automatically restores the previous champion.
+
+This is real automatic adoption, not an auto-generated suggestion queue. Human
+review remains available through the evidence report and can pin or roll back a
+champion, but it is not required for an ordinary passing cycle. Branch
+protection and CI become the approval mechanism: the bot may update only the
+optimizable strategy file and champion manifest, and auto-merge is allowed only
+when the immutable gate workflow succeeds.
 
 Rejected edits and failure clusters should remain available to the optimizer,
 but no transcript, screenshot, or generated artifact should enter the deployed
@@ -188,7 +199,8 @@ For Manse, a future Sleep pilot must therefore:
 - use only opted-in archived sessions;
 - run `harvest` first and require manual redaction plus `reviewed: true`;
 - exclude tool arguments, outputs, credentials, camera data, and child data;
-- disable automatic scheduling and adoption during the pilot;
+- disable automatic scheduling and adoption only during the data-boundary
+  pilot, then enable it after the reviewed-task path and rollback drill pass;
 - set a short local retention period for tasks and `evidence.jsonl`;
 - target only the optimizable strategy reference; and
 - replay in empty disposable workspaces with network and deployment disabled.
@@ -213,21 +225,25 @@ Codex-backed dry run comes only after the harvested task JSON is inspected.
 - Use `codex_exec` with network disabled and an isolated writeable workspace.
 - Optimize only `optimized-creator-strategy.md` for one epoch and two edits.
 
-### Phase C: shadow adoption
+### Phase C: automatic shadow adoption
 
-- Generate a candidate strategy and replay all six Showcase regression games.
+- Generate a challenger strategy and replay all six Showcase regression games.
 - Produce an HTML or Markdown comparison report with score deltas and evidence.
-- Let maintainers accept or reject the candidate without changing the plugin.
+- Automatically adopt the passing challenger into an isolated champion pointer,
+  then run a rollback drill without changing the published plugin.
 
 ### Phase D: controlled continuous improvement
 
 - Run weekly or after a minimum batch of new reviewed failures, not after every
   creator session.
-- Keep a champion strategy and one challenger; promote only through the gate.
+- Keep a champion strategy and one challenger; promote automatically and
+  atomically only through the immutable gate.
 - Track accepted skill version, evaluator version, dataset hash, model IDs,
   token cost, seeds, and rollback commit.
-- Re-run the sealed test suite after promotion and before publishing a plugin
-  cachebuster.
+- Re-run the sealed test suite after promotion. When it passes, automatically
+  commit the new champion strategy, issue the plugin cachebuster, and publish
+  the local plugin package. Keep the previous cache entry available for one-step
+  rollback.
 
 ## Stop conditions
 
