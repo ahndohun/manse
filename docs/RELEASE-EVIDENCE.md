@@ -59,7 +59,10 @@ continuous input feedback, progression HUD, and completion celebration. Fresh
 local pointer-mode visual QA confirmed the themed stages for all five games;
 their independent repositories then passed typecheck, production build, tests,
 content validation, release validation, and production dependency audit before
-deployment.
+deployment. Showcase version 14 published the new `Playable world · original
+game art` treatment from source commit
+`26440f9bc0e3d906add57a232aba0b8786e2321c` and removed the former mechanic-demo
+label.
 
 ## Six public creator game Sites
 
@@ -70,14 +73,20 @@ validator, production build, and production-only npm audit before Sites version
 the navigation shell, hashed client assets, and game pack while leaving the
 heavy camera model and WebAssembly payloads lazy.
 
-| Game | Public Site | Deployed source commit |
-| --- | --- | --- |
-| Morning Star Catch | https://morning-star-catch.ran584000.chatgpt.site | `ca22e8cd845ebe37a6c3b34801191f03c609f4e2` |
-| Fire Hose Hero | https://fire-hose-hero.ran584000.chatgpt.site | `e8fb77dc7ab381e1e9a08795323a1f814e6ba0ff` |
-| Fruit Basket Catch | https://fruit-basket.ran584000.chatgpt.site | `0e9534eace4ba0567824eca23c386a6965f762b8` |
-| Museum Statues | https://museum-statues.ran584000.chatgpt.site | `5db37be38fbb538cb98e8c8cfa199864a7c2200e` |
-| Froggy Hops | https://froggy-hops.ran584000.chatgpt.site | `428151a0e01f1e904df0f1d5f520cf516027bdae` |
-| Monkey Bananas | https://monkey-bananas.ran584000.chatgpt.site | `af1a417579a832a5cb54b7a61d8ebd0afb7d6429` |
+| Game | Public Site | Version | Deployed source commit |
+| --- | --- | --- | --- |
+| Morning Star Catch | https://morning-star-catch.ran584000.chatgpt.site | 7 | `11e122d4e8cba4b3a98e4441072a983c729acfc0` |
+| Fire Hose Hero | https://fire-hose-hero.ran584000.chatgpt.site | 8 | `e8fb77dc7ab381e1e9a08795323a1f814e6ba0ff` |
+| Fruit Basket Catch | https://fruit-basket.ran584000.chatgpt.site | 7 | `a649c2d93f9f6d1c1b346a5fe670facfac23fe51` |
+| Museum Statues | https://museum-statues.ran584000.chatgpt.site | 7 | `99f38ee79bf8d8d653b8d81e46b2259bcf608a08` |
+| Froggy Hops | https://froggy-hops.ran584000.chatgpt.site | 7 | `b60ec256572e8f3daec9c6893bf843c5fcbc6ee4` |
+| Monkey Bananas | https://monkey-bananas.ran584000.chatgpt.site | 7 | `750e92e9fa68bfe87fe0ca01e71ba48c87c818b1` |
+
+Fresh signed-out checks after the version 7 roll-out returned HTTP 200 for all
+six Site roots and manifests. Pointer mode entered the themed play field on all
+five newly promoted games with WebGL2 grade S, no visible runtime error, and the
+expected frog pond, orchard basket, jungle banana course, constellation sky,
+and moonlit museum renderer respectively.
 
 Anonymous HTTPS checks returned 200 for all 78 requested paths: each Site root,
 public manifest, thumbnail, asset provenance, game pack, pack provenance, both
