@@ -71,7 +71,10 @@ Showcase version 15 deployed the shared MANSE platform shell from source commit
 the Showcase and all six creator-game Sites at 1280 pixels. Every Site showed
 the exact `MANSE` wordmark, exact Showcase back-link destination
 `https://manse-showcase.ran584000.chatgpt.site`, a present `<main>` landmark,
-and no horizontal overflow.
+and no horizontal overflow. A fresh interactive round trip then clicked Fire
+Hose Hero from the Showcase, reached its independent public origin in the same
+tab, clicked the localized `게임 둘러보기` action, and returned to the exact
+Showcase origin in that same tab.
 
 ## Six public creator game Sites
 
@@ -170,8 +173,10 @@ Evidence covered:
 - exact catalog snapshot compatibility;
 - all seven Manse Creator skills and plugin manifest validation;
 - fixed SHA-256 checks for the bundled MediaPipe model and WebAssembly assets;
-- zero dependency vulnerabilities reported by npm audit after applying a
-  compatible patched PostCSS override to the static build toolchain; and
+- zero dependency vulnerabilities in both full and production-only npm audits
+  after pinning patched PostCSS, Sharp, and fast-uri releases; a fresh temporary
+  checkout repeated `npm ci`, the complete validation suite, lint, both
+  production builds, and both audits successfully; and
 - no required runtime CDN, analytics, camera-frame upload, or child-data
   transmission added by Manse.
 

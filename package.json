@@ -9,7 +9,8 @@
     "packages/*"
   ],
   "overrides": {
-    "postcss": "8.5.20"
+    "postcss": "8.5.20",
+    "sharp": "0.35.3"
   },
   "scripts": {
     "build": "npm run build --workspaces --if-present",
@@ -29,7 +30,12 @@
     "showcase:build": "npm run build --workspace @manse/showcase"
   },
   "devDependencies": {
-    "@playwright/test": "1.61.1"
+    "@playwright/test": "1.61.1",
+    "@vitejs/plugin-rsc": "0.5.26",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "react-server-dom-webpack": "19.2.6",
+    "vite": "8.1.5"
   },
   "engines": {
     "node": ">=22.13.0"
