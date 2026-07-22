@@ -11,6 +11,9 @@ import {
   localizeOptional,
   type GameUiLocale,
 } from "./game-config";
+import { PresentationAudio } from "./feel/audio";
+import { applyMissionEvent, createMissionState, resetMissionState } from "./feel/mission";
+import { createThemedRendererFactory } from "./feel/themed-renderer";
 
 const PACK_URL = `/packs/${GAME_CONFIG.slug}/manse.pack.json`;
 const EMPTY: Pick<PlayerSnapshot, "phase" | "provider" | "tier" | "renderer" | "cameraActive" | "targetProgress" | "caption"> = {
@@ -93,6 +96,8 @@ export function GameClient() {
   const [error, setError] = useState<string | null>(null);
   const [locale, setLocale] = useState<GameUiLocale>(() => getInitialUiLocale());
   const browserLocaleAppliedRef = useRef(false);
+  const missionRef = useRef(createMissionState(locale));
+  const audioRef = useRef(new PresentationAudio());
 
   const boot = useCallback(async (provider: ProviderKind) => {
     const container = stageRef.current;
@@ -105,6 +110,7 @@ export function GameClient() {
     await previousPlayer?.destroy().catch(() => undefined);
     if (runId !== runIdRef.current) return;
     setSnapshot(EMPTY);
+    resetMissionState(missionRef.current, locale);
 
     const player = createMansePlayer({
       container,
@@ -112,8 +118,11 @@ export function GameClient() {
       provider,
       captions: true,
       reducedStimulation: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+      rendererFactory: createThemedRendererFactory({ mission: missionRef.current, locale }),
       onEvent: (event) => {
         if (runId !== runIdRef.current) return;
+        applyMissionEvent(missionRef.current, event, performance.now());
+        audioRef.current.onEvent(event, missionRef.current);
         if (event.type === "error") setError(UI_COPY[locale].startError);
       },
     });
@@ -157,6 +166,7 @@ export function GameClient() {
       unsubscribeRef.current?.();
       void playerRef.current?.destroy();
       playerRef.current = null;
+      audioRef.current.destroy();
     };
   }, []);
 
@@ -172,6 +182,7 @@ export function GameClient() {
   }, [changeLocale, locale]);
 
   const start = (provider: ProviderKind) => {
+    audioRef.current.arm();
     setBusy(true);
     setError(null);
     void boot(provider);

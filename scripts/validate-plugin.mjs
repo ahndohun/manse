@@ -1,12 +1,13 @@
 import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
-import { mkdir, mkdtemp, readFile, readdir, rm, symlink } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, readdir, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { basename, dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const pluginRoot = join(repositoryRoot, "plugins/manse-creator");
+const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
 const manifest = await readJson(join(pluginRoot, ".codex-plugin/plugin.json"));
 const marketplace = await readJson(join(repositoryRoot, ".agents/plugins/marketplace.json"));
 const expectedSkills = [
@@ -103,9 +104,17 @@ try {
     "--minutes", "60",
     "--target-count", "12",
   ]);
-  await mkdir(join(gameRoot, "node_modules/@manse"), { recursive: true });
-  await symlink(join(gameRoot, "vendor/manse-schema"), join(gameRoot, "node_modules/@manse/schema"));
-  await symlink(join(repositoryRoot, "packages/schema/node_modules/zod"), join(gameRoot, "node_modules/zod"));
+  const expectedFeelKit = ["audio.ts", "hud.ts", "mission.ts", "outcome.ts", "particles.ts", "stage.ts", "themed-renderer.ts"];
+  const actualFeelKit = (await readdir(join(gameRoot, "app/feel"))).sort();
+  assert(JSON.stringify(actualFeelKit) === JSON.stringify(expectedFeelKit), "A fresh scaffold must contain the complete creator-owned presentation kit.");
+  const generatedClient = await readFile(join(gameRoot, "app/GameClient.tsx"), "utf8");
+  const generatedRenderer = await readFile(join(gameRoot, "app/feel/themed-renderer.ts"), "utf8");
+  assert(generatedClient.includes("createThemedRendererFactory"), "A fresh scaffold must install the presentation-kit renderer.");
+  assert(!/\bcreateDefaultRenderer\s*\(/u.test(generatedRenderer), "The presentation kit must fully replace, never composite over, the default renderer.");
+  assert(generatedRenderer.includes("drawVideoCover") && generatedRenderer.includes("drawPaintedSet"), "The kit must provide full-strength camera and painted simulator stages.");
+  run(npmCommand, ["install", "--ignore-scripts", "--no-audit", "--no-fund"], gameRoot);
+  run(npmCommand, ["run", "typecheck"], gameRoot);
+  run(npmCommand, ["run", "build"], gameRoot);
   const result = run(process.execPath, [
     join(gameRoot, "vendor/manse-cli/lib/cli.js"),
     "validate",
@@ -147,6 +156,39 @@ try {
   assert(experience.status === "design-required", "A scaffold must not falsely self-approve its game quality.");
   assert(experience.beats?.length === 3, "The experience contract must carry three authored beats.");
   assert(experience.qualityGates?.themedEntitiesInPlay === false, "Unimplemented visual gates must start false.");
+
+  const blockedRelease = spawnSync(process.execPath, [join(gameRoot, "scripts/check-game-quality.mjs"), "--release"], {
+    cwd: gameRoot,
+    encoding: "utf8",
+  });
+  assert(blockedRelease.status !== 0, "Release quality must fail before presenter and playtest evidence exist.");
+  assert(
+    `${blockedRelease.stderr}${blockedRelease.stdout}`.includes("evidence.gameplayScreenshot"),
+    "The blocked release must name its missing gameplay evidence.",
+  );
+  const evidenceRoot = join(gameRoot, ".manse/evidence");
+  await mkdir(evidenceRoot, { recursive: true });
+  await writeFile(join(evidenceRoot, "gameplay.png"), Buffer.alloc(40_001, 1));
+  await writeFile(join(evidenceRoot, "completion.png"), Buffer.alloc(40_001, 2));
+  await writeFile(join(evidenceRoot, "playtest.md"), "Kit-based pointer and reduced-motion playtest completed from the generated production build. Camera and simulator use the same themed layer; the camera test retained a full-strength mirrored self-view.\n");
+  await writeJson(join(gameRoot, ".manse/experience.json"), {
+    ...experience,
+    status: "approved",
+    presenter: {
+      source: "app/feel/themed-renderer.ts",
+      themedEntities: ["archive seals", "hand-held keeper tool"],
+      reactiveStates: ["waiting", "responding", "resolved"],
+      continuousFeedback: "The themed object responds continuously to dwell and pose input.",
+      scoreAndResolution: "Localized HUD scoring culminates in the presentation-kit victory panel.",
+    },
+    qualityGates: Object.fromEntries(Object.keys(experience.qualityGates).map((gate) => [gate, true])),
+    evidence: {
+      gameplayScreenshot: ".manse/evidence/gameplay.png",
+      completionScreenshot: ".manse/evidence/completion.png",
+      playtestNotes: ".manse/evidence/playtest.md",
+    },
+  });
+  run(process.execPath, [join(gameRoot, "scripts/check-game-quality.mjs"), "--release"], gameRoot);
 
   // A motion mechanic must generate a valid schemaVersion 2 pack pinned to the
   // 0.2 engine it bundles.
@@ -196,6 +238,10 @@ console.log("Manse Creator contract passed: manifest, seven skills, vendored run
 
 async function readJson(path) {
   return JSON.parse(await readFile(path, "utf8"));
+}
+
+async function writeJson(path, value) {
+  await writeFile(path, `${JSON.stringify(value, null, 2)}\n`, "utf8");
 }
 
 function assert(condition, message) {

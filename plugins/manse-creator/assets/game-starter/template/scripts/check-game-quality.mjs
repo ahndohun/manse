@@ -57,6 +57,12 @@ if (release) {
     if (!/(?:RendererFactory|rendererFactory|create[A-Za-z]+Renderer)/u.test(presenterSource)) {
       failures.push("the presenter source must install a game-specific runtime renderer.");
     }
+    if (/\bcreateDefaultRenderer\s*\(/u.test(presenterSource)) {
+      failures.push("the presenter must fully replace, never composite over, createDefaultRenderer.");
+    }
+    if (!presenterSource.includes("drawVideoCover") || !presenterSource.includes("drawPaintedSet")) {
+      failures.push("the presenter must provide full-strength camera cover and a painted simulator set.");
+    }
   }
   if (!Array.isArray(experience.presenter?.themedEntities) || experience.presenter.themedEntities.length < 1) {
     failures.push("presenter.themedEntities must name the in-play fantasy objects.");
