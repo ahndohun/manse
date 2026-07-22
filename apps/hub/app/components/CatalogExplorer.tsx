@@ -33,7 +33,7 @@ function GameCard({ game, featured = false }: { game: CatalogGame; featured?: bo
   const artUrl = game.slug === "fire-hose-hero"
     ? "/featured/fire-hose-hero-gameplay.png"
     : game.thumbnailUrl;
-  const artDescription = featured ? `${game.title} gameplay` : `${game.title} cover art`;
+  const artDescription = `${game.title} game art`;
   return (
     <article className={featured ? "game-card game-card-featured" : "game-card"}>
       <a className="game-card-art" href={game.gameUrl} target="_blank" rel="noreferrer" aria-label={`Play ${game.title}`}>
@@ -45,7 +45,7 @@ function GameCard({ game, featured = false }: { game: CatalogGame; featured?: bo
         ) : (
           <span aria-hidden="true">{game.title.slice(0, 1).toUpperCase()}</span>
         )}
-        <strong>{featured ? "Flagship mission · real gameplay" : "Engine mechanic demo · cover art"}</strong>
+        <strong>{featured ? "Flagship mission · real gameplay" : "Playable world · original game art"}</strong>
       </a>
       <div className="game-card-body">
         <div className="game-card-kicker">

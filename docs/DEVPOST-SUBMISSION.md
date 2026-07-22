@@ -152,7 +152,8 @@ recognition support before completing a measured hardware matrix.
   loop. Fire Hose Hero is the release-quality flagship: a three-alarm,
   12-fire mission with a continuous hose, reactive targets, score/combo,
   wave timers, authored sound, and explicit victory/failure. The other five
-  entries are labeled honestly as engine mechanic demos.
+  entries now ship as distinct playable worlds with game-specific renderers,
+  reaction states, continuous feedback, progression, and completion moments.
 - Generated games begin with an explicit fantasy, physical verb, themed target,
   and three escalating beats. Publication blocks until a game-specific renderer,
   reaction states, continuous feedback, audio, reduced-motion play, and genuine

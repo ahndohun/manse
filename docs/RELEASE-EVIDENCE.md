@@ -44,14 +44,22 @@ non-touch `Dodge`, `Freeze`, `Squat`, and `Jump` tags. The public playground
 again completed 3 / 3, and the deployed home page contains zero occurrences of
 the removed "Auto quality" claim.
 
-Version 12 is the final presentation release. It replaces the placeholder-like
-catalog treatments with a real Fire Hose Hero play frame, labels the other five
-entries explicitly as engine-mechanic demos with cover art, and places the
-flagship's 3-alarm / 12-fire proof above the fold. Fresh signed-out desktop and
+Version 12 replaced the placeholder-like catalog treatments with a real Fire
+Hose Hero play frame, labeled the other five entries according to their state at
+that release, and placed the flagship's 3-alarm / 12-fire proof above the fold.
+Fresh signed-out desktop and
 390-pixel mobile checks verified all six cards, working filters and outbound
 game links, no horizontal overflow, and zero page or console errors. The public
 Playground again completed 3 / 3 without an account, camera, API key, or
 rebuild.
+
+Version 13 promotes the other five entries to playable worlds after each game
+received its own trusted, Site-bundled renderer, authored reaction states,
+continuous input feedback, progression HUD, and completion celebration. Fresh
+local pointer-mode visual QA confirmed the themed stages for all five games;
+their independent repositories then passed typecheck, production build, tests,
+content validation, release validation, and production dependency audit before
+deployment.
 
 ## Six public creator game Sites
 

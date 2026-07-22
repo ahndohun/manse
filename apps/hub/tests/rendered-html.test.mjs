@@ -27,7 +27,8 @@ test("server-renders the public Showcase from the reviewed static catalog", asyn
   assert.match(html, /Play motion games in any browser\./);
   assert.match(html, /Playable showcase/);
   assert.match(html, /Flagship mission · real gameplay/);
-  assert.match(html, /Engine mechanic demo · cover art/);
+  assert.match(html, /Playable world · original game art/);
+  assert.doesNotMatch(html, /Engine mechanic demo · cover art/);
   assert.match(html, /\/featured\/fire-hose-hero-gameplay\.png/);
   assert.match(html, /Morning Star Catch/);
   assert.match(html, /Fire Hose Hero/);
